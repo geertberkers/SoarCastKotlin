@@ -1,0 +1,51 @@
+<resources>
+<!--    <string name="app_name">Soarcast</string>-->
+<!--    <string name="action_settings">Settings</string>-->
+<!--    &lt;!&ndash; Strings used for fragments for navigation &ndash;&gt;-->
+<!--    <string name="first_fragment_label">First Fragment</string>-->
+<!--    <string name="second_fragment_label">Second Fragment</string>-->
+<!--    <string name="next">Next</string>-->
+<!--    <string name="previous">Previous</string>-->
+
+<!--    <string name="hello_first_fragment">Hello first fragment</string>-->
+<!--    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>-->
+    <string name="app_name">SoarCast</string>
+    <string name="check_connection">Check connection</string>
+    <string name="check_login">Login not valid</string>
+    <string name="connecting">Connecting...</string>
+    <string name="dayaftertomorrow">Day after tomorrow</string>
+    <string name="extensie">.txt</string>
+    <string name="laden">Loading data...</string>
+    <string name="login_id">Versie201711</string>
+    <string name="login_onjuist">false</string>
+    <string name="login_verlopen">expired</string>
+    <string name="no_data">No data available</string>
+    <string name="p_activity_id">1</string>
+    <string name="p_day">today</string>
+    <string name="p_runsToShow">lastOnly</string>
+    <string name="p_unit_richting">deg</string>
+    <string name="p_unit_wind">m/s</string>
+    <string name="paasei1">Lieren201712</string>
+    <string name="paasei2">Kiten201712</string>
+    <string name="permissie">Check permission: Storage</string>
+    <string name="php_login">SoarCastApp.php?</string>
+    <string name="php_login_parameter">id</string>
+    <string name="php_soarcast">plotPerLocAndUnit.php?</string>
+    <string name="q_activity_id">activity_id</string>
+    <string name="q_csv">csv</string>
+    <string name="q_day">day</string>
+    <string name="q_location">location</string>
+    <string name="q_runsToShow">runsToShow</string>
+    <string name="q_unit">unit</string>
+    <string name="schermafdruk">/Pictures/SoarCast_screenshot.jpg</string>
+    <string name="search_menu_title">Search</string>
+    <string name="sponsor1url">https://www.parakiting.nl</string>
+    <string name="sponsor2url">https://www.paraworks.nl/phone/</string>
+    <string name="status_bar_notification_info_overflow">999+</string>
+    <string name="tekst_verlopen">Account expired</string>
+    <string name="tomorrow">Tomorrow</string>
+    <string name="url_login">http://www.erwinvoogt.com/SoarCastApp/</string>
+    <string name="url_soarcast">http://www.soarcast.nl/sc/</string>
+    <string name="verder">Continue</string>
+    <string name="yesterday">Yesterday</string>
+</resources>
