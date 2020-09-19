@@ -2,6 +2,7 @@ package geert.berkers.soarcast.views;
 
 
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -13,6 +14,7 @@ import android.view.View;
 /**
  * Created by Zorgkluis (Geert Berkers)
  */
+@SuppressLint("DefaultLocale")
 public class WaardenView extends View {
     private Integer aantalR;
 
@@ -59,18 +61,18 @@ public class WaardenView extends View {
         this.mWaarden = new Paint(1);
         this.mWaarden.setColor(-7829368);
         this.mWaarden.setStyle(Paint.Style.STROKE);
-        this.aantalW = Integer.valueOf(0);
-        this.aantalR = Integer.valueOf(0);
+        this.aantalW = 0;
+        this.aantalR = 0;
         this.eenheid = 0;
         this.schaal = 0;
         this.uurVanaf = 24;
-        this.tIndicator = Integer.valueOf(43200);
-        for (int i = 0; i < this.maxN.intValue(); i++) {
-            this.tijdW[i] = Integer.valueOf(0);
-            this.tijdR[i] = Integer.valueOf(0);
-            this.windMeting[i] = Double.valueOf(0.0D);
-            this.vlaagMeting[i] = Double.valueOf(0.0D);
-            this.richtingMeting[i] = Double.valueOf(0.0D);
+        this.tIndicator = 43200;
+        for (int i = 0; i < this.maxN; i++) {
+            this.tijdW[i] = 0;
+            this.tijdR[i] = 0;
+            this.windMeting[i] = 0.0D;
+            this.vlaagMeting[i] = 0.0D;
+            this.richtingMeting[i] = 0.0D;
         }
     }
 
@@ -134,27 +136,27 @@ public class WaardenView extends View {
             d1 = 0.0D;
             d2 = 0.0D;
         }
-        if (this.aantalR.intValue() > 0) {
+        if (this.aantalR > 0) {
             i = 1;
             double d = 0.0D;
             while (true) {
                 d3 = d;
-                if (i < this.aantalR.intValue()) {
-                    int k = this.tIndicator.intValue();
+                if (i < this.aantalR) {
+                    int k = this.tIndicator;
                     Integer[] arrayOfInteger = this.tijdR;
                     int m = i - 1;
                     int j = i;
                     d3 = d;
-                    if (k >= arrayOfInteger[m].intValue()) {
+                    if (k >= arrayOfInteger[m]) {
                         j = i;
                         d3 = d;
-                        if (this.tIndicator.intValue() <= this.tijdR[i].intValue()) {
-                            if (Math.abs(this.tijdR[m].intValue() - this.tIndicator.intValue()) <= Math.abs(this.tijdR[i].intValue() - this.tIndicator.intValue())) {
-                                d = this.richtingMeting[m].doubleValue();
+                        if (this.tIndicator <= this.tijdR[i]) {
+                            if (Math.abs(this.tijdR[m] - this.tIndicator) <= Math.abs(this.tijdR[i] - this.tIndicator)) {
+                                d = this.richtingMeting[m];
                             } else {
-                                d = this.richtingMeting[i].doubleValue();
+                                d = this.richtingMeting[i];
                             }
-                            j = this.aantalR.intValue();
+                            j = this.aantalR;
                             d3 = d;
                         }
                     }

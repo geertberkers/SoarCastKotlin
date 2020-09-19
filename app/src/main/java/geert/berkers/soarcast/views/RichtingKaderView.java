@@ -25,7 +25,7 @@ public class RichtingKaderView extends View {
 
     private int uurVanaf;
 
-    private Integer[] zonOpOnder = new Integer[] { Integer.valueOf(6), Integer.valueOf(18) };
+    private Integer[] zonOpOnder = new Integer[] {6, 18};
 
     public RichtingKaderView(Context paramContext) {
         super(paramContext);
@@ -83,7 +83,7 @@ public class RichtingKaderView extends View {
         while (i < 25) {
             k = i - 1;
             int m = (this.uurVanaf + k) % 24;
-            if (m < this.zonOpOnder[0].intValue() || m > this.zonOpOnder[j].intValue()) {
+            if (m < this.zonOpOnder[0] || m > this.zonOpOnder[j]) {
                 this.mAssen.setColor(268435711);
                 float f14 = f9 / 24.0F;
                 float f15 = k;
@@ -92,7 +92,7 @@ public class RichtingKaderView extends View {
                 j = 1;
                 paramCanvas.drawRect(f15 * f14 + f5, f7, f14 * f16 + f5, f8, paint);
             }
-            if (m == this.zonOpOnder[0].intValue() || m == this.zonOpOnder[j].intValue()) {
+            if (m == this.zonOpOnder[0] || m == this.zonOpOnder[j]) {
                 this.mAssen.setColor(100663551);
                 float f14 = f9 / 24.0F;
                 paramCanvas.drawRect(k * f14 + f5, f7, f5 + f14 * i, f8, this.mAssen);
