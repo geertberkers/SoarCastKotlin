@@ -1,6 +1,7 @@
 package geert.berkers.soarcast
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
@@ -32,13 +33,17 @@ class MainActivity : AppCompatActivity() {
     var sponsor10K by Delegates.notNull<Boolean>()
     var sponsor20K by Delegates.notNull<Boolean>()
 
+    companion object {
+        const val SPONSOR_1 = "sponsor1"
+        const val SPONSOR_2 = "sponsor2"
+    }
 
+    private val sharedPrefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
 
     private fun startSoarCast() {
-        val sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this)
         sharedPrefs.edit {
-            putBoolean("sponsor1", sponsor10K)
-            putBoolean("sponsor2", sponsor20K)
+            putBoolean(SPONSOR_1, sponsor10K)
+            putBoolean(SPONSOR_2, sponsor20K)
         }
 
         val soarIntent = Intent(this, WelkomSoarCast::class.java).apply {
@@ -46,18 +51,22 @@ class MainActivity : AppCompatActivity() {
         }
 
         startActivity(soarIntent)
-
-
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        bestand = ""
-        gebruiker = ""
+        this.loginOk = false
+        this.gebruiker = getString(R.string.login_id)
 
-        loginOk = false
-        sponsor10K = false
-        sponsor20K = false
+        this.sponsor10K = sharedPrefs.getBoolean(SPONSOR_1, false)
+        this.sponsor20K = sharedPrefs.getBoolean(SPONSOR_2, false)
+
+        setContentView(R.layout.activity_main)
+
+        if (this.sponsor10K) {
+
+        }
 //        binding = ActivityMainBinding.inflate(layoutInflater)
 //        setContentView(binding.root)
 //
