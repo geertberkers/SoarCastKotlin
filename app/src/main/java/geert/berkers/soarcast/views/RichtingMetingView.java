@@ -1,4 +1,4 @@
-package geert.berkers.soarcast;
+package geert.berkers.soarcast.views;
 
 import android.content.Context;
 import android.graphics.Canvas;

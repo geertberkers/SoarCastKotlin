@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/helescherm"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_marginTop="-12.0dip">
+
+    <ImageView
+        android:id="@+id/soarcastlogo"
+        android:layout_width="0.0dip"
+        android:layout_height="wrap_content"
+        android:src="@drawable/soarcastlogo"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/locatieN"
+        android:layout_width="40.0dip"
+        android:layout_height="40.0dip"
+        android:layout_marginLeft="2.0dip"
+        android:layout_marginTop="16.0dip"
+        android:src="@drawable/pijlomhoog"
+        android:tint="@color/soarcastblue"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/soarcastlogo" />
+
+    <ImageButton
+        android:id="@+id/locatieZ"
+        android:layout_width="40.0dip"
+        android:layout_height="40.0dip"
+        android:layout_marginLeft="2.0dip"
+        android:layout_marginTop="8.0dip"
+        android:src="@drawable/pijlomlaag"
+        android:tint="@color/soarcastblue"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/locatieN" />
+
+    <TextView
+        android:id="@+id/locatie"
+        android:layout_width="0.0dip"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="44.0dip"
+        android:layout_marginTop="80.0dip"
+        android:layout_marginRight="44.0dip"
+        android:text="Wijk aan Zee"
+        android:textColor="@color/soarcastyel"
+        android:textSize="18.0sp"
+        android:textStyle="bold"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/soarcastlogo" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="visible"
+        app:layout_constraintGuide_percent="0.7" />
+
+    <view
+        android:id="@+id/windKaderView"
+        class="geert.berkers.soarcast.views.WindKaderView"
+        android:layout_width="0.0dip"
+        android:layout_height="0.0dip"
+        android:layout_marginLeft="4.0dip"
+        android:layout_marginRight="4.0dip"
+        android:layout_marginBottom="20.0dip"
+        app:layout_constraintBottom_toTopOf="@+id/guideline2"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/soarcastlogo"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <view
+        android:id="@+id/windModelView"
+        class="geert.berkers.soarcast.views.WindModelView"
+        android:layout_width="0.0dip"
+        android:layout_height="0.0dip"
+        android:layout_marginLeft="4.0dip"
+        android:layout_marginTop="0.0dip"
+        android:layout_marginRight="4.0dip"
+        android:layout_marginBottom="20.0dip"
+        app:layout_constraintBottom_toTopOf="@+id/guideline2"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/soarcastlogo"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <view
+        android:id="@+id/windMetingView"
+        class="geert.berkers.soarcast.views.WindMetingView"
+        android:layout_width="0.0dip"
+        android:layout_height="0.0dip"
+        android:layout_marginLeft="4.0dip"
+        android:layout_marginTop="0.0dip"
+        android:layout_marginRight="4.0dip"
+        android:layout_marginBottom="20.0dip"
+        app:layout_constraintBottom_toTopOf="@+id/guideline2"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/soarcastlogo"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <view
+        android:id="@+id/richtingKaderView"
+        class="geert.berkers.soarcast.views.RichtingKaderView"
+        android:layout_width="0.0dip"
+        android:layout_height="0.0dip"
+        android:layout_marginLeft="4.0dip"
+        android:layout_marginTop="4.0dip"
+        android:layout_marginRight="4.0dip"
+        android:layout_marginBottom="4.0dip"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guideline2" />
+
+    <view
+        android:id="@+id/richtingModelView"
+        class="geert.berkers.soarcast.views.RichtingModelView"
+        android:layout_width="0.0dip"
+        android:layout_height="0.0dip"
+        android:layout_marginLeft="4.0dip"
+        android:layout_marginTop="4.0dip"
+        android:layout_marginRight="4.0dip"
+        android:layout_marginBottom="4.0dip"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guideline2" />
+
+    <view
+        android:id="@+id/richtingMetingView"
+        class="geert.berkers.soarcast.views.RichtingMetingView"
+        android:layout_width="0.0dip"
+        android:layout_height="0.0dip"
+        android:layout_marginLeft="4.0dip"
+        android:layout_marginTop="4.0dip"
+        android:layout_marginRight="4.0dip"
+        android:layout_marginBottom="4.0dip"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guideline2" />
+
+    <Space
+        android:id="@+id/dummyMargin1"
+        android:layout_width="fill_parent"
+        android:layout_height="6.0dip"
+        app:layout_constraintBottom_toBottomOf="@+id/windKaderView" />
+
+    <Space
+        android:id="@+id/dummyMargin2"
+        android:layout_width="fill_parent"
+        android:layout_height="6.0dip"
+        app:layout_constraintTop_toTopOf="@+id/richtingKaderView" />
+
+    <view
+        android:id="@+id/waardenView"
+        class="geert.berkers.soarcast.views.WaardenView"
+        android:layout_width="0.0dip"
+        android:layout_height="0.0dip"
+        android:layout_marginLeft="4.0dip"
+        android:layout_marginTop="0.0dip"
+        android:layout_marginRight="4.0dip"
+        android:layout_marginBottom="0.0dip"
+        app:layout_constraintBottom_toBottomOf="@+id/dummyMargin2"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/dummyMargin1"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/laden"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8.0dip"
+        android:layout_marginTop="8.0dip"
+        android:layout_marginRight="8.0dip"
+        android:layout_marginBottom="8.0dip"
+        android:textColor="@color/soarcastred"
+        android:textSize="18.0sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/windMetingView"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/windMetingView"
+        app:layout_constraintVertical_bias="0.3" />
+
+    <Button
+        android:id="@+id/model"
+        android:layout_width="54.0dip"
+        android:layout_height="36.0dip"
+        android:layout_marginTop="16.0dip"
+        android:layout_marginRight="8.0dip"
+        android:paddingLeft="-2.0dip"
+        android:paddingRight="-2.0dip"
+        android:text="Harm"
+        android:textSize="12.0sp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/soarcastlogo" />
+
+    <Button
+        android:id="@+id/eenheid"
+        android:layout_width="54.0dip"
+        android:layout_height="36.0dip"
+        android:layout_marginLeft="24.0dip"
+        android:layout_marginTop="16.0dip"
+        android:paddingLeft="-2.0dip"
+        android:paddingRight="-2.0dip"
+        android:text="m/s"
+        android:textSize="12.0sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/soarcastlogo" />
+
+    <Button
+        android:id="@+id/richt"
+        android:layout_width="54.0dip"
+        android:layout_height="36.0dip"
+        android:layout_marginLeft="24.0dip"
+        android:layout_marginTop="10.0dip"
+        android:paddingLeft="-2.0dip"
+        android:paddingRight="-2.0dip"
+        android:text="N"
+        android:textSize="12.0sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/guideline2" />
+
+    <ImageButton
+        android:id="@+id/delen"
+        android:layout_width="54.0dip"
+        android:layout_height="36.0dip"
+        android:layout_marginTop="10.0dip"
+        android:layout_marginRight="8.0dip"
+        android:src="?actionModeShareDrawable"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/guideline2" />
+</androidx.constraintlayout.widget.ConstraintLayout>

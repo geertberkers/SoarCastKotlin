@@ -1,4 +1,4 @@
-package geert.berkers.soarcast;
+package geert.berkers.soarcast.views;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -6,6 +6,8 @@ import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.view.View;
+
+import geert.berkers.soarcast.R;
 
 /**
  * Created by Zorgkluis (Geert Berkers)

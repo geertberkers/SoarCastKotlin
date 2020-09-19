@@ -1,4 +1,4 @@
-package geert.berkers.soarcast;
+package geert.berkers.soarcast.views;
 
 /**
  * Created by Zorgkluis (Geert Berkers)
@@ -65,11 +65,11 @@ public class WindModelView extends View {
         Path path = new Path();
         this.mModel.setColor(1073742079);
         this.mModel.setStyle(Paint.Style.FILL);
-        while (i < this.aantal.intValue()) {
+        while (i < this.aantal) {
             Integer[] arrayOfInteger = this.tijd;
             j = i - 1;
-            float f6 = arrayOfInteger[j].intValue() * f4 / 24.0F / 3600.0F + f2;
-            float f7 = this.tijd[i].intValue() * f4 / 24.0F / 3600.0F + f2;
+            float f6 = arrayOfInteger[j] * f4 / 24.0F / 3600.0F + f2;
+            float f7 = this.tijd[i] * f4 / 24.0F / 3600.0F + f2;
             if (f6 < f7) {
                 float f8 = f3 - this.windModel[j].floatValue() / f1 * f5;
                 float f9 = this.windModel[i].floatValue() / f1;
@@ -111,7 +111,7 @@ public class WindModelView extends View {
 
     public void update(int paramInt1, int paramInt2, Integer[] paramArrayOfInteger, Double[] paramArrayOfDouble1, Double[] paramArrayOfDouble2) {
         this.schaal = paramInt1;
-        this.aantal = Integer.valueOf(paramInt2);
+        this.aantal = paramInt2;
         this.tijd = paramArrayOfInteger;
         this.windModel = paramArrayOfDouble1;
         this.vlaagModel = paramArrayOfDouble2;

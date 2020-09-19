@@ -1,4 +1,4 @@
-package geert.berkers.soarcast;
+package geert.berkers.soarcast.views;
 
 
 
@@ -22,23 +22,23 @@ public class WaardenView extends View {
 
     private Paint mWaarden;
 
-    private final Integer maxN = Integer.valueOf(288);
+    private final Integer maxN = 288;
 
-    private Double[] richtingMeting = new Double[this.maxN.intValue()];
+    private Double[] richtingMeting = new Double[this.maxN];
 
     private int schaal;
 
     private Integer tIndicator;
 
-    private Integer[] tijdR = new Integer[this.maxN.intValue()];
+    private Integer[] tijdR = new Integer[this.maxN];
 
-    private Integer[] tijdW = new Integer[this.maxN.intValue()];
+    private Integer[] tijdW = new Integer[this.maxN];
 
     private int uurVanaf;
 
-    private Double[] vlaagMeting = new Double[this.maxN.intValue()];
+    private Double[] vlaagMeting = new Double[this.maxN];
 
-    private Double[] windMeting = new Double[this.maxN.intValue()];
+    private Double[] windMeting = new Double[this.maxN];
 
     public WaardenView(Context paramContext) {
         super(paramContext);
@@ -86,39 +86,39 @@ public class WaardenView extends View {
         float f2 = 8.0F * f6;
         float f4 = f3 - f2 - f1;
         float f8 = f7 - 0.0F;
-        f3 = f1 + 1.0F * this.tIndicator.intValue() / 86400.0F * f4;
+        f3 = f1 + 1.0F * this.tIndicator / 86400.0F * f4;
         float f5 = f4 * 0.17F;
         f1 = 0.3F * f8;
         f4 = f1 / 2.0F;
         int i = this.schaal;
-        if (this.aantalW.intValue() > 0) {
+        if (this.aantalW > 0) {
             i = 1;
             d3 = 0.0D;
             double d = 0.0D;
             while (true) {
                 d1 = d3;
                 d2 = d;
-                if (i < this.aantalW.intValue()) {
-                    int k = this.tIndicator.intValue();
+                if (i < this.aantalW) {
+                    int k = this.tIndicator;
                     Integer[] arrayOfInteger = this.tijdW;
                     int m = i - 1;
                     int j = i;
                     d2 = d3;
                     d1 = d;
-                    if (k >= arrayOfInteger[m].intValue()) {
+                    if (k >= arrayOfInteger[m]) {
                         j = i;
                         d2 = d3;
                         d1 = d;
-                        if (this.tIndicator.intValue() <= this.tijdW[i].intValue()) {
-                            if (Math.abs(this.tijdW[m].intValue() - this.tIndicator.intValue()) <= Math.abs(this.tijdW[i].intValue() - this.tIndicator.intValue())) {
-                                d1 = this.windMeting[m].doubleValue();
-                                d2 = this.vlaagMeting[m].doubleValue();
+                        if (this.tIndicator <= this.tijdW[i]) {
+                            if (Math.abs(this.tijdW[m] - this.tIndicator) <= Math.abs(this.tijdW[i] - this.tIndicator)) {
+                                d1 = this.windMeting[m];
+                                d2 = this.vlaagMeting[m];
                             } else {
-                                d1 = this.windMeting[i].doubleValue();
-                                d2 = this.vlaagMeting[i].doubleValue();
+                                d1 = this.windMeting[i];
+                                d2 = this.vlaagMeting[i];
                             }
                             d = d1;
-                            j = this.aantalW.intValue();
+                            j = this.aantalW;
                             d1 = d2;
                             d2 = d;
                         }
@@ -225,17 +225,17 @@ public class WaardenView extends View {
         paramCanvas.drawRect(f7, f6 - f1, f5, f6 + f1, this.mWaarden);
         this.mWaarden.setColor(-14671617);
         this.mWaarden.setTextAlign(Paint.Align.LEFT);
-        String str = String.format("%.1f", new Object[] { Double.valueOf(d1) });
+        String str = String.format("%.1f", d1);
         f1 = f4 / 2.0F;
         f4 = f6 + f2;
         paramCanvas.drawText(str, f7 + f1 + f2, f4, this.mWaarden);
         this.mWaarden.setColor(-5205936);
         this.mWaarden.setTextAlign(Paint.Align.CENTER);
-        paramCanvas.drawText(String.format("%.1f", new Object[] { Double.valueOf(d2) }), f3, f4, this.mWaarden);
+        paramCanvas.drawText(String.format("%.1f", d2), f3, f4, this.mWaarden);
         this.mWaarden.setColor(-14671617);
         this.mWaarden.setTextAlign(Paint.Align.RIGHT);
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(String.format("%.0f", new Object[] { Double.valueOf(d3) }));
+        stringBuilder.append(String.format("%.0f", d3));
         stringBuilder.append("");
         paramCanvas.drawText(stringBuilder.toString(), f5 - f2, f4, this.mWaarden);
     }
@@ -262,25 +262,25 @@ public class WaardenView extends View {
         setMeasuredDimension(paramInt1, paramInt2);
     }
 
-    public void update(int paramInt1, int paramInt2, int paramInt3, int paramInt4) {
-        this.eenheid = paramInt1;
-        this.schaal = paramInt2;
-        this.uurVanaf = paramInt3;
-        this.tIndicator = Integer.valueOf(paramInt4);
+    public void update(int eenheid, int schaal, int uurVanaf, int tIndicator) {
+        this.eenheid = eenheid;
+        this.schaal = schaal;
+        this.uurVanaf = uurVanaf;
+        this.tIndicator = tIndicator;
         invalidate();
     }
 
-    public void zetRichting(int paramInt, Integer[] paramArrayOfInteger, Double[] paramArrayOfDouble) {
-        this.aantalR = Integer.valueOf(paramInt);
-        this.tijdR = paramArrayOfInteger;
-        this.richtingMeting = paramArrayOfDouble;
+    public void zetRichting(int aantalR, Integer[] tijdR, Double[] richtingMeting) {
+        this.aantalR = aantalR;
+        this.tijdR = tijdR;
+        this.richtingMeting = richtingMeting;
     }
 
-    public void zetWind(int paramInt1, int paramInt2, Integer[] paramArrayOfInteger, Double[] paramArrayOfDouble1, Double[] paramArrayOfDouble2) {
-        this.schaal = paramInt1;
-        this.aantalW = Integer.valueOf(paramInt2);
-        this.tijdW = paramArrayOfInteger;
-        this.windMeting = paramArrayOfDouble1;
-        this.vlaagMeting = paramArrayOfDouble2;
+    public void zetWind(int schaal, int aantalW, Integer[] tijdW, Double[] windMeting, Double[] vlaagmeting) {
+        this.schaal = schaal;
+        this.aantalW = aantalW;
+        this.tijdW = tijdW;
+        this.windMeting = windMeting;
+        this.vlaagMeting = vlaagmeting;
     }
 }
