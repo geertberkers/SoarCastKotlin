@@ -12,30 +12,22 @@ import android.os.AsyncTask;
 import android.widget.Toast;
 import android.os.Parcelable;
 import java.io.OutputStream;
-import android.graphics.Bitmap.CompressFormat;
 import java.io.FileOutputStream;
 import java.io.File;
 import android.os.Environment;
 import android.graphics.Bitmap;
-//import android.support.v4.content.ContextCompat;
 import android.content.SharedPreferences;
 import android.view.MotionEvent;
-import android.view.View.OnTouchListener;
-import android.view.GestureDetector.OnGestureListener;
 import android.content.Context;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.graphics.PorterDuff.Mode;
 import android.widget.ImageButton;
 import android.widget.Button;
 import android.util.DisplayMetrics;
 import android.os.Bundle;
-import android.net.Uri.Builder;
 import android.util.Log;
 import android.net.Uri;
 import android.content.Intent;
 import android.widget.TextView;
-import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
 import java.util.ArrayList;
 import android.view.GestureDetector;
@@ -43,7 +35,13 @@ import android.app.Activity;
 
 import androidx.core.content.ContextCompat;
 
+//import geert.berkers.soarcast.Locatie;
+import geert.berkers.soarcast.Locatie;
 import geert.berkers.soarcast.R;
+//import geert.berkers.soarcast.Richting;
+//import geert.berkers.soarcast.Wind;
+import geert.berkers.soarcast.Richting;
+import geert.berkers.soarcast.Wind;
 import geert.berkers.soarcast.views.RichtingKaderView;
 import geert.berkers.soarcast.views.RichtingMetingView;
 import geert.berkers.soarcast.views.RichtingModelView;
@@ -52,6 +50,7 @@ import geert.berkers.soarcast.views.WindKaderView;
 import geert.berkers.soarcast.views.WindMetingView;
 import geert.berkers.soarcast.views.WindModelView;
 
+@SuppressWarnings("deprecation")
 public class WelkomSoarCast extends Activity
 {
     private Integer eenheid;
@@ -211,6 +210,7 @@ public class WelkomSoarCast extends Activity
     private void doeLocatieN() {
         if (this.klaar > 0 && !this.grafiekBezig && this.locID >= 0 && this.locIndex > 0) {
             final SharedPreferences.Editor edit = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).edit();
+            // TODO: Text LocIndex
             final Integer locIndex = this.locIndex;
             --this.locIndex;
             this.updateLocatieWindRichting();
@@ -222,6 +222,7 @@ public class WelkomSoarCast extends Activity
     private void doeLocatieZ() {
         if (this.klaar > 0 && !this.grafiekBezig && this.locID >= 0 && this.locIndex < this.locIndexMax) {
             final SharedPreferences.Editor edit = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).edit();
+            // TODO: Text LocIndex
             final Integer locIndex = this.locIndex;
             ++this.locIndex;
             this.updateLocatieWindRichting();
@@ -254,8 +255,6 @@ public class WelkomSoarCast extends Activity
         final LeesRichting leesRichting = new LeesRichting();
         leesWind.execute(this.locID);
         leesRichting.execute(this.locID);
-//        leesWind.execute((Object[])new Integer[] { this.locID });
-//        leesRichting.execute((Object[])new Integer[] { this.locID });
     }
 
     private void updateRichting() {
@@ -532,50 +531,34 @@ public class WelkomSoarCast extends Activity
                     WelkomSoarCast.this.updateRichtingModel();
                 }
             });
-            button2.setOnClickListener((View.OnClickListener)new View.OnClickListener() {
-                public void onClick(final View view) {
-                    if (WelkomSoarCast.this.klaar > 0 && !WelkomSoarCast.this.grafiekBezig) {
-                        // TODO: Fix not a statement
-                        //WelkomSoarCast.this.eenheid;
-                        ++WelkomSoarCast.this.eenheid;
-                        WelkomSoarCast.this.eenheid %= 4;
-                        button2.setText((CharSequence)WelkomSoarCast.this.tekstEenheid[WelkomSoarCast.this.eenheid]);
-                        ((WindKaderView)WelkomSoarCast.this.findViewById(R.id.windKaderView)).update(WelkomSoarCast.this.eenheid, WelkomSoarCast.this.schaal, WelkomSoarCast.this.uurVanaf, ((Wind)WelkomSoarCast.this.mWind.get(0)).geefZonOpOnder());
-                        ((WaardenView)WelkomSoarCast.this.findViewById(R.id.waardenView)).update(WelkomSoarCast.this.eenheid, WelkomSoarCast.this.schaal, WelkomSoarCast.this.uurVanaf, WelkomSoarCast.this.tIndicator);
-                        edit.putInt("eenheid", (int)WelkomSoarCast.this.eenheid);
-                        edit.apply();
-                    }
+            button2.setOnClickListener((View.OnClickListener) view -> {
+                if (WelkomSoarCast.this.klaar > 0 && !WelkomSoarCast.this.grafiekBezig) {
+                    // TODO: Fix not a statement
+                    //WelkomSoarCast.this.eenheid;
+                    ++WelkomSoarCast.this.eenheid;
+                    WelkomSoarCast.this.eenheid %= 4;
+                    button2.setText((CharSequence)WelkomSoarCast.this.tekstEenheid[WelkomSoarCast.this.eenheid]);
+                    ((WindKaderView)WelkomSoarCast.this.findViewById(R.id.windKaderView)).update(WelkomSoarCast.this.eenheid, WelkomSoarCast.this.schaal, WelkomSoarCast.this.uurVanaf, ((Wind)WelkomSoarCast.this.mWind.get(0)).geefZonOpOnder());
+                    ((WaardenView)WelkomSoarCast.this.findViewById(R.id.waardenView)).update(WelkomSoarCast.this.eenheid, WelkomSoarCast.this.schaal, WelkomSoarCast.this.uurVanaf, WelkomSoarCast.this.tIndicator);
+                    edit.putInt("eenheid", (int)WelkomSoarCast.this.eenheid);
+                    edit.apply();
                 }
             });
-            button3.setOnClickListener((View.OnClickListener)new View.OnClickListener() {
-                public void onClick(final View view) {
-                    if (WelkomSoarCast.this.klaar > 0 && !WelkomSoarCast.this.grafiekBezig) {
-                        // TODO: Fix not a statement
-                        //WelkomSoarCast.this.richt;
-                        ++WelkomSoarCast.this.richt;
-                        WelkomSoarCast.this.richt %= 2;
-                        button3.setText((CharSequence)WelkomSoarCast.this.tekstRicht[WelkomSoarCast.this.richt]);
-                        ((RichtingKaderView)WelkomSoarCast.this.findViewById(R.id.richtingKaderView)).update(((Locatie)WelkomSoarCast.this.mLocatie.get(WelkomSoarCast.this.locIndex)).mindeg, ((Locatie)WelkomSoarCast.this.mLocatie.get(WelkomSoarCast.this.locIndex)).maxdeg, WelkomSoarCast.this.richt, WelkomSoarCast.this.uurVanaf, ((Richting)WelkomSoarCast.this.mRichting.get(0)).geefZonOpOnder());
-                        edit.putInt("richting", (int)WelkomSoarCast.this.richt);
-                        edit.apply();
-                    }
+            button3.setOnClickListener((View.OnClickListener) view -> {
+                if (WelkomSoarCast.this.klaar > 0 && !WelkomSoarCast.this.grafiekBezig) {
+                    // TODO: Fix not a statement
+                    //WelkomSoarCast.this.richt;
+                    ++WelkomSoarCast.this.richt;
+                    WelkomSoarCast.this.richt %= 2;
+                    button3.setText((CharSequence)WelkomSoarCast.this.tekstRicht[WelkomSoarCast.this.richt]);
+                    ((RichtingKaderView)WelkomSoarCast.this.findViewById(R.id.richtingKaderView)).update(((Locatie)WelkomSoarCast.this.mLocatie.get(WelkomSoarCast.this.locIndex)).mindeg, ((Locatie)WelkomSoarCast.this.mLocatie.get(WelkomSoarCast.this.locIndex)).maxdeg, WelkomSoarCast.this.richt, WelkomSoarCast.this.uurVanaf, ((Richting)WelkomSoarCast.this.mRichting.get(0)).geefZonOpOnder());
+                    edit.putInt("richting", (int)WelkomSoarCast.this.richt);
+                    edit.apply();
                 }
             });
-            imageButton3.setOnClickListener((View.OnClickListener)new View.OnClickListener() {
-                public void onClick(final View view) {
-                    WelkomSoarCast.this.doeLocatieZ();
-                }
-            });
-            imageButton2.setOnClickListener((View.OnClickListener)new View.OnClickListener() {
-                public void onClick(final View view) {
-                    WelkomSoarCast.this.doeLocatieN();
-                }
-            });
-            imageButton.setOnClickListener((View.OnClickListener)new View.OnClickListener() {
-                public void onClick(final View view) {
-                    WelkomSoarCast.this.schermafdruk();
-                }
-            });
+            imageButton3.setOnClickListener((View.OnClickListener) view -> WelkomSoarCast.this.doeLocatieZ());
+            imageButton2.setOnClickListener((View.OnClickListener) view -> WelkomSoarCast.this.doeLocatieN());
+            imageButton.setOnClickListener((View.OnClickListener) view -> WelkomSoarCast.this.schermafdruk());
             ((TextView)this.findViewById(R.id.locatie)).setOnClickListener((View.OnClickListener)new View.OnClickListener() {
                 public void onClick(final View view) {
                     if (WelkomSoarCast.this.locID >= 0) {
@@ -713,6 +696,7 @@ public class WelkomSoarCast extends Activity
             this.LOG_TAG = LeesLocaties.class.getSimpleName();
         }
 
+        // TODO: Implement translation of bytecode
         protected Integer doInBackground(final String... p0) {
             //
             // This method could not be decompiled.
@@ -1396,6 +1380,7 @@ public class WelkomSoarCast extends Activity
             this.LOG_TAG = LeesRichting.class.getSimpleName();
         }
 
+        // TODO: Implement translation of bytecode
         protected Integer doInBackground(final Integer... p0) {
             //
             // This method could not be decompiled.
@@ -2158,6 +2143,7 @@ public class WelkomSoarCast extends Activity
             this.LOG_TAG = LeesWind.class.getSimpleName();
         }
 
+        // TODO: Implement translation of bytecode
         protected Integer doInBackground(final Integer... p0) {
             //
             // This method could not be decompiled.
@@ -3270,236 +3256,5 @@ public class WelkomSoarCast extends Activity
         }
     }
 
-    private class Locatie
-    {
-        private Integer id;
-        private Double lat;
-        private Double lon;
-        private Integer maxdeg;
-        private Integer mindeg;
-        private String naam;
 
-        private Locatie(final String naam, final Integer id, final Double lat, final Double lon, final Integer mindeg, final Integer maxdeg) {
-            this.naam = naam;
-            this.id = id;
-            this.lat = lat;
-            this.lon = lon;
-            this.mindeg = mindeg;
-            this.maxdeg = maxdeg;
-        }
-    }
-
-    private class Richting
-    {
-        private Integer dag;
-        private Integer locatieID;
-        private Double richtingGFS;
-        private Double richtingHarmonie;
-        private Double richtingMeting;
-        private Long unixTimestamp;
-
-        private Richting(final Long unixTimestamp, final Integer dag, final Integer locatieID, final Double richtingMeting, final Double richtingHarmonie, final Double richtingGFS) {
-            this.unixTimestamp = unixTimestamp;
-            this.dag = dag;
-            this.locatieID = locatieID;
-            this.richtingMeting = richtingMeting;
-            this.richtingHarmonie = richtingHarmonie;
-            this.richtingGFS = richtingGFS;
-        }
-
-        private Integer[] geefZonOpOnder() {
-            final String format = new SimpleDateFormat("MM").format(new Date(this.unixTimestamp * 1000L));
-            while (true) {
-                try {
-                    Integer n = Integer.parseInt(format);
-                    while (true) {
-                        Integer n2 = null;
-                        Integer n3 = null;
-                        switch (n) {
-                            case 12: {
-                                n2 = 8;
-                                n3 = 16;
-                                break;
-                            }
-                            case 11: {
-                                n2 = 7;
-                                n3 = 17;
-                                break;
-                            }
-                            case 10: {
-                                n2 = 7;
-                                n3 = 19;
-                                break;
-                            }
-                            case 9: {
-                                n2 = 7;
-                                n3 = 20;
-                                break;
-                            }
-                            case 8: {
-                                n2 = 6;
-                                n3 = 21;
-                                break;
-                            }
-                            case 7: {
-                                n2 = 5;
-                                n3 = 22;
-                                break;
-                            }
-                            case 6: {
-                                n2 = 5;
-                                n3 = 22;
-                                break;
-                            }
-                            case 5: {
-                                n2 = 6;
-                                n3 = 21;
-                                break;
-                            }
-                            case 4: {
-                                n2 = 7;
-                                n3 = 20;
-                                break;
-                            }
-                            case 3: {
-                                n2 = 7;
-                                n3 = 18;
-                                break;
-                            }
-                            case 2: {
-                                n2 = 8;
-                                n3 = 17;
-                                break;
-                            }
-                            case 1: {
-                                n2 = 8;
-                                n3 = 16;
-                                break;
-                            }
-                            default: {
-                                n2 = 8;
-                                n3 = 16;
-                                break;
-                            }
-                        }
-                        return new Integer[] { n2, n3 };
-//                        n = 0;
-//                        continue;
-                    }
-                }
-                catch (NumberFormatException ex) {}
-                continue;
-            }
-        }
-    }
-
-    private class Wind
-    {
-        private Integer dag;
-        private Integer locatieID;
-        private Double snelheidGFS;
-        private Double snelheidHarmonie;
-        private Double snelheidMeting;
-        private Long unixTimestamp;
-        private Double vlaagGFS;
-        private Double vlaagHarmonie;
-        private Double vlaagMeting;
-
-        private Wind(final Long unixTimestamp, final Integer dag, final Integer locatieID, final Double snelheidMeting, final Double vlaagMeting, final Double snelheidHarmonie, final Double vlaagHarmonie, final Double snelheidGFS, final Double vlaagGFS) {
-            this.unixTimestamp = unixTimestamp;
-            this.dag = dag;
-            this.locatieID = locatieID;
-            this.snelheidMeting = snelheidMeting;
-            this.vlaagMeting = vlaagMeting;
-            this.snelheidHarmonie = snelheidHarmonie;
-            this.vlaagHarmonie = vlaagHarmonie;
-            this.snelheidGFS = snelheidGFS;
-            this.vlaagGFS = vlaagGFS;
-        }
-
-        private Integer[] geefZonOpOnder() {
-            final String format = new SimpleDateFormat("MM").format(new Date(this.unixTimestamp * 1000L));
-            while (true) {
-                try {
-                    Integer n = Integer.parseInt(format);
-                    while (true) {
-                        Integer n2 = null;
-                        Integer n3 = null;
-                        switch (n) {
-                            case 12: {
-                                n2 = 8;
-                                n3 = 16;
-                                break;
-                            }
-                            case 11: {
-                                n2 = 7;
-                                n3 = 17;
-                                break;
-                            }
-                            case 10: {
-                                n2 = 7;
-                                n3 = 19;
-                                break;
-                            }
-                            case 9: {
-                                n2 = 7;
-                                n3 = 20;
-                                break;
-                            }
-                            case 8: {
-                                n2 = 6;
-                                n3 = 21;
-                                break;
-                            }
-                            case 7: {
-                                n2 = 5;
-                                n3 = 22;
-                                break;
-                            }
-                            case 6: {
-                                n2 = 5;
-                                n3 = 22;
-                                break;
-                            }
-                            case 5: {
-                                n2 = 6;
-                                n3 = 21;
-                                break;
-                            }
-                            case 4: {
-                                n2 = 7;
-                                n3 = 20;
-                                break;
-                            }
-                            case 3: {
-                                n2 = 7;
-                                n3 = 18;
-                                break;
-                            }
-                            case 2: {
-                                n2 = 8;
-                                n3 = 17;
-                                break;
-                            }
-                            case 1: {
-                                n2 = 8;
-                                n3 = 16;
-                                break;
-                            }
-                            default: {
-                                n2 = 8;
-                                n3 = 16;
-                                break;
-                            }
-                        }
-                        return new Integer[] { n2, n3 };
-//                        n = 0;
-//                        continue;
-                    }
-                }
-                catch (NumberFormatException ex) {}
-                continue;
-            }
-        }
-    }
 }
