@@ -1,5 +1,8 @@
+@file:Suppress("DEPRECATION")
+
 package geert.berkers.soarcast
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -119,8 +122,7 @@ class MainActivity : Activity() {
         }
     }
 
-//    @Suppress("DEPRECATION")
-//    @SuppressLint("StaticFieldLeak")
+    @SuppressLint("StaticFieldLeak")
     inner class CheckGebruiker : AsyncTask<String?, Void?, Int>(){
 
         override fun onPostExecute(result: Int?) {
@@ -185,190 +187,16 @@ class MainActivity : Activity() {
                 } else {
                     this@MainActivity.bestand = data
                 }
+
                 this@MainActivity.sponsor1OK = data.indexOf("sp1") > 0
                 this@MainActivity.sponsor2OK = data.indexOf("sp2") > 0
+
                 return 1
-
-
             } catch (ex: Exception) {
                 return -9
             } finally {
                 httpConnection?.disconnect()
             }
         }
-
     }
-//    class CheckGebruiker : AsyncTask<String?, Void?, Int>() {
-//        private val LOG_TAG: String
-//        protected override fun doInBackground(vararg ex: String): Int {
-//            if (ex.size == 0) {
-//                return -1
-//            }
-//            val b = false
-//            if (ex[0].length < 2) {
-//                return -1
-//            }
-//            val sb = StringBuilder()
-//            sb.append(this@MainActivity.resources.getString(R.string.url_login))
-//            sb.append(this@MainActivity.resources.getString(R.string.php_login))
-//            val `in`: Any = sb.toString()
-//            val string = this@MainActivity.resources.getString(R.string.php_login_parameter)
-//            val line: Any? = null
-//            val s: Serializable? = null
-//            //            Label_0615:
-//            {
-//                try {
-//                    ex = (IOException) new URL(Uri.parse((String) in).buildUpon().appendQueryParameter(string, ex[0]).build().toString()).openConnection();
-//                    try {
-//                        ((HttpURLConnection) ex).setRequestMethod("GET");
-//                        ((URLConnection) ex).connect();
-//                        in = ((URLConnection) ex).getInputStream();
-//                        s = new StringBuffer();
-//                        if (in == null) {
-//                            if (ex != null) {
-//                                ((HttpURLConnection) ex).disconnect();
-//                            }
-//                            return -9;
-//                        }
-//                        in = new BufferedReader(new InputStreamReader((InputStream) in));
-//                        try {
-//                            while (true) {
-//                                line = ((BufferedReader) in).readLine();
-//                                if (line == null) {
-//                                    break;
-//                                }
-//                                ((StringBuffer) s).append((String) line);
-//                            }
-//                            if (((StringBuffer) s).length() == 0) {
-//                                s = -9;
-//                                if (ex != null) {
-//                                    ((HttpURLConnection) ex).disconnect();
-//                                }
-//                                if (in != null) {
-//                                    try {
-//                                        ((BufferedReader) in).close();
-//                                        return (Integer) s;
-//                                    } catch (IOException ex) {
-//                                        Log.e(this.LOG_TAG, "Error closing stream", (Throwable) ex);
-//                                    }
-//                                }
-//                                return (Integer) s;
-//                            }
-//                            s = ((StringBuffer) s).toString();
-//                            if (ex != null) {
-//                                ((HttpURLConnection) ex).disconnect();
-//                            }
-//                            if (in != null) {
-//                                try {
-//                                    ((BufferedReader) in).close();
-//                                } catch (IOException ex) {
-//                                    Log.e(this.LOG_TAG, "Error closing stream", (Throwable) ex);
-//                                }
-//                            }
-//                            if (((String) s).length() < 1) {
-//                                return -9;
-//                            }
-//                            if (((String) s).equals(MainActivity.this.getResources().getString(R.string.login_onjuist))) {
-//                                return -1;
-//                            }
-//                            if (((String) s).equals(MainActivity.this.getResources().getString(R.string.login_verlopen))) {
-//                                return -2;
-//                            }
-//                            final int index = ((String) s).indexOf(MainActivity.this.getResources().getString(R.string.csv_separator));
-//                            if (index > 0) {
-//                                MainActivity.this.bestand = ((String) s).substring(0, index);
-//                            } else {
-//                                MainActivity.this.bestand = (String) s;
-//                            }
-//                            ex = (IOException) MainActivity.this;
-//                            ((MainActivity) ex).sponsor1OK = (((String) s).indexOf("sp1") > 0);
-//                            ex = (IOException) MainActivity.this;
-//                            boolean b2 = b;
-//                            if (((String) s).indexOf("sp2") > 0) {
-//                                b2 = true;
-//                            }
-//                            ((MainActivity) ex).sponsor2OK = b2;
-//                            return 1;
-//                        } catch (IOException line) {
-//                        } finally {
-//                            line = ex;
-//                        }
-//                    } catch (IOException line) {
-//                        s = null;
-//                    } finally {
-//                        break Label_0615;
-//                    }
-//                    in = line;
-//                    line = ex;
-//                } catch (IOException in) {
-//                    ex = null;
-//                    line = s;
-//                } finally {
-//                    ex = null;
-//                    break Label_0615;
-//                }
-//                try {
-//                    Log.e(this.LOG_TAG, "Error ", (Throwable) in);
-//                    final Integer value = -9;
-//                    if (line != null) {
-//                        ((HttpURLConnection) line).disconnect();
-//                    }
-//                    if (ex != null) {
-//                        try {
-//                            ((BufferedReader) ex).close();
-//                            return value;
-//                        } catch (IOException ex) {
-//                            Log.e(this.LOG_TAG, "Error closing stream", (Throwable) ex);
-//                        }
-//                    }
-//                    return value;
-//                } finally {
-//                    in = ex;
-//                }
-//                ex = (IOException) line;
-//                line = in;
-//            }
-//            if (ex != null) {
-//                ((HttpURLConnection) ex).disconnect();
-//            }
-//            if (line != null) {
-//                try {
-//                    ((BufferedReader) line).close();
-//                } catch (IOException ex2) {
-//                    Log.e(this.LOG_TAG, "Error closing stream", (Throwable) ex2);
-//                }
-//            }
-//            throw ;
-//        }
-//
-//        override fun onPostExecute(n: Int) {
-//            val applicationContext = this@MainActivity.applicationContext
-//            val textView = findViewById<View>(R.id.status) as TextView
-//            var text = ""
-//            if (n == -1) {
-//                text = applicationContext.getString(R.string.check_login)
-//            }
-//            if (n == -2) {
-//                text = applicationContext.getString(R.string.tekst_verlopen)
-//            }
-//            if (n == -9) {
-//                text = applicationContext.getString(R.string.check_connection)
-//            }
-//            if (n < 0) {
-//                Toast.makeText(applicationContext, text as CharSequence, Toast.LENGTH_SHORT).show()
-//            }
-//            if (n == 1) {
-//                text = applicationContext.getString(R.string.verder)
-//            }
-//            textView.text = text
-//            if (n == 1) {
-//                loginOK = true
-//                startSoarCast()
-//            }
-//        }
-//
-//        init {
-//            LOG_TAG = CheckGebruiker::class.java.simpleName
-//        }
-//    }
 }
