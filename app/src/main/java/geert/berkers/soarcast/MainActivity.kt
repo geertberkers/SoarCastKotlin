@@ -14,6 +14,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.preference.PreferenceManager
+import geert.berkers.soarcast.decompiled.WelkomSoarCast
 import java.lang.Exception
 import java.net.HttpURLConnection
 import java.net.URL

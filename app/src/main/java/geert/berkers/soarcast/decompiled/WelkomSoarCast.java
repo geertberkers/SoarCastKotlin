@@ -4,9 +4,6 @@ package geert.berkers.soarcast.decompiled;
  * Created by Zorgkluis (Geert Berkers)
  */
 
-import java.util.Date;
-import java.text.SimpleDateFormat;
-
 import android.graphics.PorterDuff;
 import android.os.AsyncTask;
 import android.widget.Toast;
@@ -35,11 +32,8 @@ import android.app.Activity;
 
 import androidx.core.content.ContextCompat;
 
-//import geert.berkers.soarcast.Locatie;
 import geert.berkers.soarcast.Locatie;
 import geert.berkers.soarcast.R;
-//import geert.berkers.soarcast.Richting;
-//import geert.berkers.soarcast.Wind;
 import geert.berkers.soarcast.Richting;
 import geert.berkers.soarcast.Wind;
 import geert.berkers.soarcast.views.RichtingKaderView;
