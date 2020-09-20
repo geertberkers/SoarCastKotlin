@@ -12,9 +12,12 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 import geert.berkers.soarcast.databinding.ActivityMainBinding
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlin.properties.Delegates
 
 class WelkomSoarCast {
