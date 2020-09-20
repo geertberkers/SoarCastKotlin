@@ -1,818 +1,675 @@
 package geert.berkers.soarcast.decompiled;
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.PorterDuff;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.os.Environment;
-import android.os.Parcelable;
-import android.preference.PreferenceManager;
-import android.support.v4.content.ContextCompat;
-import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.TextView;
-import android.widget.Toast;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-
 /**
  * Created by Zorgkluis (Geert Berkers)
  */
 
-public class WelkomSoarCast extends Activity {
+import java.util.Date;
+import java.text.SimpleDateFormat;
+
+import android.graphics.PorterDuff;
+import android.os.AsyncTask;
+import android.widget.Toast;
+import android.os.Parcelable;
+import java.io.OutputStream;
+import android.graphics.Bitmap.CompressFormat;
+import java.io.FileOutputStream;
+import java.io.File;
+import android.os.Environment;
+import android.graphics.Bitmap;
+//import android.support.v4.content.ContextCompat;
+import android.content.SharedPreferences;
+import android.view.MotionEvent;
+import android.view.View.OnTouchListener;
+import android.view.GestureDetector.OnGestureListener;
+import android.content.Context;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.graphics.PorterDuff.Mode;
+import android.widget.ImageButton;
+import android.widget.Button;
+import android.util.DisplayMetrics;
+import android.os.Bundle;
+import android.net.Uri.Builder;
+import android.util.Log;
+import android.net.Uri;
+import android.content.Intent;
+import android.widget.TextView;
+import android.content.SharedPreferences.Editor;
+import android.preference.PreferenceManager;
+import java.util.ArrayList;
+import android.view.GestureDetector;
+import android.app.Activity;
+
+import androidx.core.content.ContextCompat;
+
+import geert.berkers.soarcast.R;
+import geert.berkers.soarcast.views.RichtingKaderView;
+import geert.berkers.soarcast.views.RichtingMetingView;
+import geert.berkers.soarcast.views.RichtingModelView;
+import geert.berkers.soarcast.views.WaardenView;
+import geert.berkers.soarcast.views.WindKaderView;
+import geert.berkers.soarcast.views.WindMetingView;
+import geert.berkers.soarcast.views.WindModelView;
+
+public class WelkomSoarCast extends Activity
+{
     private Integer eenheid;
-
     public GestureDetector gestureDetector1;
-
     public GestureDetector gestureDetector2;
-
     private Boolean grafiekBezig;
-
     private Integer klaar;
-
     private Integer locID;
-
     private Integer locIndex;
-
     private Integer locIndexMax;
-
     private ArrayList<Locatie> mLocatie;
-
     private ArrayList<Richting> mRichting;
-
     private ArrayList<Wind> mWind;
-
-    private final Integer maxN = Integer.valueOf(288);
-
-    private String[] queryDag = new String[] { "yesterday", "today", "tomorrow", "dayaftertomorrow" };
-
+    private final Integer maxN;
+    private String[] queryDag;
     public float reedsVerschoven1;
-
     public float reedsVerschoven2;
-
     private Integer richt;
-
     private Integer schaal;
-
     private Integer tIndicator;
-
-    private String[] tekstEenheid = new String[] { "m/s", "km/h", "kn", "Bft" };
-
-    private String[] tekstModel = new String[] { "Harm", "GFS" };
-
-    private String[] tekstRicht = new String[] { "N", "deg" };
-
+    private String[] tekstEenheid;
+    private String[] tekstModel;
+    private String[] tekstRicht;
     private Long tijdNul;
-
     private Integer uurVanaf;
-
     private Integer weerModel;
 
-    private Integer[] bepaalKolommen(String paramString) {
-        Integer[] arrayOfInteger = new Integer[7];
-        arrayOfInteger[0] = Integer.valueOf(-1);
-        arrayOfInteger[1] = Integer.valueOf(-1);
-        arrayOfInteger[2] = Integer.valueOf(-1);
-        arrayOfInteger[3] = Integer.valueOf(-1);
-        arrayOfInteger[4] = Integer.valueOf(-1);
-        arrayOfInteger[5] = Integer.valueOf(-1);
-        arrayOfInteger[6] = Integer.valueOf(-1);
-        String str = getResources().getString(2131427328);
-        Integer integer1 = Integer.valueOf(0);
-        Integer integer2 = Integer.valueOf(paramString.length());
-        int i = 0;
-        while (true) {
-            Integer integer;
-            if (integer1.intValue() < integer2.intValue()) {
-                byte b;
-                Integer integer3 = Integer.valueOf(paramString.indexOf(str, integer1.intValue()));
-                integer = integer3;
-                if (integer3.intValue() < 0)
-                    integer = integer2;
-                String str1 = paramString.substring(integer1.intValue(), integer.intValue());
-                switch (str1.hashCode()) {
-                    default:
-                        b = -1;
-                        break;
-                    case 664374541:
-                        if (str1.equals("gfs_windsnelheid")) {
-                            b = 3;
-                            break;
-                        }
-                    case 441051965:
-                        if (str1.equals("harm_windrichting")) {
-                            b = 5;
-                            break;
-                        }
-                    case 96835762:
-                        if (str1.equals("etime")) {
-                            b = 0;
-                            break;
-                        }
-                    case -1281577795:
-                        if (str1.equals("gfs_windrichting")) {
-                            b = 6;
-                            break;
-                        }
-                    case -1897228994:
-                        if (str1.equals("harm_windvlaag")) {
-                            b = 2;
-                            break;
-                        }
-                    case -1907962995:
-                        if (str1.equals("harm_windsnelheid")) {
-                            b = 1;
-                            break;
-                        }
-                    case -2064956482:
-                        if (str1.equals("gfs_windvlaag")) {
-                            b = 4;
-                            break;
-                        }
-                }
-                switch (b) {
-                    default:
-                        if (str1.length() > 8) {
-                            if (str1.substring(0, 8).equals("windstoo")) {
-                                arrayOfInteger[i] = Integer.valueOf(2);
-                                break;
-                            }
-                            if (str1.substring(0, 8).equals("windsnel")) {
-                                arrayOfInteger[i] = Integer.valueOf(1);
-                            } else if (str1.substring(0, 8).equals("windrich")) {
-                                arrayOfInteger[i] = Integer.valueOf(7);
-                            }
-                            i++;
-                            Integer integer4 = Integer.valueOf(integer.intValue() + 1);
-                            continue;
-                        }
-                        break;
-                    case 6:
-                        arrayOfInteger[i] = Integer.valueOf(9);
-                        break;
-                    case 5:
-                        arrayOfInteger[i] = Integer.valueOf(8);
-                        break;
-                    case 4:
-                        arrayOfInteger[i] = Integer.valueOf(6);
-                        break;
-                    case 3:
-                        arrayOfInteger[i] = Integer.valueOf(5);
-                        break;
-                    case 2:
-                        arrayOfInteger[i] = Integer.valueOf(4);
-                        break;
-                    case 1:
-                        arrayOfInteger[i] = Integer.valueOf(3);
-                        break;
-                    case 0:
-                        arrayOfInteger[i] = Integer.valueOf(0);
-                        break;
-                }
-            } else {
-                break;
+    public WelkomSoarCast() {
+        this.tekstModel = new String[] { "Harm", "GFS" };
+        this.tekstEenheid = new String[] { "m/s", "km/h", "kn", "Bft" };
+        this.tekstRicht = new String[] { "N", "deg" };
+        this.queryDag = new String[] { "yesterday", "today", "tomorrow", "dayaftertomorrow" };
+        this.maxN = 288;
+    }
+
+    private Integer[] bepaalKolommen(final String s) {
+        final Integer[] array = { -1, -1, -1, -1, -1, -1, -1 };
+        final String string = this.getResources().getString(R.string.csv_separator);
+        Integer n = 0;
+        final Integer value = s.length();
+        int n2 = 0;
+        while (n < value) {
+            Integer value2;
+            if ((value2 = s.indexOf(string, n)) < 0) {
+                value2 = value;
             }
-            i++;
-            integer1 = Integer.valueOf(integer.intValue() + 1);
+            final String substring = s.substring(n, value2);
+            int n3 = 0;
+            Label_0342: {
+                switch (substring.hashCode()) {
+                    case 664374541: {
+                        if (substring.equals("gfs_windsnelheid")) {
+                            n3 = 3;
+                            break Label_0342;
+                        }
+                        break;
+                    }
+                    case 441051965: {
+                        if (substring.equals("harm_windrichting")) {
+                            n3 = 5;
+                            break Label_0342;
+                        }
+                        break;
+                    }
+                    case 96835762: {
+                        if (substring.equals("etime")) {
+                            n3 = 0;
+                            break Label_0342;
+                        }
+                        break;
+                    }
+                    case -1281577795: {
+                        if (substring.equals("gfs_windrichting")) {
+                            n3 = 6;
+                            break Label_0342;
+                        }
+                        break;
+                    }
+                    case -1897228994: {
+                        if (substring.equals("harm_windvlaag")) {
+                            n3 = 2;
+                            break Label_0342;
+                        }
+                        break;
+                    }
+                    case -1907962995: {
+                        if (substring.equals("harm_windsnelheid")) {
+                            n3 = 1;
+                            break Label_0342;
+                        }
+                        break;
+                    }
+                    case -2064956482: {
+                        if (substring.equals("gfs_windvlaag")) {
+                            n3 = 4;
+                            break Label_0342;
+                        }
+                        break;
+                    }
+                }
+                n3 = -1;
+            }
+            switch (n3) {
+                default: {
+                    if (substring.length() <= 8) {
+                        break;
+                    }
+                    if (substring.substring(0, 8).equals("windstoo")) {
+                        array[n2] = 2;
+                        break;
+                    }
+                    if (substring.substring(0, 8).equals("windsnel")) {
+                        array[n2] = 1;
+                        break;
+                    }
+                    if (substring.substring(0, 8).equals("windrich")) {
+                        array[n2] = 7;
+                        break;
+                    }
+                    break;
+                }
+                case 6: {
+                    array[n2] = 9;
+                    break;
+                }
+                case 5: {
+                    array[n2] = 8;
+                    break;
+                }
+                case 4: {
+                    array[n2] = 6;
+                    break;
+                }
+                case 3: {
+                    array[n2] = 5;
+                    break;
+                }
+                case 2: {
+                    array[n2] = 4;
+                    break;
+                }
+                case 1: {
+                    array[n2] = 3;
+                    break;
+                }
+                case 0: {
+                    array[n2] = 0;
+                    break;
+                }
+            }
+            ++n2;
+            n = value2 + 1;
         }
-        return arrayOfInteger;
+        return array;
     }
 
     private void doeLocatieN() {
-        if (this.klaar.intValue() > 0 && !this.grafiekBezig.booleanValue() && this.locID.intValue() >= 0 && this.locIndex.intValue() > 0) {
-            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit();
-            Integer integer = this.locIndex;
-            this.locIndex = Integer.valueOf(this.locIndex.intValue() - 1);
-            updateLocatieWindRichting();
-            editor.putInt("locatie", this.locIndex.intValue());
-            editor.apply();
+        if (this.klaar > 0 && !this.grafiekBezig && this.locID >= 0 && this.locIndex > 0) {
+            final SharedPreferences.Editor edit = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).edit();
+            final Integer locIndex = this.locIndex;
+            --this.locIndex;
+            this.updateLocatieWindRichting();
+            edit.putInt("locatie", (int)this.locIndex);
+            edit.apply();
         }
     }
 
     private void doeLocatieZ() {
-        if (this.klaar.intValue() > 0 && !this.grafiekBezig.booleanValue() && this.locID.intValue() >= 0 && this.locIndex.intValue() < this.locIndexMax.intValue()) {
-            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit();
-            Integer integer = this.locIndex;
-            this.locIndex = Integer.valueOf(this.locIndex.intValue() + 1);
-            updateLocatieWindRichting();
-            editor.putInt("locatie", this.locIndex.intValue());
-            editor.apply();
+        if (this.klaar > 0 && !this.grafiekBezig && this.locID >= 0 && this.locIndex < this.locIndexMax) {
+            final SharedPreferences.Editor edit = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).edit();
+            final Integer locIndex = this.locIndex;
+            ++this.locIndex;
+            this.updateLocatieWindRichting();
+            edit.putInt("locatie", (int)this.locIndex);
+            edit.apply();
         }
     }
 
     private void ikBenKlaar() {
-        Integer integer = this.klaar;
-        this.klaar = Integer.valueOf(this.klaar.intValue() + 1);
-        if (this.klaar.intValue() > 0) {
-            ((TextView)findViewById(2131165247)).setText("");
-            ((waardenView)findViewById(2131165326)).update(this.eenheid.intValue(), this.schaal.intValue(), this.uurVanaf.intValue(), this.tIndicator.intValue());
+        final Integer klaar = this.klaar;
+        ++this.klaar;
+        if (this.klaar > 0) {
+            ((TextView)this.findViewById(R.id.laden)).setText((CharSequence)"");
+            ((WaardenView)this.findViewById(R.id.waardenView)).update(this.eenheid, this.schaal, this.uurVanaf, this.tIndicator);
         }
     }
 
     private void updateLocatieWindRichting() {
-        this.klaar = Integer.valueOf(-1);
-        this.locID = (this.mLocatie.get(this.locIndex.intValue())).id;
-        ((TextView)findViewById(2131165247)).setText(getResources().getString(2131427366));
-        ((TextView)findViewById(2131165252)).setText((this.mLocatie.get(this.locIndex.intValue())).naam);
-        if (!this.mWind.isEmpty())
+        this.klaar = -1;
+        this.locID = this.mLocatie.get(this.locIndex).id;
+        ((TextView)this.findViewById(R.id.laden)).setText((CharSequence)this.getResources().getString(R.string.laden));
+        ((TextView)this.findViewById(R.id.locatie)).setText((CharSequence)this.mLocatie.get(this.locIndex).naam);
+        if (!this.mWind.isEmpty()) {
             this.mWind.clear();
-        if (!this.mRichting.isEmpty())
+        }
+        if (!this.mRichting.isEmpty()) {
             this.mRichting.clear();
-        LeesWind leesWind = new LeesWind();
-        LeesRichting leesRichting = new LeesRichting();
-        leesWind.execute((Object[])new Integer[] { this.locID });
-        leesRichting.execute((Object[])new Integer[] { this.locID });
+        }
+        final LeesWind leesWind = new LeesWind();
+        final LeesRichting leesRichting = new LeesRichting();
+        leesWind.execute(this.locID);
+        leesRichting.execute(this.locID);
+//        leesWind.execute((Object[])new Integer[] { this.locID });
+//        leesRichting.execute((Object[])new Integer[] { this.locID });
     }
 
     private void updateRichting() {
-        Integer[] arrayOfInteger = new Integer[this.maxN.intValue()];
-        Double[] arrayOfDouble = new Double[this.maxN.intValue()];
-        int k = this.mRichting.size();
-        Long long_2 = Long.valueOf(this.tijdNul.longValue() + (this.uurVanaf.intValue() * 3600));
-        Long long_1 = Long.valueOf(long_2.longValue() + 86400L);
-        int i = 0;
-        int j;
-        for (j = 0; (this.mRichting.get(i)).unixTimestamp.longValue() <= long_1.longValue(); j = m) {
-            int m = j;
-            if ((this.mRichting.get(i)).unixTimestamp.longValue() >= long_2.longValue()) {
-                Double double_ = (this.mRichting.get(i)).richtingMeting;
-                m = j;
-                if (double_.doubleValue() >= 0.0D) {
-                    m = j;
-                    if (double_.doubleValue() < 1000.0D) {
-                        m = j;
-                        if (j < this.maxN.intValue()) {
-                            arrayOfInteger[j] = Integer.valueOf((int)((this.mRichting.get(i)).unixTimestamp.longValue() - long_2.longValue()));
-                            arrayOfDouble[j] = double_;
-                            m = j + 1;
+        final Integer[] array = new Integer[(int)this.maxN];
+        final Double[] array2 = new Double[(int)this.maxN];
+        final int size = this.mRichting.size();
+        final Long value = this.tijdNul + this.uurVanaf * 3600;
+        Long n = value + 86400L;
+        int n2 = 0;
+        int n3 = 0;
+        while (this.mRichting.get(n2).unixTimestamp <= n) {
+            int n4 = n3;
+            if (this.mRichting.get(n2).unixTimestamp >= value) {
+                final Double access$4200 = this.mRichting.get(n2).richtingMeting;
+                n4 = n3;
+                if (access$4200 >= 0.0) {
+                    n4 = n3;
+                    if (access$4200 < 1000.0 && (n4 = n3) < this.maxN) {
+                        array[n3] = (int)(this.mRichting.get(n2).unixTimestamp - value);
+                        array2[n3] = access$4200;
+                        n4 = n3 + 1;
+                    }
+                }
+            }
+            if (n2 < size - 1) {
+                ++n2;
+                n3 = n4;
+            }
+            else {
+                n = 0L;
+                n3 = n4;
+            }
+        }
+        ((RichtingMetingView)this.findViewById(R.id.richtingMetingView)).update(this.mLocatie.get(this.locIndex).mindeg, this.mLocatie.get(this.locIndex).maxdeg, n3, array, array2);
+        ((WaardenView)this.findViewById(R.id.waardenView)).zetRichting(n3, array, array2);
+    }
+
+    private void updateRichtingModel() {
+        final Integer[] array = new Integer[(int)this.maxN];
+        final Double[] array2 = new Double[(int)this.maxN];
+        final int size = this.mRichting.size();
+        final Long value = this.tijdNul + this.uurVanaf * 3600;
+        Long n = value + 86400L;
+        int index = 0;
+        int n2 = 0;
+        while (this.mRichting.get(index).unixTimestamp <= n) {
+            int n3 = n2;
+            if (this.mRichting.get(index).unixTimestamp >= value) {
+                Double n4;
+                if (this.weerModel == 1) {
+                    n4 = this.mRichting.get(index).richtingGFS;
+                }
+                else {
+                    n4 = this.mRichting.get(index).richtingHarmonie;
+                }
+                n3 = n2;
+                if (n4 >= 0.0 && (n3 = n2) < this.maxN) {
+                    array[n2] = (int)(this.mRichting.get(index).unixTimestamp - value);
+                    array2[n2] = n4;
+                    n3 = n2 + 1;
+                }
+            }
+            if (index < size - 1) {
+                ++index;
+                n2 = n3;
+            }
+            else {
+                n = 0L;
+                n2 = n3;
+            }
+        }
+        ((RichtingModelView)this.findViewById(R.id.richtingModelView)).update(this.mLocatie.get(this.locIndex).mindeg, this.mLocatie.get(this.locIndex).maxdeg, n2, array, array2);
+    }
+
+    private void updateWindModel() {
+        final Integer[] array = new Integer[(int)this.maxN];
+        final Double[] array2 = new Double[(int)this.maxN];
+        final Double[] array3 = new Double[(int)this.maxN];
+        final int size = this.mWind.size();
+        final Long value = this.tijdNul + this.uurVanaf * 3600;
+        Long n = value + 86400L;
+        int index = 0;
+        int n2 = 0;
+        while (this.mWind.get(index).unixTimestamp <= n) {
+            if (this.mWind.get(index).unixTimestamp >= value) {
+                Double n3;
+                Double n4;
+                if (this.weerModel == 1) {
+                    n3 = this.mWind.get(index).snelheidGFS;
+                    n4 = this.mWind.get(index).vlaagGFS;
+                }
+                else {
+                    n3 = this.mWind.get(index).snelheidHarmonie;
+                    n4 = this.mWind.get(index).vlaagHarmonie;
+                }
+                if (n4 > 0.0 || (n3 > 0.0 && n2 < this.maxN)) {
+                    array[n2] = (int)(this.mWind.get(index).unixTimestamp - value);
+                    array2[n2] = n3;
+                    array3[n2] = n4;
+                    ++n2;
+                }
+            }
+            if (index < size - 1) {
+                ++index;
+            }
+            else {
+                n = 0L;
+            }
+        }
+        ((WindModelView)this.findViewById(R.id.windModelView)).update(this.schaal, n2, array, array2, array3);
+    }
+
+    private void updateWindmeting() {
+        final Integer[] array = new Integer[(int)this.maxN];
+        final Double[] array2 = new Double[(int)this.maxN];
+        final Double[] array3 = new Double[(int)this.maxN];
+        final int size = this.mWind.size();
+        final Long value = this.tijdNul + this.uurVanaf * 3600;
+        Long n = value + 86400L;
+        int index = 0;
+        int n2 = 0;
+        while (this.mWind.get(index).unixTimestamp <= n) {
+            int n3 = n2;
+            Label_0374: {
+                if (this.mWind.get(index).unixTimestamp >= value) {
+                    final Double access$3500 = this.mWind.get(index).snelheidMeting;
+                    final Double access$3501 = this.mWind.get(index).vlaagMeting;
+                    if (access$3501 <= 0.0) {
+                        n3 = n2;
+                        if (access$3500 <= 0.0 || (n3 = n2) >= this.maxN) {
+                            break Label_0374;
+                        }
+                    }
+                    array[n2] = (int)(this.mWind.get(index).unixTimestamp - value);
+                    Double n4 = null;
+                    Label_0285: {
+                        if (access$3500 > 0.0) {
+                            n4 = access$3500;
+                            if (access$3500 < 400.0) {
+                                break Label_0285;
+                            }
+                        }
+                        if (n2 > 0) {
+                            n4 = array2[n2 - 1];
+                        }
+                        else {
+                            n4 = access$3501;
+                        }
+                    }
+                    Double n5 = null;
+                    Label_0330: {
+                        if (access$3501 > 0.0) {
+                            n5 = access$3501;
+                            if (access$3501 < 400.0) {
+                                break Label_0330;
+                            }
+                        }
+                        if (n2 > 0) {
+                            n5 = array3[n2 - 1];
+                        }
+                        else {
+                            n5 = n4;
+                        }
+                    }
+                    n3 = n2;
+                    if (n4 < 400.0) {
+                        n3 = n2;
+                        if (n5 < 400.0) {
+                            array2[n2] = n4;
+                            array3[n2] = n5;
+                            n3 = n2 + 1;
                         }
                     }
                 }
             }
-            if (i < k - 1) {
-                i++;
-                j = m;
-                continue;
+            if (index < size - 1) {
+                ++index;
+                n2 = n3;
             }
-            long_1 = Long.valueOf(0L);
+            else {
+                n = 0L;
+                n2 = n3;
+            }
         }
-        ((richtingMetingView)findViewById(2131165275)).update((this.mLocatie.get(this.locIndex.intValue())).mindeg.intValue(), (this.mLocatie.get(this.locIndex.intValue())).maxdeg.intValue(), j, arrayOfInteger, arrayOfDouble);
-        ((waardenView)findViewById(2131165326)).zetRichting(j, arrayOfInteger, arrayOfDouble);
-    }
-
-    private void updateRichtingModel() {
-        Integer[] arrayOfInteger = new Integer[this.maxN.intValue()];
-        Double[] arrayOfDouble = new Double[this.maxN.intValue()];
-        int k = this.mRichting.size();
-        Long long_2 = Long.valueOf(this.tijdNul.longValue() + (this.uurVanaf.intValue() * 3600));
-        Long long_1 = Long.valueOf(long_2.longValue() + 86400L);
-        int i = 0;
-        int j;
-        for (j = 0; (this.mRichting.get(i)).unixTimestamp.longValue() <= long_1.longValue(); j = m) {
-            int m = j;
-            if ((this.mRichting.get(i)).unixTimestamp.longValue() >= long_2.longValue()) {
-                Double double_;
-                if (this.weerModel.intValue() == 1) {
-                    double_ = (this.mRichting.get(i)).richtingGFS;
-                } else {
-                    double_ = (this.mRichting.get(i)).richtingHarmonie;
-                }
-                m = j;
-                if (double_.doubleValue() >= 0.0D) {
-                    m = j;
-                    if (j < this.maxN.intValue()) {
-                        arrayOfInteger[j] = Integer.valueOf((int)((this.mRichting.get(i)).unixTimestamp.longValue() - long_2.longValue()));
-                        arrayOfDouble[j] = double_;
-                        m = j + 1;
-                    }
-                }
+        ((WindMetingView)this.findViewById(R.id.windMetingView)).update(this.schaal, n2, array, array2, array3);
+        ((WaardenView)this.findViewById(R.id.waardenView)).zetWind(this.schaal, n2, array, array2, array3);
+        if (!this.grafiekBezig) {
+            if (n2 > 0) {
+                this.tIndicator = array[n2 - 1];
             }
-            if (i < k - 1) {
-                i++;
-                j = m;
-                continue;
+            if (n2 == 0 || this.tIndicator < 10800 || this.tIndicator > 75600) {
+                this.tIndicator = 43200;
             }
-            long_1 = Long.valueOf(0L);
         }
-        ((richtingModelView)findViewById(2131165276)).update((this.mLocatie.get(this.locIndex.intValue())).mindeg.intValue(), (this.mLocatie.get(this.locIndex.intValue())).maxdeg.intValue(), j, arrayOfInteger, arrayOfDouble);
-    }
-
-    private void updateWindModel() {
-        Integer[] arrayOfInteger = new Integer[this.maxN.intValue()];
-        Double[] arrayOfDouble1 = new Double[this.maxN.intValue()];
-        Double[] arrayOfDouble2 = new Double[this.maxN.intValue()];
-        int k = this.mWind.size();
-        Long long_1 = Long.valueOf(this.tijdNul.longValue() + (this.uurVanaf.intValue() * 3600));
-        Long long_2 = Long.valueOf(long_1.longValue() + 86400L);
-        int i = 0;
-        int j = 0;
-        while ((this.mWind.get(i)).unixTimestamp.longValue() <= long_2.longValue()) {
-            if ((this.mWind.get(i)).unixTimestamp.longValue() >= long_1.longValue()) {
-                Double double_1;
-                Double double_2;
-                if (this.weerModel.intValue() == 1) {
-                    double_1 = (this.mWind.get(i)).snelheidGFS;
-                    double_2 = (this.mWind.get(i)).vlaagGFS;
-                } else {
-                    double_1 = (this.mWind.get(i)).snelheidHarmonie;
-                    double_2 = (this.mWind.get(i)).vlaagHarmonie;
-                }
-                if (double_2.doubleValue() > 0.0D || (double_1.doubleValue() > 0.0D && j < this.maxN.intValue())) {
-                    arrayOfInteger[j] = Integer.valueOf((int)((this.mWind.get(i)).unixTimestamp.longValue() - long_1.longValue()));
-                    arrayOfDouble1[j] = double_1;
-                    arrayOfDouble2[j] = double_2;
-                    j++;
-                }
-            }
-            if (i < k - 1) {
-                i++;
-                continue;
-            }
-            long_2 = Long.valueOf(0L);
-        }
-        ((windModelView)findViewById(2131165329)).update(this.schaal.intValue(), j, arrayOfInteger, arrayOfDouble1, arrayOfDouble2);
-    }
-
-    private void updateWindmeting() {
-        // Byte code:
-        //   0: aload_0
-        //   1: getfield maxN : Ljava/lang/Integer;
-        //   4: invokevirtual intValue : ()I
-        //   7: anewarray java/lang/Integer
-        //   10: astore #9
-        //   12: aload_0
-        //   13: getfield maxN : Ljava/lang/Integer;
-        //   16: invokevirtual intValue : ()I
-        //   19: anewarray java/lang/Double
-        //   22: astore #10
-        //   24: aload_0
-        //   25: getfield maxN : Ljava/lang/Integer;
-        //   28: invokevirtual intValue : ()I
-        //   31: anewarray java/lang/Double
-        //   34: astore #11
-        //   36: aload_0
-        //   37: getfield mWind : Ljava/util/ArrayList;
-        //   40: invokevirtual size : ()I
-        //   43: istore #4
-        //   45: aload_0
-        //   46: getfield tijdNul : Ljava/lang/Long;
-        //   49: invokevirtual longValue : ()J
-        //   52: aload_0
-        //   53: getfield uurVanaf : Ljava/lang/Integer;
-        //   56: invokevirtual intValue : ()I
-        //   59: sipush #3600
-        //   62: imul
-        //   63: i2l
-        //   64: ladd
-        //   65: invokestatic valueOf : (J)Ljava/lang/Long;
-        //   68: astore #12
-        //   70: aload #12
-        //   72: invokevirtual longValue : ()J
-        //   75: ldc2_w 86400
-        //   78: ladd
-        //   79: invokestatic valueOf : (J)Ljava/lang/Long;
-        //   82: astore #7
-        //   84: iconst_0
-        //   85: istore_1
-        //   86: iconst_0
-        //   87: istore_2
-        //   88: aload_0
-        //   89: getfield mWind : Ljava/util/ArrayList;
-        //   92: iload_1
-        //   93: invokevirtual get : (I)Ljava/lang/Object;
-        //   96: checkcast com/erwinvoogt/soarcast/WelkomSoarCast$Wind
-        //   99: invokestatic access$3400 : (Lcom/erwinvoogt/soarcast/WelkomSoarCast$Wind;)Ljava/lang/Long;
-        //   102: invokevirtual longValue : ()J
-        //   105: aload #7
-        //   107: invokevirtual longValue : ()J
-        //   110: lcmp
-        //   111: ifgt -> 402
-        //   114: iload_2
-        //   115: istore_3
-        //   116: aload_0
-        //   117: getfield mWind : Ljava/util/ArrayList;
-        //   120: iload_1
-        //   121: invokevirtual get : (I)Ljava/lang/Object;
-        //   124: checkcast com/erwinvoogt/soarcast/WelkomSoarCast$Wind
-        //   127: invokestatic access$3400 : (Lcom/erwinvoogt/soarcast/WelkomSoarCast$Wind;)Ljava/lang/Long;
-        //   130: invokevirtual longValue : ()J
-        //   133: aload #12
-        //   135: invokevirtual longValue : ()J
-        //   138: lcmp
-        //   139: iflt -> 374
-        //   142: aload_0
-        //   143: getfield mWind : Ljava/util/ArrayList;
-        //   146: iload_1
-        //   147: invokevirtual get : (I)Ljava/lang/Object;
-        //   150: checkcast com/erwinvoogt/soarcast/WelkomSoarCast$Wind
-        //   153: invokestatic access$3500 : (Lcom/erwinvoogt/soarcast/WelkomSoarCast$Wind;)Ljava/lang/Double;
-        //   156: astore #6
-        //   158: aload_0
-        //   159: getfield mWind : Ljava/util/ArrayList;
-        //   162: iload_1
-        //   163: invokevirtual get : (I)Ljava/lang/Object;
-        //   166: checkcast com/erwinvoogt/soarcast/WelkomSoarCast$Wind
-        //   169: invokestatic access$3600 : (Lcom/erwinvoogt/soarcast/WelkomSoarCast$Wind;)Ljava/lang/Double;
-        //   172: astore #8
-        //   174: aload #8
-        //   176: invokevirtual doubleValue : ()D
-        //   179: dconst_0
-        //   180: dcmpl
-        //   181: ifgt -> 209
-        //   184: iload_2
-        //   185: istore_3
-        //   186: aload #6
-        //   188: invokevirtual doubleValue : ()D
-        //   191: dconst_0
-        //   192: dcmpl
-        //   193: ifle -> 374
-        //   196: iload_2
-        //   197: istore_3
-        //   198: iload_2
-        //   199: aload_0
-        //   200: getfield maxN : Ljava/lang/Integer;
-        //   203: invokevirtual intValue : ()I
-        //   206: if_icmpge -> 374
-        //   209: aload #9
-        //   211: iload_2
-        //   212: aload_0
-        //   213: getfield mWind : Ljava/util/ArrayList;
-        //   216: iload_1
-        //   217: invokevirtual get : (I)Ljava/lang/Object;
-        //   220: checkcast com/erwinvoogt/soarcast/WelkomSoarCast$Wind
-        //   223: invokestatic access$3400 : (Lcom/erwinvoogt/soarcast/WelkomSoarCast$Wind;)Ljava/lang/Long;
-        //   226: invokevirtual longValue : ()J
-        //   229: aload #12
-        //   231: invokevirtual longValue : ()J
-        //   234: lsub
-        //   235: l2i
-        //   236: invokestatic valueOf : (I)Ljava/lang/Integer;
-        //   239: aastore
-        //   240: aload #6
-        //   242: invokevirtual doubleValue : ()D
-        //   245: dconst_0
-        //   246: dcmpg
-        //   247: ifle -> 266
-        //   250: aload #6
-        //   252: astore #5
-        //   254: aload #6
-        //   256: invokevirtual doubleValue : ()D
-        //   259: ldc2_w 400.0
-        //   262: dcmpl
-        //   263: iflt -> 285
-        //   266: iload_2
-        //   267: ifle -> 281
-        //   270: aload #10
-        //   272: iload_2
-        //   273: iconst_1
-        //   274: isub
-        //   275: aaload
-        //   276: astore #5
-        //   278: goto -> 285
-        //   281: aload #8
-        //   283: astore #5
-        //   285: aload #8
-        //   287: invokevirtual doubleValue : ()D
-        //   290: dconst_0
-        //   291: dcmpg
-        //   292: ifle -> 311
-        //   295: aload #8
-        //   297: astore #6
-        //   299: aload #8
-        //   301: invokevirtual doubleValue : ()D
-        //   304: ldc2_w 400.0
-        //   307: dcmpl
-        //   308: iflt -> 330
-        //   311: iload_2
-        //   312: ifle -> 326
-        //   315: aload #11
-        //   317: iload_2
-        //   318: iconst_1
-        //   319: isub
-        //   320: aaload
-        //   321: astore #6
-        //   323: goto -> 330
-        //   326: aload #5
-        //   328: astore #6
-        //   330: iload_2
-        //   331: istore_3
-        //   332: aload #5
-        //   334: invokevirtual doubleValue : ()D
-        //   337: ldc2_w 400.0
-        //   340: dcmpg
-        //   341: ifge -> 374
-        //   344: iload_2
-        //   345: istore_3
-        //   346: aload #6
-        //   348: invokevirtual doubleValue : ()D
-        //   351: ldc2_w 400.0
-        //   354: dcmpg
-        //   355: ifge -> 374
-        //   358: aload #10
-        //   360: iload_2
-        //   361: aload #5
-        //   363: aastore
-        //   364: aload #11
-        //   366: iload_2
-        //   367: aload #6
-        //   369: aastore
-        //   370: iload_2
-        //   371: iconst_1
-        //   372: iadd
-        //   373: istore_3
-        //   374: iload_1
-        //   375: iload #4
-        //   377: iconst_1
-        //   378: isub
-        //   379: if_icmpge -> 391
-        //   382: iload_1
-        //   383: iconst_1
-        //   384: iadd
-        //   385: istore_1
-        //   386: iload_3
-        //   387: istore_2
-        //   388: goto -> 88
-        //   391: lconst_0
-        //   392: invokestatic valueOf : (J)Ljava/lang/Long;
-        //   395: astore #7
-        //   397: iload_3
-        //   398: istore_2
-        //   399: goto -> 88
-        //   402: aload_0
-        //   403: ldc_w 2131165328
-        //   406: invokevirtual findViewById : (I)Landroid/view/View;
-        //   409: checkcast com/erwinvoogt/soarcast/windMetingView
-        //   412: aload_0
-        //   413: getfield schaal : Ljava/lang/Integer;
-        //   416: invokevirtual intValue : ()I
-        //   419: iload_2
-        //   420: aload #9
-        //   422: aload #10
-        //   424: aload #11
-        //   426: invokevirtual update : (II[Ljava/lang/Integer;[Ljava/lang/Double;[Ljava/lang/Double;)V
-        //   429: aload_0
-        //   430: ldc_w 2131165326
-        //   433: invokevirtual findViewById : (I)Landroid/view/View;
-        //   436: checkcast com/erwinvoogt/soarcast/waardenView
-        //   439: aload_0
-        //   440: getfield schaal : Ljava/lang/Integer;
-        //   443: invokevirtual intValue : ()I
-        //   446: iload_2
-        //   447: aload #9
-        //   449: aload #10
-        //   451: aload #11
-        //   453: invokevirtual zetWind : (II[Ljava/lang/Integer;[Ljava/lang/Double;[Ljava/lang/Double;)V
-        //   456: aload_0
-        //   457: getfield grafiekBezig : Ljava/lang/Boolean;
-        //   460: invokevirtual booleanValue : ()Z
-        //   463: ifne -> 520
-        //   466: iload_2
-        //   467: ifle -> 480
-        //   470: aload_0
-        //   471: aload #9
-        //   473: iload_2
-        //   474: iconst_1
-        //   475: isub
-        //   476: aaload
-        //   477: putfield tIndicator : Ljava/lang/Integer;
-        //   480: iload_2
-        //   481: ifeq -> 510
-        //   484: aload_0
-        //   485: getfield tIndicator : Ljava/lang/Integer;
-        //   488: invokevirtual intValue : ()I
-        //   491: sipush #10800
-        //   494: if_icmplt -> 510
-        //   497: aload_0
-        //   498: getfield tIndicator : Ljava/lang/Integer;
-        //   501: invokevirtual intValue : ()I
-        //   504: ldc_w 75600
-        //   507: if_icmple -> 520
-        //   510: aload_0
-        //   511: ldc_w 43200
-        //   514: invokestatic valueOf : (I)Ljava/lang/Integer;
-        //   517: putfield tIndicator : Ljava/lang/Integer;
-        //   520: return
     }
 
     public void locatieOpMaps() {
-        StringBuilder stringBuilder2 = new StringBuilder();
-        stringBuilder2.append((this.mLocatie.get(this.locIndex.intValue())).lat.toString());
-        stringBuilder2.append(",");
-        stringBuilder2.append((this.mLocatie.get(this.locIndex.intValue())).lon.toString());
-        String str = stringBuilder2.toString();
-        Intent intent = new Intent("android.intent.action.VIEW");
-        Uri.Builder builder = Uri.parse("geo:0,0?").buildUpon();
-        StringBuilder stringBuilder3 = new StringBuilder();
-        stringBuilder3.append(str);
-        stringBuilder3.append("(");
-        stringBuilder3.append((this.mLocatie.get(this.locIndex.intValue())).naam);
-        stringBuilder3.append(" - weather station)");
-        Uri uri = builder.appendQueryParameter("q", stringBuilder3.toString()).build();
-        intent.setData(uri);
-        if (intent.resolveActivity(getPackageManager()) != null) {
-            startActivity(intent);
+        final StringBuilder sb = new StringBuilder();
+        sb.append(this.mLocatie.get(this.locIndex).lat.toString());
+        sb.append(",");
+        sb.append(this.mLocatie.get(this.locIndex).lon.toString());
+        final String string = sb.toString();
+        final Intent intent = new Intent("android.intent.action.VIEW");
+        final Uri.Builder buildUpon = Uri.parse("geo:0,0?").buildUpon();
+        final StringBuilder sb2 = new StringBuilder();
+        sb2.append(string);
+        sb2.append("(");
+        sb2.append(this.mLocatie.get(this.locIndex).naam);
+        sb2.append(" - weather station)");
+        final Uri build = buildUpon.appendQueryParameter("q", sb2.toString()).build();
+        intent.setData(build);
+        if (intent.resolveActivity(this.getPackageManager()) != null) {
+            this.startActivity(intent);
             return;
         }
-        StringBuilder stringBuilder1 = new StringBuilder();
-        stringBuilder1.append("Maps niet bereikt ");
-        stringBuilder1.append(uri);
-        Log.d("SoarCast", stringBuilder1.toString());
+        final StringBuilder sb3 = new StringBuilder();
+        sb3.append("Maps niet bereikt ");
+        sb3.append(build);
+        Log.d("SoarCast", sb3.toString());
     }
 
-    protected void onCreate(Bundle paramBundle) {
-        super.onCreate(paramBundle);
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        final SharedPreferences.Editor editor = sharedPreferences.edit();
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        final Integer schermbreedte = Integer.valueOf(displayMetrics.widthPixels);
+    protected void onCreate(final Bundle bundle) {
+        super.onCreate(bundle);
+        final SharedPreferences defaultSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
+        final SharedPreferences.Editor edit = defaultSharedPreferences.edit();
+        final DisplayMetrics displayMetrics = new DisplayMetrics();
+        this.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        final Integer value = displayMetrics.widthPixels;
         this.mLocatie = new ArrayList<Locatie>();
         this.mWind = new ArrayList<Wind>();
         this.mRichting = new ArrayList<Richting>();
-        this.locIndexMax = Integer.valueOf(0);
-        this.locIndex = Integer.valueOf(0);
-        this.locID = Integer.valueOf(-1);
-        this.klaar = Integer.valueOf(-1);
-        this.weerModel = Integer.valueOf(0);
-        this.eenheid = Integer.valueOf(0);
-        this.schaal = Integer.valueOf(1);
-        this.richt = Integer.valueOf(1);
-        this.uurVanaf = Integer.valueOf(24);
-        this.tijdNul = Long.valueOf(0L);
-        this.grafiekBezig = Boolean.valueOf(false);
-        this.tIndicator = Integer.valueOf(43200);
-        getIntent().getExtras().getString("gebruiker");
-        String str = getIntent().getExtras().getString("bestand");
-        this.eenheid = Integer.valueOf(sharedPreferences.getInt("eenheid", 0));
-        this.richt = Integer.valueOf(sharedPreferences.getInt("richting", 0));
-        this.locIndex = Integer.valueOf(sharedPreferences.getInt("locatie", 0));
-        if (paramBundle == null) {
-            setContentView(2131296284);
-            ((TextView)findViewById(2131165247)).setText(getResources().getString(2131427366));
-            (new LeesLocaties()).execute((Object[])new String[] { str });
-            final Button btM = (Button)findViewById(2131165257);
-            final Button btE = (Button)findViewById(2131165233);
-            final Button btR = (Button)findViewById(2131165273);
-            ImageButton imageButton1 = (ImageButton)findViewById(2131165228);
-            button1.setText(this.tekstModel[this.weerModel.intValue()]);
-            button2.setText(this.tekstEenheid[this.eenheid.intValue()]);
-            button3.setText(this.tekstRicht[this.richt.intValue()]);
-            button1.getBackground().setColorFilter(-2047872, PorterDuff.Mode.MULTIPLY);
+        this.locIndexMax = 0;
+        this.locIndex = 0;
+        this.locID = -1;
+        this.klaar = -1;
+        this.weerModel = 0;
+        this.eenheid = 0;
+        this.schaal = 1;
+        this.richt = 1;
+        this.uurVanaf = 24;
+        this.tijdNul = 0L;
+        this.grafiekBezig = false;
+        this.tIndicator = 43200;
+        this.getIntent().getExtras().getString("gebruiker");
+        final String string = this.getIntent().getExtras().getString("bestand");
+        this.eenheid = defaultSharedPreferences.getInt("eenheid", 0);
+        this.richt = defaultSharedPreferences.getInt("richting", 0);
+        this.locIndex = defaultSharedPreferences.getInt("locatie", 0);
+        if (bundle == null) {
+            this.setContentView(R.layout.activity_welkomsoarcast);
+            ((TextView)this.findViewById(R.id.laden)).setText((CharSequence)this.getResources().getString(R.string.laden));
+            new LeesLocaties().execute(string);
+            final Button button = (Button)this.findViewById(R.id.model);
+            final Button button2 = (Button)this.findViewById(R.id.eenheid);
+            final Button button3 = (Button)this.findViewById(R.id.richt);
+            final ImageButton imageButton = (ImageButton)this.findViewById(R.id.delen);
+            button.setText((CharSequence)this.tekstModel[this.weerModel]);
+            button2.setText((CharSequence)this.tekstEenheid[this.eenheid]);
+            button3.setText((CharSequence)this.tekstRicht[this.richt]);
+            button.getBackground().setColorFilter(-2047872, PorterDuff.Mode.MULTIPLY);
             button2.getBackground().setColorFilter(-2047872, PorterDuff.Mode.MULTIPLY);
             button3.getBackground().setColorFilter(-2047872, PorterDuff.Mode.MULTIPLY);
-            imageButton1.getBackground().setColorFilter(-2047872, PorterDuff.Mode.MULTIPLY);
-            ImageButton imageButton2 = (ImageButton)findViewById(2131165253);
-            ImageButton imageButton3 = (ImageButton)findViewById(2131165254);
-            button1.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View param1View) {
-                    if (WelkomSoarCast.this.klaar.intValue() > 0 && !WelkomSoarCast.this.grafiekBezig.booleanValue()) {
-                        WelkomSoarCast.this.weerModel;
-                        WelkomSoarCast.access$302(WelkomSoarCast.this, Integer.valueOf(WelkomSoarCast.this.weerModel.intValue() + 1));
-                        WelkomSoarCast.access$302(WelkomSoarCast.this, Integer.valueOf(WelkomSoarCast.this.weerModel.intValue() % 2));
-                        btM.setText(WelkomSoarCast.this.tekstModel[WelkomSoarCast.this.weerModel.intValue()]);
-                        WelkomSoarCast.this.updateWindModel();
-                        WelkomSoarCast.this.updateRichtingModel();
+            imageButton.getBackground().setColorFilter(-2047872, PorterDuff.Mode.MULTIPLY);
+            final ImageButton imageButton2 = (ImageButton)this.findViewById(R.id.locatieN);
+            final ImageButton imageButton3 = (ImageButton)this.findViewById(R.id.locatieZ);
+            button.setOnClickListener((View.OnClickListener) view -> {
+                if (WelkomSoarCast.this.klaar > 0 && !WelkomSoarCast.this.grafiekBezig) {
+                    // TODO: Fix not a statement
+                    //WelkomSoarCast.this.weerModel;
+                    ++WelkomSoarCast.this.weerModel;
+                    WelkomSoarCast.this.weerModel %= 2;
+                    button.setText((CharSequence)WelkomSoarCast.this.tekstModel[WelkomSoarCast.this.weerModel]);
+                    WelkomSoarCast.this.updateWindModel();
+                    WelkomSoarCast.this.updateRichtingModel();
+                }
+            });
+            button2.setOnClickListener((View.OnClickListener)new View.OnClickListener() {
+                public void onClick(final View view) {
+                    if (WelkomSoarCast.this.klaar > 0 && !WelkomSoarCast.this.grafiekBezig) {
+                        // TODO: Fix not a statement
+                        //WelkomSoarCast.this.eenheid;
+                        ++WelkomSoarCast.this.eenheid;
+                        WelkomSoarCast.this.eenheid %= 4;
+                        button2.setText((CharSequence)WelkomSoarCast.this.tekstEenheid[WelkomSoarCast.this.eenheid]);
+                        ((WindKaderView)WelkomSoarCast.this.findViewById(R.id.windKaderView)).update(WelkomSoarCast.this.eenheid, WelkomSoarCast.this.schaal, WelkomSoarCast.this.uurVanaf, ((Wind)WelkomSoarCast.this.mWind.get(0)).geefZonOpOnder());
+                        ((WaardenView)WelkomSoarCast.this.findViewById(R.id.waardenView)).update(WelkomSoarCast.this.eenheid, WelkomSoarCast.this.schaal, WelkomSoarCast.this.uurVanaf, WelkomSoarCast.this.tIndicator);
+                        edit.putInt("eenheid", (int)WelkomSoarCast.this.eenheid);
+                        edit.apply();
                     }
                 }
             });
-            button2.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View param1View) {
-                    if (WelkomSoarCast.this.klaar.intValue() > 0 && !WelkomSoarCast.this.grafiekBezig.booleanValue()) {
-                        WelkomSoarCast.this.eenheid;
-                        WelkomSoarCast.access$702(WelkomSoarCast.this, Integer.valueOf(WelkomSoarCast.this.eenheid.intValue() + 1));
-                        WelkomSoarCast.access$702(WelkomSoarCast.this, Integer.valueOf(WelkomSoarCast.this.eenheid.intValue() % 4));
-                        btE.setText(WelkomSoarCast.this.tekstEenheid[WelkomSoarCast.this.eenheid.intValue()]);
-                        ((windKaderView)WelkomSoarCast.this.findViewById(2131165327)).update(WelkomSoarCast.this.eenheid.intValue(), WelkomSoarCast.this.schaal.intValue(), WelkomSoarCast.this.uurVanaf.intValue(), ((WelkomSoarCast.Wind)WelkomSoarCast.this.mWind.get(0)).geefZonOpOnder());
-                        ((waardenView)WelkomSoarCast.this.findViewById(2131165326)).update(WelkomSoarCast.this.eenheid.intValue(), WelkomSoarCast.this.schaal.intValue(), WelkomSoarCast.this.uurVanaf.intValue(), WelkomSoarCast.this.tIndicator.intValue());
-                        editor.putInt("eenheid", WelkomSoarCast.this.eenheid.intValue());
-                        editor.apply();
+            button3.setOnClickListener((View.OnClickListener)new View.OnClickListener() {
+                public void onClick(final View view) {
+                    if (WelkomSoarCast.this.klaar > 0 && !WelkomSoarCast.this.grafiekBezig) {
+                        // TODO: Fix not a statement
+                        //WelkomSoarCast.this.richt;
+                        ++WelkomSoarCast.this.richt;
+                        WelkomSoarCast.this.richt %= 2;
+                        button3.setText((CharSequence)WelkomSoarCast.this.tekstRicht[WelkomSoarCast.this.richt]);
+                        ((RichtingKaderView)WelkomSoarCast.this.findViewById(R.id.richtingKaderView)).update(((Locatie)WelkomSoarCast.this.mLocatie.get(WelkomSoarCast.this.locIndex)).mindeg, ((Locatie)WelkomSoarCast.this.mLocatie.get(WelkomSoarCast.this.locIndex)).maxdeg, WelkomSoarCast.this.richt, WelkomSoarCast.this.uurVanaf, ((Richting)WelkomSoarCast.this.mRichting.get(0)).geefZonOpOnder());
+                        edit.putInt("richting", (int)WelkomSoarCast.this.richt);
+                        edit.apply();
                     }
                 }
             });
-            button3.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View param1View) {
-                    if (WelkomSoarCast.this.klaar.intValue() > 0 && !WelkomSoarCast.this.grafiekBezig.booleanValue()) {
-                        WelkomSoarCast.this.richt;
-                        WelkomSoarCast.access$1402(WelkomSoarCast.this, Integer.valueOf(WelkomSoarCast.this.richt.intValue() + 1));
-                        WelkomSoarCast.access$1402(WelkomSoarCast.this, Integer.valueOf(WelkomSoarCast.this.richt.intValue() % 2));
-                        btR.setText(WelkomSoarCast.this.tekstRicht[WelkomSoarCast.this.richt.intValue()]);
-                        ((richtingKaderView)WelkomSoarCast.this.findViewById(2131165274)).update((WelkomSoarCast.this.mLocatie.get(WelkomSoarCast.this.locIndex.intValue())).mindeg.intValue(), (WelkomSoarCast.this.mLocatie.get(WelkomSoarCast.this.locIndex.intValue())).maxdeg.intValue(), WelkomSoarCast.this.richt.intValue(), WelkomSoarCast.this.uurVanaf.intValue(), ((WelkomSoarCast.Richting)WelkomSoarCast.this.mRichting.get(0)).geefZonOpOnder());
-                        editor.putInt("richting", WelkomSoarCast.this.richt.intValue());
-                        editor.apply();
-                    }
-                }
-            });
-            imageButton3.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View param1View) {
+            imageButton3.setOnClickListener((View.OnClickListener)new View.OnClickListener() {
+                public void onClick(final View view) {
                     WelkomSoarCast.this.doeLocatieZ();
                 }
             });
-            imageButton2.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View param1View) {
+            imageButton2.setOnClickListener((View.OnClickListener)new View.OnClickListener() {
+                public void onClick(final View view) {
                     WelkomSoarCast.this.doeLocatieN();
                 }
             });
-            imageButton1.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View param1View) {
+            imageButton.setOnClickListener((View.OnClickListener)new View.OnClickListener() {
+                public void onClick(final View view) {
                     WelkomSoarCast.this.schermafdruk();
                 }
             });
-            ((TextView)findViewById(2131165252)).setOnClickListener(new View.OnClickListener() {
-                public void onClick(View param1View) {
-                    if (WelkomSoarCast.this.locID.intValue() >= 0)
+            ((TextView)this.findViewById(R.id.locatie)).setOnClickListener((View.OnClickListener)new View.OnClickListener() {
+                public void onClick(final View view) {
+                    if (WelkomSoarCast.this.locID >= 0) {
                         WelkomSoarCast.this.locatieOpMaps();
+                    }
                 }
             });
             this.gestureDetector1 = new GestureDetector((Context)this, (GestureDetector.OnGestureListener)new OnSwipeListener() {
-                public boolean onSchuif(float param1Float) {
-                    int i = schermbreedte.intValue() / 24;
-                    Integer integer1 = Integer.valueOf((int)(param1Float - 1.0D * WelkomSoarCast.this.reedsVerschoven1));
-                    Integer integer2 = Integer.valueOf(integer1.intValue() / Integer.valueOf(i).intValue());
-                    if (integer2.intValue() != 0 && !WelkomSoarCast.this.grafiekBezig.booleanValue() && WelkomSoarCast.this.klaar.intValue() > 0) {
-                        WelkomSoarCast.access$202(WelkomSoarCast.this, Boolean.valueOf(true));
-                        WelkomSoarCast.this.reedsVerschoven1 += integer1.intValue();
-                        WelkomSoarCast.access$1002(WelkomSoarCast.this, Integer.valueOf(WelkomSoarCast.this.uurVanaf.intValue() - integer2.intValue()));
-                        if (WelkomSoarCast.this.uurVanaf.intValue() < 0)
-                            WelkomSoarCast.access$1002(WelkomSoarCast.this, Integer.valueOf(0));
-                        if (WelkomSoarCast.this.uurVanaf.intValue() > 72)
-                            WelkomSoarCast.access$1002(WelkomSoarCast.this, Integer.valueOf(72));
-                        ((windKaderView)WelkomSoarCast.this.findViewById(2131165327)).update(WelkomSoarCast.this.eenheid.intValue(), WelkomSoarCast.this.schaal.intValue(), WelkomSoarCast.this.uurVanaf.intValue(), ((WelkomSoarCast.Wind)WelkomSoarCast.this.mWind.get(0)).geefZonOpOnder());
-                        ((richtingKaderView)WelkomSoarCast.this.findViewById(2131165274)).update((WelkomSoarCast.this.mLocatie.get(WelkomSoarCast.this.locIndex.intValue())).mindeg.intValue(), (WelkomSoarCast.this.mLocatie.get(WelkomSoarCast.this.locIndex.intValue())).maxdeg.intValue(), WelkomSoarCast.this.richt.intValue(), WelkomSoarCast.this.uurVanaf.intValue(), ((WelkomSoarCast.Richting)WelkomSoarCast.this.mRichting.get(0)).geefZonOpOnder());
+                @Override
+                public boolean onSchuif(final float n) {
+                    final int i = value / 24;
+                    final Integer value = (int)(n - 1.0 * WelkomSoarCast.this.reedsVerschoven1);
+                    final Integer value2 = value / i;
+                    if (value2 != 0 && !WelkomSoarCast.this.grafiekBezig && WelkomSoarCast.this.klaar > 0) {
+                        WelkomSoarCast.this.grafiekBezig = true;
+                        WelkomSoarCast.this.reedsVerschoven1 += value;
+                        WelkomSoarCast.this.uurVanaf -= value2;
+                        if (WelkomSoarCast.this.uurVanaf < 0) {
+                            WelkomSoarCast.this.uurVanaf = 0;
+                        }
+                        if (WelkomSoarCast.this.uurVanaf > 72) {
+                            WelkomSoarCast.this.uurVanaf = 72;
+                        }
+                        ((WindKaderView)WelkomSoarCast.this.findViewById(R.id.windKaderView)).update(WelkomSoarCast.this.eenheid, WelkomSoarCast.this.schaal, WelkomSoarCast.this.uurVanaf, ((Wind)WelkomSoarCast.this.mWind.get(0)).geefZonOpOnder());
+                        ((RichtingKaderView)WelkomSoarCast.this.findViewById(R.id.richtingKaderView)).update(((Locatie)WelkomSoarCast.this.mLocatie.get(WelkomSoarCast.this.locIndex)).mindeg, ((Locatie)WelkomSoarCast.this.mLocatie.get(WelkomSoarCast.this.locIndex)).maxdeg, WelkomSoarCast.this.richt, WelkomSoarCast.this.uurVanaf, ((Richting)WelkomSoarCast.this.mRichting.get(0)).geefZonOpOnder());
                         WelkomSoarCast.this.updateWindmeting();
                         WelkomSoarCast.this.updateWindModel();
                         WelkomSoarCast.this.updateRichting();
                         WelkomSoarCast.this.updateRichtingModel();
-                        ((waardenView)WelkomSoarCast.this.findViewById(2131165326)).update(WelkomSoarCast.this.eenheid.intValue(), WelkomSoarCast.this.schaal.intValue(), WelkomSoarCast.this.uurVanaf.intValue(), WelkomSoarCast.this.tIndicator.intValue());
-                        WelkomSoarCast.access$202(WelkomSoarCast.this, Boolean.valueOf(false));
+                        ((WaardenView)WelkomSoarCast.this.findViewById(R.id.waardenView)).update(WelkomSoarCast.this.eenheid, WelkomSoarCast.this.schaal, WelkomSoarCast.this.uurVanaf, WelkomSoarCast.this.tIndicator);
+                        WelkomSoarCast.this.grafiekBezig = false;
                     }
                     return true;
                 }
 
-                public boolean onSwipe(OnSwipeListener.Direction param1Direction) {
-                    if (param1Direction == OnSwipeListener.Direction.up)
+                @Override
+                public boolean onSwipe(final Direction direction) {
+                    if (direction == Direction.up) {
                         WelkomSoarCast.this.doeLocatieZ();
-                    if (param1Direction == OnSwipeListener.Direction.down)
+                    }
+                    if (direction == Direction.down) {
                         WelkomSoarCast.this.doeLocatieN();
+                    }
                     return true;
                 }
 
+                @Override
                 public boolean zetSchuifOpNul() {
-                    WelkomSoarCast.this.reedsVerschoven1 = 0.0F;
+                    WelkomSoarCast.this.reedsVerschoven1 = 0.0f;
                     return true;
                 }
             });
-            findViewById(2131165327).setOnTouchListener(new View.OnTouchListener() {
-                public boolean onTouch(View param1View, MotionEvent param1MotionEvent) {
-                    WelkomSoarCast.this.gestureDetector1.onTouchEvent(param1MotionEvent);
+            this.findViewById(R.id.windKaderView).setOnTouchListener((View.OnTouchListener)new View.OnTouchListener() {
+                public boolean onTouch(final View view, final MotionEvent motionEvent) {
+                    WelkomSoarCast.this.gestureDetector1.onTouchEvent(motionEvent);
                     return true;
                 }
             });
-            findViewById(2131165274).setOnTouchListener(new View.OnTouchListener() {
-                public boolean onTouch(View param1View, MotionEvent param1MotionEvent) {
-                    WelkomSoarCast.this.gestureDetector1.onTouchEvent(param1MotionEvent);
+            this.findViewById(R.id.richtingKaderView).setOnTouchListener((View.OnTouchListener)new View.OnTouchListener() {
+                public boolean onTouch(final View view, final MotionEvent motionEvent) {
+                    WelkomSoarCast.this.gestureDetector1.onTouchEvent(motionEvent);
                     return true;
                 }
             });
             this.gestureDetector2 = new GestureDetector((Context)this, (GestureDetector.OnGestureListener)new OnSwipeListener() {
-                public boolean onSchuif(float param1Float) {
-                    Integer integer = Integer.valueOf((int)(param1Float - 1.0D * WelkomSoarCast.this.reedsVerschoven2));
-                    param1Float = 86400.0F * integer.intValue() * 1.0F / 1.0F * schermbreedte.intValue();
-                    if (param1Float != 0.0F && !WelkomSoarCast.this.grafiekBezig.booleanValue() && WelkomSoarCast.this.klaar.intValue() > 0) {
-                        WelkomSoarCast.access$202(WelkomSoarCast.this, Boolean.valueOf(true));
-                        WelkomSoarCast.this.reedsVerschoven2 += integer.intValue();
-                        WelkomSoarCast.access$1302(WelkomSoarCast.this, Integer.valueOf(WelkomSoarCast.this.tIndicator.intValue() + (int)param1Float));
-                        if (WelkomSoarCast.this.tIndicator.intValue() < 10800)
-                            WelkomSoarCast.access$1302(WelkomSoarCast.this, Integer.valueOf(10800));
-                        if (WelkomSoarCast.this.tIndicator.intValue() > 75600)
-                            WelkomSoarCast.access$1302(WelkomSoarCast.this, Integer.valueOf(75600));
-                        ((waardenView)WelkomSoarCast.this.findViewById(2131165326)).update(WelkomSoarCast.this.eenheid.intValue(), WelkomSoarCast.this.schaal.intValue(), WelkomSoarCast.this.uurVanaf.intValue(), WelkomSoarCast.this.tIndicator.intValue());
-                        WelkomSoarCast.access$202(WelkomSoarCast.this, Boolean.valueOf(false));
+                @Override
+                public boolean onSchuif(float n) {
+                    final Integer value = (int)(n - 1.0 * WelkomSoarCast.this.reedsVerschoven2);
+                    n = 86400.0f * (value * 1.0f) / (1.0f * value);
+                    if (n != 0.0f && !WelkomSoarCast.this.grafiekBezig && WelkomSoarCast.this.klaar > 0) {
+                        WelkomSoarCast.this.grafiekBezig = true;
+                        WelkomSoarCast.this.reedsVerschoven2 += value;
+                        WelkomSoarCast.this.tIndicator += (int)n;
+                        if (WelkomSoarCast.this.tIndicator < 10800) {
+                            WelkomSoarCast.this.tIndicator = 10800;
+                        }
+                        if (WelkomSoarCast.this.tIndicator > 75600) {
+                            WelkomSoarCast.this.tIndicator = 75600;
+                        }
+                        ((WaardenView)WelkomSoarCast.this.findViewById(R.id.waardenView)).update(WelkomSoarCast.this.eenheid, WelkomSoarCast.this.schaal, WelkomSoarCast.this.uurVanaf, WelkomSoarCast.this.tIndicator);
+                        WelkomSoarCast.this.grafiekBezig = false;
                     }
                     return true;
                 }
 
+                @Override
                 public boolean zetSchuifOpNul() {
-                    WelkomSoarCast.this.reedsVerschoven2 = 0.0F;
+                    WelkomSoarCast.this.reedsVerschoven2 = 0.0f;
                     return true;
                 }
             });
-            findViewById(2131165326).setOnTouchListener(new View.OnTouchListener() {
-                public boolean onTouch(View param1View, MotionEvent param1MotionEvent) {
-                    WelkomSoarCast.this.gestureDetector2.onTouchEvent(param1MotionEvent);
+            this.findViewById(R.id.waardenView).setOnTouchListener((View.OnTouchListener)new View.OnTouchListener() {
+                public boolean onTouch(final View view, final MotionEvent motionEvent) {
+                    WelkomSoarCast.this.gestureDetector2.onTouchEvent(motionEvent);
                     return true;
                 }
             });
@@ -821,2161 +678,2828 @@ public class WelkomSoarCast extends Activity {
 
     public void schermafdruk() {
         if (ContextCompat.checkSelfPermission((Context)this, "android.permission.WRITE_EXTERNAL_STORAGE") == 0 && ContextCompat.checkSelfPermission((Context)this, "android.permission.READ_EXTERNAL_STORAGE") == 0) {
-            View view = getWindow().getDecorView().getRootView();
-            view.setDrawingCacheEnabled(true);
-            Bitmap bitmap = Bitmap.createBitmap(view.getDrawingCache());
-            view.setDrawingCacheEnabled(false);
-            File file = Environment.getExternalStorageDirectory();
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append(file.getAbsolutePath());
-            stringBuilder.append(getResources().getText(2131427388));
-            file = new File(stringBuilder.toString());
+            final View rootView = this.getWindow().getDecorView().getRootView();
+            rootView.setDrawingCacheEnabled(true);
+            final Bitmap bitmap = Bitmap.createBitmap(rootView.getDrawingCache());
+            rootView.setDrawingCacheEnabled(false);
+            final File externalStorageDirectory = Environment.getExternalStorageDirectory();
+            final StringBuilder sb = new StringBuilder();
+            sb.append(externalStorageDirectory.getAbsolutePath());
+            sb.append((Object)this.getResources().getText(R.string.schermafdruk));
+            final File file = new File(sb.toString());
             try {
                 file.createNewFile();
-                FileOutputStream fileOutputStream = new FileOutputStream(file);
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
+                final FileOutputStream fileOutputStream = new FileOutputStream(file);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, (OutputStream)fileOutputStream);
                 fileOutputStream.close();
-            } catch (Exception exception) {
-                Log.e("SoarCast", "Error screenshot", exception);
             }
-            Intent intent = new Intent("android.intent.action.SEND");
+            catch (Exception ex) {
+                Log.e("SoarCast", "Error screenshot", (Throwable)ex);
+            }
+            final Intent intent = new Intent("android.intent.action.SEND");
             intent.setType("image/*");
             intent.putExtra("android.intent.extra.STREAM", (Parcelable)Uri.fromFile(file));
-            startActivity(Intent.createChooser(intent, "Share via"));
+            this.startActivity(Intent.createChooser(intent, (CharSequence)"Share via"));
             return;
         }
-        Toast.makeText(getBaseContext(), getResources().getString(2131427378), 0).show();
+        Toast.makeText(this.getBaseContext(), (CharSequence)this.getResources().getString(R.string.permissie), Toast.LENGTH_SHORT).show();
     }
 
-    private class LeesLocaties extends AsyncTask<String, Void, Integer> {
-        private final String LOG_TAG = LeesLocaties.class.getSimpleName();
+    private class LeesLocaties extends AsyncTask<String, Void, Integer>
+    {
+        private final String LOG_TAG;
 
-        private LeesLocaties() {}
+        private LeesLocaties() {
+            this.LOG_TAG = LeesLocaties.class.getSimpleName();
+        }
 
-        protected Integer doInBackground(String... param1VarArgs) {
-            // Byte code:
-            //   0: new java/lang/StringBuilder
-            //   3: dup
-            //   4: invokespecial <init> : ()V
-            //   7: astore_3
-            //   8: aload_3
-            //   9: aload_0
-            //   10: getfield this$0 : Lcom/erwinvoogt/soarcast/WelkomSoarCast;
-            //   13: invokevirtual getResources : ()Landroid/content/res/Resources;
-            //   16: ldc 2131427395
-            //   18: invokevirtual getString : (I)Ljava/lang/String;
-            //   21: invokevirtual append : (Ljava/lang/String;)Ljava/lang/StringBuilder;
-            //   24: pop
-            //   25: aload_3
-            //   26: aload_1
-            //   27: iconst_0
-            //   28: aaload
-            //   29: invokevirtual append : (Ljava/lang/String;)Ljava/lang/StringBuilder;
-            //   32: pop
-            //   33: aload_3
-            //   34: aload_0
-            //   35: getfield this$0 : Lcom/erwinvoogt/soarcast/WelkomSoarCast;
-            //   38: invokevirtual getResources : ()Landroid/content/res/Resources;
-            //   41: ldc 2131427365
-            //   43: invokevirtual getString : (I)Ljava/lang/String;
-            //   46: invokevirtual append : (Ljava/lang/String;)Ljava/lang/StringBuilder;
-            //   49: pop
-            //   50: aload_3
-            //   51: invokevirtual toString : ()Ljava/lang/String;
-            //   54: astore_1
-            //   55: iconst_0
-            //   56: invokestatic valueOf : (I)Ljava/lang/Integer;
-            //   59: astore #15
-            //   61: aload_0
-            //   62: getfield this$0 : Lcom/erwinvoogt/soarcast/WelkomSoarCast;
-            //   65: invokestatic access$1700 : (Lcom/erwinvoogt/soarcast/WelkomSoarCast;)Ljava/util/ArrayList;
-            //   68: invokevirtual isEmpty : ()Z
-            //   71: ifne -> 84
-            //   74: aload_0
-            //   75: getfield this$0 : Lcom/erwinvoogt/soarcast/WelkomSoarCast;
-            //   78: invokestatic access$1700 : (Lcom/erwinvoogt/soarcast/WelkomSoarCast;)Ljava/util/ArrayList;
-            //   81: invokevirtual clear : ()V
-            //   84: aconst_null
-            //   85: astore #4
-            //   87: aconst_null
-            //   88: astore_3
-            //   89: new java/net/URL
-            //   92: dup
-            //   93: aload_1
-            //   94: invokespecial <init> : (Ljava/lang/String;)V
-            //   97: invokevirtual openConnection : ()Ljava/net/URLConnection;
-            //   100: checkcast java/net/HttpURLConnection
-            //   103: astore #13
-            //   105: aload #13
-            //   107: ldc 'GET'
-            //   109: invokevirtual setRequestMethod : (Ljava/lang/String;)V
-            //   112: aload #13
-            //   114: invokevirtual connect : ()V
-            //   117: aload #13
-            //   119: invokevirtual getInputStream : ()Ljava/io/InputStream;
+        protected Integer doInBackground(final String... p0) {
+            //
+            // This method could not be decompiled.
+            //
+            // Original Bytecode:
+            //
+            //     3: dup
+            //     4: invokespecial   java/lang/StringBuilder.<init>:()V
+            //     7: astore_3
+            //     8: aload_3
+            //     9: aload_0
+            //    10: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesLocaties.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
+            //    13: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
+            //    16: ldc             2131427395
+            //    18: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
+            //    21: invokevirtual   java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+            //    24: pop
+            //    25: aload_3
+            //    26: aload_1
+            //    27: iconst_0
+            //    28: aaload
+            //    29: invokevirtual   java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+            //    32: pop
+            //    33: aload_3
+            //    34: aload_0
+            //    35: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesLocaties.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
+            //    38: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
+            //    41: ldc             2131427365
+            //    43: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
+            //    46: invokevirtual   java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+            //    49: pop
+            //    50: aload_3
+            //    51: invokevirtual   java/lang/StringBuilder.toString:()Ljava/lang/String;
+            //    54: astore_1
+            //    55: iconst_0
+            //    56: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //    59: astore          15
+            //    61: aload_0
+            //    62: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesLocaties.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
+            //    65: invokestatic    com/erwinvoogt/soarcast/WelkomSoarCast.access$1700:(Lcom/erwinvoogt/soarcast/WelkomSoarCast;)Ljava/util/ArrayList;
+            //    68: invokevirtual   java/util/ArrayList.isEmpty:()Z
+            //    71: ifne            84
+            //    74: aload_0
+            //    75: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesLocaties.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
+            //    78: invokestatic    com/erwinvoogt/soarcast/WelkomSoarCast.access$1700:(Lcom/erwinvoogt/soarcast/WelkomSoarCast;)Ljava/util/ArrayList;
+            //    81: invokevirtual   java/util/ArrayList.clear:()V
+            //    84: aconst_null
+            //    85: astore          4
+            //    87: aconst_null
+            //    88: astore_3
+            //    89: new             Ljava/net/URL;
+            //    92: dup
+            //    93: aload_1
+            //    94: invokespecial   java/net/URL.<init>:(Ljava/lang/String;)V
+            //    97: invokevirtual   java/net/URL.openConnection:()Ljava/net/URLConnection;
+            //   100: checkcast       Ljava/net/HttpURLConnection;
+            //   103: astore          13
+            //   105: aload           13
+            //   107: ldc             "GET"
+            //   109: invokevirtual   java/net/HttpURLConnection.setRequestMethod:(Ljava/lang/String;)V
+            //   112: aload           13
+            //   114: invokevirtual   java/net/HttpURLConnection.connect:()V
+            //   117: aload           13
+            //   119: invokevirtual   java/net/HttpURLConnection.getInputStream:()Ljava/io/InputStream;
             //   122: astore_1
             //   123: aload_1
-            //   124: ifnonnull -> 142
-            //   127: aload #13
-            //   129: ifnull -> 137
-            //   132: aload #13
-            //   134: invokevirtual disconnect : ()V
+            //   124: ifnonnull       142
+            //   127: aload           13
+            //   129: ifnull          137
+            //   132: aload           13
+            //   134: invokevirtual   java/net/HttpURLConnection.disconnect:()V
             //   137: iconst_0
-            //   138: invokestatic valueOf : (I)Ljava/lang/Integer;
+            //   138: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
             //   141: areturn
-            //   142: new java/io/BufferedReader
+            //   142: new             Ljava/io/BufferedReader;
             //   145: dup
-            //   146: new java/io/InputStreamReader
+            //   146: new             Ljava/io/InputStreamReader;
             //   149: dup
             //   150: aload_1
-            //   151: invokespecial <init> : (Ljava/io/InputStream;)V
-            //   154: invokespecial <init> : (Ljava/io/Reader;)V
-            //   157: astore #14
-            //   159: ldc ''
-            //   161: astore #7
+            //   151: invokespecial   java/io/InputStreamReader.<init>:(Ljava/io/InputStream;)V
+            //   154: invokespecial   java/io/BufferedReader.<init>:(Ljava/io/Reader;)V
+            //   157: astore          14
+            //   159: ldc             ""
+            //   161: astore          7
             //   163: iconst_0
-            //   164: invokestatic valueOf : (I)Ljava/lang/Integer;
-            //   167: astore #8
+            //   164: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //   167: astore          8
             //   169: dconst_0
-            //   170: invokestatic valueOf : (D)Ljava/lang/Double;
+            //   170: invokestatic    java/lang/Double.valueOf:(D)Ljava/lang/Double;
             //   173: astore_3
             //   174: dconst_0
-            //   175: invokestatic valueOf : (D)Ljava/lang/Double;
+            //   175: invokestatic    java/lang/Double.valueOf:(D)Ljava/lang/Double;
             //   178: astore_1
             //   179: iconst_0
-            //   180: invokestatic valueOf : (I)Ljava/lang/Integer;
-            //   183: astore #5
+            //   180: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //   183: astore          5
             //   185: iconst_0
-            //   186: invokestatic valueOf : (I)Ljava/lang/Integer;
-            //   189: astore #4
+            //   186: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //   189: astore          4
             //   191: iconst_m1
-            //   192: invokestatic valueOf : (I)Ljava/lang/Integer;
-            //   195: astore #6
+            //   192: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //   195: astore          6
             //   197: aload_0
-            //   198: getfield this$0 : Lcom/erwinvoogt/soarcast/WelkomSoarCast;
-            //   201: invokevirtual getResources : ()Landroid/content/res/Resources;
-            //   204: ldc 2131427328
-            //   206: invokevirtual getString : (I)Ljava/lang/String;
-            //   209: astore #17
-            //   211: aload #14
-            //   213: invokevirtual readLine : ()Ljava/lang/String;
-            //   216: astore #18
-            //   218: aload #18
-            //   220: ifnull -> 910
-            //   223: aload #15
-            //   225: invokevirtual intValue : ()I
-            //   228: ifle -> 1143
-            //   231: aload #18
-            //   233: aload #17
-            //   235: invokevirtual indexOf : (Ljava/lang/String;)I
-            //   238: invokestatic valueOf : (I)Ljava/lang/Integer;
-            //   241: astore #16
-            //   243: aload #6
-            //   245: astore #11
-            //   247: aload #16
-            //   249: invokevirtual intValue : ()I
-            //   252: ifle -> 280
-            //   255: aload #18
+            //   198: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesLocaties.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
+            //   201: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
+            //   204: ldc             R.string.csv_separator
+            //   206: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
+            //   209: astore          17
+            //   211: aload           14
+            //   213: invokevirtual   java/io/BufferedReader.readLine:()Ljava/lang/String;
+            //   216: astore          18
+            //   218: aload           18
+            //   220: ifnull          910
+            //   223: aload           15
+            //   225: invokevirtual   java/lang/Integer.intValue:()I
+            //   228: ifle            1143
+            //   231: aload           18
+            //   233: aload           17
+            //   235: invokevirtual   java/lang/String.indexOf:(Ljava/lang/String;)I
+            //   238: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //   241: astore          16
+            //   243: aload           6
+            //   245: astore          11
+            //   247: aload           16
+            //   249: invokevirtual   java/lang/Integer.intValue:()I
+            //   252: ifle            280
+            //   255: aload           18
             //   257: iconst_0
-            //   258: aload #16
-            //   260: invokevirtual intValue : ()I
-            //   263: invokevirtual substring : (II)Ljava/lang/String;
-            //   266: astore #7
-            //   268: aload #16
-            //   270: invokevirtual intValue : ()I
+            //   258: aload           16
+            //   260: invokevirtual   java/lang/Integer.intValue:()I
+            //   263: invokevirtual   java/lang/String.substring:(II)Ljava/lang/String;
+            //   266: astore          7
+            //   268: aload           16
+            //   270: invokevirtual   java/lang/Integer.intValue:()I
             //   273: iconst_1
             //   274: iadd
-            //   275: invokestatic valueOf : (I)Ljava/lang/Integer;
-            //   278: astore #11
-            //   280: aload #11
-            //   282: invokevirtual intValue : ()I
+            //   275: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //   278: astore          11
+            //   280: aload           11
+            //   282: invokevirtual   java/lang/Integer.intValue:()I
             //   285: istore_2
-            //   286: aload #7
-            //   288: astore #10
-            //   290: aload #8
-            //   292: astore #6
-            //   294: aload #16
-            //   296: astore #12
-            //   298: aload #11
-            //   300: astore #9
-            //   302: aload #10
-            //   304: astore #7
+            //   286: aload           7
+            //   288: astore          10
+            //   290: aload           8
+            //   292: astore          6
+            //   294: aload           16
+            //   296: astore          12
+            //   298: aload           11
+            //   300: astore          9
+            //   302: aload           10
+            //   304: astore          7
             //   306: iload_2
-            //   307: aload #16
-            //   309: invokevirtual intValue : ()I
-            //   312: if_icmple -> 418
-            //   315: aload #18
-            //   317: aload #17
-            //   319: aload #11
-            //   321: invokevirtual intValue : ()I
-            //   324: invokevirtual indexOf : (Ljava/lang/String;I)I
-            //   327: invokestatic valueOf : (I)Ljava/lang/Integer;
-            //   330: astore #16
-            //   332: aload #8
-            //   334: astore #6
-            //   336: aload #16
-            //   338: astore #12
-            //   340: aload #11
-            //   342: astore #9
-            //   344: aload #10
-            //   346: astore #7
-            //   348: aload #16
-            //   350: invokevirtual intValue : ()I
-            //   353: aload #11
-            //   355: invokevirtual intValue : ()I
-            //   358: if_icmplt -> 418
-            //   361: aload #18
-            //   363: aload #11
-            //   365: invokevirtual intValue : ()I
-            //   368: aload #16
-            //   370: invokevirtual intValue : ()I
-            //   373: invokevirtual substring : (II)Ljava/lang/String;
-            //   376: astore #6
-            //   378: aload #6
-            //   380: invokestatic valueOf : (Ljava/lang/String;)Ljava/lang/Integer;
-            //   383: astore #6
-            //   385: aload #10
-            //   387: astore #7
-            //   389: goto -> 402
+            //   307: aload           16
+            //   309: invokevirtual   java/lang/Integer.intValue:()I
+            //   312: if_icmple       418
+            //   315: aload           18
+            //   317: aload           17
+            //   319: aload           11
+            //   321: invokevirtual   java/lang/Integer.intValue:()I
+            //   324: invokevirtual   java/lang/String.indexOf:(Ljava/lang/String;I)I
+            //   327: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //   330: astore          16
+            //   332: aload           8
+            //   334: astore          6
+            //   336: aload           16
+            //   338: astore          12
+            //   340: aload           11
+            //   342: astore          9
+            //   344: aload           10
+            //   346: astore          7
+            //   348: aload           16
+            //   350: invokevirtual   java/lang/Integer.intValue:()I
+            //   353: aload           11
+            //   355: invokevirtual   java/lang/Integer.intValue:()I
+            //   358: if_icmplt       418
+            //   361: aload           18
+            //   363: aload           11
+            //   365: invokevirtual   java/lang/Integer.intValue:()I
+            //   368: aload           16
+            //   370: invokevirtual   java/lang/Integer.intValue:()I
+            //   373: invokevirtual   java/lang/String.substring:(II)Ljava/lang/String;
+            //   376: astore          6
+            //   378: aload           6
+            //   380: invokestatic    java/lang/Integer.valueOf:(Ljava/lang/String;)Ljava/lang/Integer;
+            //   383: astore          6
+            //   385: aload           10
+            //   387: astore          7
+            //   389: goto            402
             //   392: iconst_0
-            //   393: invokestatic valueOf : (I)Ljava/lang/Integer;
-            //   396: astore #6
-            //   398: ldc ''
-            //   400: astore #7
-            //   402: aload #16
-            //   404: invokevirtual intValue : ()I
+            //   393: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //   396: astore          6
+            //   398: ldc             ""
+            //   400: astore          7
+            //   402: aload           16
+            //   404: invokevirtual   java/lang/Integer.intValue:()I
             //   407: iconst_1
             //   408: iadd
-            //   409: invokestatic valueOf : (I)Ljava/lang/Integer;
-            //   412: astore #9
-            //   414: aload #16
-            //   416: astore #12
-            //   418: aload #12
-            //   420: astore #8
-            //   422: aload #9
-            //   424: invokevirtual intValue : ()I
-            //   427: aload #12
-            //   429: invokevirtual intValue : ()I
-            //   432: if_icmple -> 1118
-            //   435: aload #18
-            //   437: aload #17
-            //   439: aload #9
-            //   441: invokevirtual intValue : ()I
-            //   444: invokevirtual indexOf : (Ljava/lang/String;I)I
-            //   447: invokestatic valueOf : (I)Ljava/lang/Integer;
-            //   450: astore #10
-            //   452: aload #10
-            //   454: astore #8
-            //   456: aload #10
-            //   458: invokevirtual intValue : ()I
-            //   461: aload #9
-            //   463: invokevirtual intValue : ()I
-            //   466: if_icmplt -> 1118
-            //   469: aload #18
-            //   471: aload #9
-            //   473: invokevirtual intValue : ()I
-            //   476: aload #10
-            //   478: invokevirtual intValue : ()I
-            //   481: invokevirtual substring : (II)Ljava/lang/String;
+            //   409: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //   412: astore          9
+            //   414: aload           16
+            //   416: astore          12
+            //   418: aload           12
+            //   420: astore          8
+            //   422: aload           9
+            //   424: invokevirtual   java/lang/Integer.intValue:()I
+            //   427: aload           12
+            //   429: invokevirtual   java/lang/Integer.intValue:()I
+            //   432: if_icmple       1118
+            //   435: aload           18
+            //   437: aload           17
+            //   439: aload           9
+            //   441: invokevirtual   java/lang/Integer.intValue:()I
+            //   444: invokevirtual   java/lang/String.indexOf:(Ljava/lang/String;I)I
+            //   447: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //   450: astore          10
+            //   452: aload           10
+            //   454: astore          8
+            //   456: aload           10
+            //   458: invokevirtual   java/lang/Integer.intValue:()I
+            //   461: aload           9
+            //   463: invokevirtual   java/lang/Integer.intValue:()I
+            //   466: if_icmplt       1118
+            //   469: aload           18
+            //   471: aload           9
+            //   473: invokevirtual   java/lang/Integer.intValue:()I
+            //   476: aload           10
+            //   478: invokevirtual   java/lang/Integer.intValue:()I
+            //   481: invokevirtual   java/lang/String.substring:(II)Ljava/lang/String;
             //   484: astore_3
             //   485: aload_3
-            //   486: invokestatic valueOf : (Ljava/lang/String;)Ljava/lang/Double;
+            //   486: invokestatic    java/lang/Double.valueOf:(Ljava/lang/String;)Ljava/lang/Double;
             //   489: astore_3
-            //   490: goto -> 498
+            //   490: goto            498
             //   493: dconst_0
-            //   494: invokestatic valueOf : (D)Ljava/lang/Double;
+            //   494: invokestatic    java/lang/Double.valueOf:(D)Ljava/lang/Double;
             //   497: astore_3
-            //   498: aload #10
-            //   500: invokevirtual intValue : ()I
+            //   498: aload           10
+            //   500: invokevirtual   java/lang/Integer.intValue:()I
             //   503: iconst_1
             //   504: iadd
-            //   505: invokestatic valueOf : (I)Ljava/lang/Integer;
-            //   508: astore #9
-            //   510: aload #10
-            //   512: astore #8
-            //   514: goto -> 517
-            //   517: aload #8
-            //   519: astore #10
-            //   521: aload #9
-            //   523: invokevirtual intValue : ()I
-            //   526: aload #8
-            //   528: invokevirtual intValue : ()I
-            //   531: if_icmple -> 1121
-            //   534: aload #18
-            //   536: aload #17
-            //   538: aload #9
-            //   540: invokevirtual intValue : ()I
-            //   543: invokevirtual indexOf : (Ljava/lang/String;I)I
-            //   546: invokestatic valueOf : (I)Ljava/lang/Integer;
-            //   549: astore #8
-            //   551: aload #8
-            //   553: astore #10
-            //   555: aload #8
-            //   557: invokevirtual intValue : ()I
-            //   560: aload #9
-            //   562: invokevirtual intValue : ()I
-            //   565: if_icmplt -> 1121
-            //   568: aload #18
-            //   570: aload #9
-            //   572: invokevirtual intValue : ()I
-            //   575: aload #8
-            //   577: invokevirtual intValue : ()I
-            //   580: invokevirtual substring : (II)Ljava/lang/String;
+            //   505: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //   508: astore          9
+            //   510: aload           10
+            //   512: astore          8
+            //   514: goto            517
+            //   517: aload           8
+            //   519: astore          10
+            //   521: aload           9
+            //   523: invokevirtual   java/lang/Integer.intValue:()I
+            //   526: aload           8
+            //   528: invokevirtual   java/lang/Integer.intValue:()I
+            //   531: if_icmple       1121
+            //   534: aload           18
+            //   536: aload           17
+            //   538: aload           9
+            //   540: invokevirtual   java/lang/Integer.intValue:()I
+            //   543: invokevirtual   java/lang/String.indexOf:(Ljava/lang/String;I)I
+            //   546: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //   549: astore          8
+            //   551: aload           8
+            //   553: astore          10
+            //   555: aload           8
+            //   557: invokevirtual   java/lang/Integer.intValue:()I
+            //   560: aload           9
+            //   562: invokevirtual   java/lang/Integer.intValue:()I
+            //   565: if_icmplt       1121
+            //   568: aload           18
+            //   570: aload           9
+            //   572: invokevirtual   java/lang/Integer.intValue:()I
+            //   575: aload           8
+            //   577: invokevirtual   java/lang/Integer.intValue:()I
+            //   580: invokevirtual   java/lang/String.substring:(II)Ljava/lang/String;
             //   583: astore_1
             //   584: aload_1
-            //   585: invokestatic valueOf : (Ljava/lang/String;)Ljava/lang/Double;
+            //   585: invokestatic    java/lang/Double.valueOf:(Ljava/lang/String;)Ljava/lang/Double;
             //   588: astore_1
-            //   589: goto -> 597
+            //   589: goto            597
             //   592: dconst_0
-            //   593: invokestatic valueOf : (D)Ljava/lang/Double;
+            //   593: invokestatic    java/lang/Double.valueOf:(D)Ljava/lang/Double;
             //   596: astore_1
-            //   597: aload #8
-            //   599: invokevirtual intValue : ()I
+            //   597: aload           8
+            //   599: invokevirtual   java/lang/Integer.intValue:()I
             //   602: iconst_1
             //   603: iadd
-            //   604: invokestatic valueOf : (I)Ljava/lang/Integer;
-            //   607: astore #11
-            //   609: aload #8
-            //   611: astore #10
-            //   613: goto -> 616
-            //   616: aload #10
-            //   618: astore #12
-            //   620: aload #5
-            //   622: astore #8
-            //   624: aload #11
-            //   626: astore #9
-            //   628: aload #11
-            //   630: invokevirtual intValue : ()I
-            //   633: aload #10
-            //   635: invokevirtual intValue : ()I
-            //   638: if_icmple -> 732
-            //   641: aload #18
-            //   643: aload #17
-            //   645: aload #11
-            //   647: invokevirtual intValue : ()I
-            //   650: invokevirtual indexOf : (Ljava/lang/String;I)I
-            //   653: invokestatic valueOf : (I)Ljava/lang/Integer;
-            //   656: astore #10
-            //   658: aload #10
-            //   660: astore #12
-            //   662: aload #5
-            //   664: astore #8
-            //   666: aload #11
-            //   668: astore #9
-            //   670: aload #10
-            //   672: invokevirtual intValue : ()I
-            //   675: aload #11
-            //   677: invokevirtual intValue : ()I
-            //   680: if_icmplt -> 732
-            //   683: aload #18
-            //   685: aload #11
-            //   687: invokevirtual intValue : ()I
-            //   690: aload #10
-            //   692: invokevirtual intValue : ()I
-            //   695: invokevirtual substring : (II)Ljava/lang/String;
-            //   698: astore #5
-            //   700: aload #5
-            //   702: invokestatic valueOf : (Ljava/lang/String;)Ljava/lang/Integer;
-            //   705: astore #8
-            //   707: goto -> 716
+            //   604: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //   607: astore          11
+            //   609: aload           8
+            //   611: astore          10
+            //   613: goto            616
+            //   616: aload           10
+            //   618: astore          12
+            //   620: aload           5
+            //   622: astore          8
+            //   624: aload           11
+            //   626: astore          9
+            //   628: aload           11
+            //   630: invokevirtual   java/lang/Integer.intValue:()I
+            //   633: aload           10
+            //   635: invokevirtual   java/lang/Integer.intValue:()I
+            //   638: if_icmple       732
+            //   641: aload           18
+            //   643: aload           17
+            //   645: aload           11
+            //   647: invokevirtual   java/lang/Integer.intValue:()I
+            //   650: invokevirtual   java/lang/String.indexOf:(Ljava/lang/String;I)I
+            //   653: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //   656: astore          10
+            //   658: aload           10
+            //   660: astore          12
+            //   662: aload           5
+            //   664: astore          8
+            //   666: aload           11
+            //   668: astore          9
+            //   670: aload           10
+            //   672: invokevirtual   java/lang/Integer.intValue:()I
+            //   675: aload           11
+            //   677: invokevirtual   java/lang/Integer.intValue:()I
+            //   680: if_icmplt       732
+            //   683: aload           18
+            //   685: aload           11
+            //   687: invokevirtual   java/lang/Integer.intValue:()I
+            //   690: aload           10
+            //   692: invokevirtual   java/lang/Integer.intValue:()I
+            //   695: invokevirtual   java/lang/String.substring:(II)Ljava/lang/String;
+            //   698: astore          5
+            //   700: aload           5
+            //   702: invokestatic    java/lang/Integer.valueOf:(Ljava/lang/String;)Ljava/lang/Integer;
+            //   705: astore          8
+            //   707: goto            716
             //   710: iconst_0
-            //   711: invokestatic valueOf : (I)Ljava/lang/Integer;
-            //   714: astore #8
-            //   716: aload #10
-            //   718: invokevirtual intValue : ()I
+            //   711: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //   714: astore          8
+            //   716: aload           10
+            //   718: invokevirtual   java/lang/Integer.intValue:()I
             //   721: iconst_1
             //   722: iadd
-            //   723: invokestatic valueOf : (I)Ljava/lang/Integer;
-            //   726: astore #9
-            //   728: aload #10
-            //   730: astore #12
-            //   732: aload #9
-            //   734: invokevirtual intValue : ()I
-            //   737: aload #12
-            //   739: invokevirtual intValue : ()I
-            //   742: if_icmple -> 1128
-            //   745: aload #18
-            //   747: aload #17
-            //   749: aload #9
-            //   751: invokevirtual intValue : ()I
-            //   754: invokevirtual indexOf : (Ljava/lang/String;I)I
-            //   757: invokestatic valueOf : (I)Ljava/lang/Integer;
-            //   760: astore #10
-            //   762: aload #10
-            //   764: astore #5
-            //   766: aload #10
-            //   768: invokevirtual intValue : ()I
-            //   771: aload #9
-            //   773: invokevirtual intValue : ()I
-            //   776: if_icmpge -> 789
-            //   779: aload #18
-            //   781: invokevirtual length : ()I
-            //   784: invokestatic valueOf : (I)Ljava/lang/Integer;
-            //   787: astore #5
-            //   789: aload #5
-            //   791: invokevirtual intValue : ()I
-            //   794: aload #9
-            //   796: invokevirtual intValue : ()I
-            //   799: if_icmplt -> 1128
-            //   802: aload #18
-            //   804: aload #9
-            //   806: invokevirtual intValue : ()I
-            //   809: aload #5
-            //   811: invokevirtual intValue : ()I
-            //   814: invokevirtual substring : (II)Ljava/lang/String;
-            //   817: astore #4
-            //   819: aload #4
-            //   821: invokestatic valueOf : (Ljava/lang/String;)Ljava/lang/Integer;
-            //   824: astore #4
-            //   826: goto -> 835
+            //   723: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //   726: astore          9
+            //   728: aload           10
+            //   730: astore          12
+            //   732: aload           9
+            //   734: invokevirtual   java/lang/Integer.intValue:()I
+            //   737: aload           12
+            //   739: invokevirtual   java/lang/Integer.intValue:()I
+            //   742: if_icmple       1128
+            //   745: aload           18
+            //   747: aload           17
+            //   749: aload           9
+            //   751: invokevirtual   java/lang/Integer.intValue:()I
+            //   754: invokevirtual   java/lang/String.indexOf:(Ljava/lang/String;I)I
+            //   757: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //   760: astore          10
+            //   762: aload           10
+            //   764: astore          5
+            //   766: aload           10
+            //   768: invokevirtual   java/lang/Integer.intValue:()I
+            //   771: aload           9
+            //   773: invokevirtual   java/lang/Integer.intValue:()I
+            //   776: if_icmpge       789
+            //   779: aload           18
+            //   781: invokevirtual   java/lang/String.length:()I
+            //   784: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //   787: astore          5
+            //   789: aload           5
+            //   791: invokevirtual   java/lang/Integer.intValue:()I
+            //   794: aload           9
+            //   796: invokevirtual   java/lang/Integer.intValue:()I
+            //   799: if_icmplt       1128
+            //   802: aload           18
+            //   804: aload           9
+            //   806: invokevirtual   java/lang/Integer.intValue:()I
+            //   809: aload           5
+            //   811: invokevirtual   java/lang/Integer.intValue:()I
+            //   814: invokevirtual   java/lang/String.substring:(II)Ljava/lang/String;
+            //   817: astore          4
+            //   819: aload           4
+            //   821: invokestatic    java/lang/Integer.valueOf:(Ljava/lang/String;)Ljava/lang/Integer;
+            //   824: astore          4
+            //   826: goto            835
             //   829: iconst_0
-            //   830: invokestatic valueOf : (I)Ljava/lang/Integer;
-            //   833: astore #4
-            //   835: aload #5
-            //   837: invokevirtual intValue : ()I
+            //   830: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //   833: astore          4
+            //   835: aload           5
+            //   837: invokevirtual   java/lang/Integer.intValue:()I
             //   840: iconst_1
             //   841: iadd
-            //   842: invokestatic valueOf : (I)Ljava/lang/Integer;
-            //   845: astore #9
-            //   847: goto -> 1128
-            //   850: aload #7
-            //   852: invokevirtual length : ()I
-            //   855: ifle -> 891
+            //   842: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //   845: astore          9
+            //   847: goto            1128
+            //   850: aload           7
+            //   852: invokevirtual   java/lang/String.length:()I
+            //   855: ifle            891
             //   858: aload_0
-            //   859: getfield this$0 : Lcom/erwinvoogt/soarcast/WelkomSoarCast;
-            //   862: invokestatic access$1700 : (Lcom/erwinvoogt/soarcast/WelkomSoarCast;)Ljava/util/ArrayList;
-            //   865: new com/erwinvoogt/soarcast/WelkomSoarCast$Locatie
+            //   859: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesLocaties.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
+            //   862: invokestatic    com/erwinvoogt/soarcast/WelkomSoarCast.access$1700:(Lcom/erwinvoogt/soarcast/WelkomSoarCast;)Ljava/util/ArrayList;
+            //   865: new             Lcom/erwinvoogt/soarcast/WelkomSoarCast$Locatie;
             //   868: dup
             //   869: aload_0
-            //   870: getfield this$0 : Lcom/erwinvoogt/soarcast/WelkomSoarCast;
-            //   873: aload #7
-            //   875: aload #10
+            //   870: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesLocaties.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
+            //   873: aload           7
+            //   875: aload           10
             //   877: aload_3
             //   878: aload_1
-            //   879: aload #5
-            //   881: aload #4
+            //   879: aload           5
+            //   881: aload           4
             //   883: aconst_null
-            //   884: invokespecial <init> : (Lcom/erwinvoogt/soarcast/WelkomSoarCast;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Double;Ljava/lang/Double;Ljava/lang/Integer;Ljava/lang/Integer;Lcom/erwinvoogt/soarcast/WelkomSoarCast$1;)V
-            //   887: invokevirtual add : (Ljava/lang/Object;)Z
+            //   884: invokespecial   com/erwinvoogt/soarcast/WelkomSoarCast$Locatie.<init>:(Lcom/erwinvoogt/soarcast/WelkomSoarCast;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Double;Ljava/lang/Double;Ljava/lang/Integer;Ljava/lang/Integer;Lcom/erwinvoogt/soarcast/WelkomSoarCast$1;)V
+            //   887: invokevirtual   java/util/ArrayList.add:(Ljava/lang/Object;)Z
             //   890: pop
-            //   891: aload #15
-            //   893: invokevirtual intValue : ()I
+            //   891: aload           15
+            //   893: invokevirtual   java/lang/Integer.intValue:()I
             //   896: iconst_1
             //   897: iadd
-            //   898: invokestatic valueOf : (I)Ljava/lang/Integer;
-            //   901: astore #15
-            //   903: aload #10
-            //   905: astore #8
-            //   907: goto -> 211
-            //   910: aload #13
-            //   912: ifnull -> 920
-            //   915: aload #13
-            //   917: invokevirtual disconnect : ()V
-            //   920: aload #14
-            //   922: ifnull -> 945
-            //   925: aload #14
-            //   927: invokevirtual close : ()V
-            //   930: aload #15
+            //   898: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //   901: astore          15
+            //   903: aload           10
+            //   905: astore          8
+            //   907: goto            211
+            //   910: aload           13
+            //   912: ifnull          920
+            //   915: aload           13
+            //   917: invokevirtual   java/net/HttpURLConnection.disconnect:()V
+            //   920: aload           14
+            //   922: ifnull          945
+            //   925: aload           14
+            //   927: invokevirtual   java/io/BufferedReader.close:()V
+            //   930: aload           15
             //   932: areturn
             //   933: astore_1
             //   934: aload_0
-            //   935: getfield LOG_TAG : Ljava/lang/String;
-            //   938: ldc 'Error closing stream'
+            //   935: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesLocaties.LOG_TAG:Ljava/lang/String;
+            //   938: ldc             "Error closing stream"
             //   940: aload_1
-            //   941: invokestatic e : (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
+            //   941: invokestatic    android/util/Log.e:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
             //   944: pop
-            //   945: aload #15
+            //   945: aload           15
             //   947: areturn
             //   948: astore_3
-            //   949: aload #14
+            //   949: aload           14
             //   951: astore_1
-            //   952: goto -> 965
+            //   952: goto            965
             //   955: astore_3
-            //   956: aload #14
+            //   956: aload           14
             //   958: astore_1
-            //   959: goto -> 977
+            //   959: goto            977
             //   962: astore_3
             //   963: aconst_null
             //   964: astore_1
             //   965: aload_3
-            //   966: astore #4
-            //   968: aload #13
+            //   966: astore          4
+            //   968: aload           13
             //   970: astore_3
-            //   971: goto -> 1054
+            //   971: goto            1054
             //   974: astore_3
             //   975: aconst_null
             //   976: astore_1
             //   977: aload_3
-            //   978: astore #4
-            //   980: aload #13
+            //   978: astore          4
+            //   980: aload           13
             //   982: astore_3
-            //   983: goto -> 1000
+            //   983: goto            1000
             //   986: astore_1
             //   987: aconst_null
-            //   988: astore #5
-            //   990: aload #4
+            //   988: astore          5
+            //   990: aload           4
             //   992: astore_3
-            //   993: goto -> 1060
-            //   996: astore #4
+            //   993: goto            1060
+            //   996: astore          4
             //   998: aconst_null
             //   999: astore_1
-            //   1000: aload_0
-            //   1001: getfield LOG_TAG : Ljava/lang/String;
-            //   1004: ldc 'Error '
-            //   1006: aload #4
-            //   1008: invokestatic e : (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
-            //   1011: pop
-            //   1012: iconst_m1
-            //   1013: invokestatic valueOf : (I)Ljava/lang/Integer;
-            //   1016: astore #4
-            //   1018: aload_3
-            //   1019: ifnull -> 1026
-            //   1022: aload_3
-            //   1023: invokevirtual disconnect : ()V
-            //   1026: aload_1
-            //   1027: ifnull -> 1049
-            //   1030: aload_1
-            //   1031: invokevirtual close : ()V
-            //   1034: aload #4
-            //   1036: areturn
-            //   1037: astore_1
-            //   1038: aload_0
-            //   1039: getfield LOG_TAG : Ljava/lang/String;
-            //   1042: ldc 'Error closing stream'
-            //   1044: aload_1
-            //   1045: invokestatic e : (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
-            //   1048: pop
-            //   1049: aload #4
-            //   1051: areturn
-            //   1052: astore #4
-            //   1054: aload_1
-            //   1055: astore #5
-            //   1057: aload #4
-            //   1059: astore_1
-            //   1060: aload_3
-            //   1061: ifnull -> 1068
-            //   1064: aload_3
-            //   1065: invokevirtual disconnect : ()V
-            //   1068: aload #5
-            //   1070: ifnull -> 1093
-            //   1073: aload #5
-            //   1075: invokevirtual close : ()V
-            //   1078: goto -> 1093
-            //   1081: astore_3
-            //   1082: aload_0
-            //   1083: getfield LOG_TAG : Ljava/lang/String;
-            //   1086: ldc 'Error closing stream'
-            //   1088: aload_3
-            //   1089: invokestatic e : (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
-            //   1092: pop
-            //   1093: aload_1
-            //   1094: athrow
-            //   1095: astore #6
-            //   1097: goto -> 392
-            //   1100: astore_3
-            //   1101: goto -> 493
-            //   1104: astore_1
-            //   1105: goto -> 592
-            //   1108: astore #5
-            //   1110: goto -> 710
-            //   1113: astore #4
-            //   1115: goto -> 829
-            //   1118: goto -> 517
-            //   1121: aload #9
-            //   1123: astore #11
-            //   1125: goto -> 616
-            //   1128: aload #6
-            //   1130: astore #10
-            //   1132: aload #8
-            //   1134: astore #5
-            //   1136: aload #9
-            //   1138: astore #6
-            //   1140: goto -> 850
-            //   1143: aload #8
-            //   1145: astore #10
-            //   1147: goto -> 850
-            // Exception table:
-            //   from	to	target	type
-            //   89	105	996	java/io/IOException
-            //   89	105	986	finally
-            //   105	123	974	java/io/IOException
-            //   105	123	962	finally
-            //   142	159	974	java/io/IOException
-            //   142	159	962	finally
-            //   163	211	955	java/io/IOException
-            //   163	211	948	finally
-            //   211	218	955	java/io/IOException
-            //   211	218	948	finally
-            //   223	243	955	java/io/IOException
-            //   223	243	948	finally
-            //   247	280	955	java/io/IOException
-            //   247	280	948	finally
-            //   280	286	955	java/io/IOException
-            //   280	286	948	finally
-            //   306	332	955	java/io/IOException
-            //   306	332	948	finally
-            //   348	378	955	java/io/IOException
-            //   348	378	948	finally
-            //   378	385	1095	java/lang/NumberFormatException
-            //   378	385	955	java/io/IOException
-            //   378	385	948	finally
-            //   392	398	955	java/io/IOException
-            //   392	398	948	finally
-            //   402	414	955	java/io/IOException
-            //   402	414	948	finally
-            //   422	452	955	java/io/IOException
-            //   422	452	948	finally
-            //   456	485	955	java/io/IOException
-            //   456	485	948	finally
-            //   485	490	1100	java/lang/NumberFormatException
-            //   485	490	955	java/io/IOException
-            //   485	490	948	finally
-            //   493	498	955	java/io/IOException
-            //   493	498	948	finally
-            //   498	510	955	java/io/IOException
-            //   498	510	948	finally
-            //   521	551	955	java/io/IOException
-            //   521	551	948	finally
-            //   555	584	955	java/io/IOException
-            //   555	584	948	finally
-            //   584	589	1104	java/lang/NumberFormatException
-            //   584	589	955	java/io/IOException
-            //   584	589	948	finally
-            //   592	597	955	java/io/IOException
-            //   592	597	948	finally
-            //   597	609	955	java/io/IOException
-            //   597	609	948	finally
-            //   628	658	955	java/io/IOException
-            //   628	658	948	finally
-            //   670	700	955	java/io/IOException
-            //   670	700	948	finally
-            //   700	707	1108	java/lang/NumberFormatException
-            //   700	707	955	java/io/IOException
-            //   700	707	948	finally
-            //   710	716	955	java/io/IOException
-            //   710	716	948	finally
-            //   716	728	955	java/io/IOException
-            //   716	728	948	finally
-            //   732	762	955	java/io/IOException
-            //   732	762	948	finally
-            //   766	789	955	java/io/IOException
-            //   766	789	948	finally
-            //   789	819	955	java/io/IOException
-            //   789	819	948	finally
-            //   819	826	1113	java/lang/NumberFormatException
-            //   819	826	955	java/io/IOException
-            //   819	826	948	finally
-            //   829	835	955	java/io/IOException
-            //   829	835	948	finally
-            //   835	847	955	java/io/IOException
-            //   835	847	948	finally
-            //   850	891	955	java/io/IOException
-            //   850	891	948	finally
-            //   891	903	955	java/io/IOException
-            //   891	903	948	finally
-            //   925	930	933	java/io/IOException
-            //   1000	1018	1052	finally
-            //   1030	1034	1037	java/io/IOException
-            //   1073	1078	1081	java/io/IOException
+            //  1000: aload_0
+            //  1001: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesLocaties.LOG_TAG:Ljava/lang/String;
+            //  1004: ldc             "Error "
+            //  1006: aload           4
+            //  1008: invokestatic    android/util/Log.e:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
+            //  1011: pop
+            //  1012: iconst_m1
+            //  1013: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //  1016: astore          4
+            //  1018: aload_3
+            //  1019: ifnull          1026
+            //  1022: aload_3
+            //  1023: invokevirtual   java/net/HttpURLConnection.disconnect:()V
+            //  1026: aload_1
+            //  1027: ifnull          1049
+            //  1030: aload_1
+            //  1031: invokevirtual   java/io/BufferedReader.close:()V
+            //  1034: aload           4
+            //  1036: areturn
+            //  1037: astore_1
+            //  1038: aload_0
+            //  1039: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesLocaties.LOG_TAG:Ljava/lang/String;
+            //  1042: ldc             "Error closing stream"
+            //  1044: aload_1
+            //  1045: invokestatic    android/util/Log.e:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
+            //  1048: pop
+            //  1049: aload           4
+            //  1051: areturn
+            //  1052: astore          4
+            //  1054: aload_1
+            //  1055: astore          5
+            //  1057: aload           4
+            //  1059: astore_1
+            //  1060: aload_3
+            //  1061: ifnull          1068
+            //  1064: aload_3
+            //  1065: invokevirtual   java/net/HttpURLConnection.disconnect:()V
+            //  1068: aload           5
+            //  1070: ifnull          1093
+            //  1073: aload           5
+            //  1075: invokevirtual   java/io/BufferedReader.close:()V
+            //  1078: goto            1093
+            //  1081: astore_3
+            //  1082: aload_0
+            //  1083: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesLocaties.LOG_TAG:Ljava/lang/String;
+            //  1086: ldc             "Error closing stream"
+            //  1088: aload_3
+            //  1089: invokestatic    android/util/Log.e:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
+            //  1092: pop
+            //  1093: aload_1
+            //  1094: athrow
+            //  1095: astore          6
+            //  1097: goto            392
+            //  1100: astore_3
+            //  1101: goto            493
+            //  1104: astore_1
+            //  1105: goto            592
+            //  1108: astore          5
+            //  1110: goto            710
+            //  1113: astore          4
+            //  1115: goto            829
+            //  1118: goto            517
+            //  1121: aload           9
+            //  1123: astore          11
+            //  1125: goto            616
+            //  1128: aload           6
+            //  1130: astore          10
+            //  1132: aload           8
+            //  1134: astore          5
+            //  1136: aload           9
+            //  1138: astore          6
+            //  1140: goto            850
+            //  1143: aload           8
+            //  1145: astore          10
+            //  1147: goto            850
+            //    Exceptions:
+            //  Try           Handler
+            //  Start  End    Start  End    Type
+            //  -----  -----  -----  -----  ---------------------------------
+            //  89     105    996    1000   Ljava/io/IOException;
+            //  89     105    986    996    Any
+            //  105    123    974    977    Ljava/io/IOException;
+            //  105    123    962    965    Any
+            //  142    159    974    977    Ljava/io/IOException;
+            //  142    159    962    965    Any
+            //  163    211    955    962    Ljava/io/IOException;
+            //  163    211    948    955    Any
+            //  211    218    955    962    Ljava/io/IOException;
+            //  211    218    948    955    Any
+            //  223    243    955    962    Ljava/io/IOException;
+            //  223    243    948    955    Any
+            //  247    280    955    962    Ljava/io/IOException;
+            //  247    280    948    955    Any
+            //  280    286    955    962    Ljava/io/IOException;
+            //  280    286    948    955    Any
+            //  306    332    955    962    Ljava/io/IOException;
+            //  306    332    948    955    Any
+            //  348    378    955    962    Ljava/io/IOException;
+            //  348    378    948    955    Any
+            //  378    385    1095   402    Ljava/lang/NumberFormatException;
+            //  378    385    955    962    Ljava/io/IOException;
+            //  378    385    948    955    Any
+            //  392    398    955    962    Ljava/io/IOException;
+            //  392    398    948    955    Any
+            //  402    414    955    962    Ljava/io/IOException;
+            //  402    414    948    955    Any
+            //  422    452    955    962    Ljava/io/IOException;
+            //  422    452    948    955    Any
+            //  456    485    955    962    Ljava/io/IOException;
+            //  456    485    948    955    Any
+            //  485    490    1100   498    Ljava/lang/NumberFormatException;
+            //  485    490    955    962    Ljava/io/IOException;
+            //  485    490    948    955    Any
+            //  493    498    955    962    Ljava/io/IOException;
+            //  493    498    948    955    Any
+            //  498    510    955    962    Ljava/io/IOException;
+            //  498    510    948    955    Any
+            //  521    551    955    962    Ljava/io/IOException;
+            //  521    551    948    955    Any
+            //  555    584    955    962    Ljava/io/IOException;
+            //  555    584    948    955    Any
+            //  584    589    1104   597    Ljava/lang/NumberFormatException;
+            //  584    589    955    962    Ljava/io/IOException;
+            //  584    589    948    955    Any
+            //  592    597    955    962    Ljava/io/IOException;
+            //  592    597    948    955    Any
+            //  597    609    955    962    Ljava/io/IOException;
+            //  597    609    948    955    Any
+            //  628    658    955    962    Ljava/io/IOException;
+            //  628    658    948    955    Any
+            //  670    700    955    962    Ljava/io/IOException;
+            //  670    700    948    955    Any
+            //  700    707    1108   716    Ljava/lang/NumberFormatException;
+            //  700    707    955    962    Ljava/io/IOException;
+            //  700    707    948    955    Any
+            //  710    716    955    962    Ljava/io/IOException;
+            //  710    716    948    955    Any
+            //  716    728    955    962    Ljava/io/IOException;
+            //  716    728    948    955    Any
+            //  732    762    955    962    Ljava/io/IOException;
+            //  732    762    948    955    Any
+            //  766    789    955    962    Ljava/io/IOException;
+            //  766    789    948    955    Any
+            //  789    819    955    962    Ljava/io/IOException;
+            //  789    819    948    955    Any
+            //  819    826    1113   835    Ljava/lang/NumberFormatException;
+            //  819    826    955    962    Ljava/io/IOException;
+            //  819    826    948    955    Any
+            //  829    835    955    962    Ljava/io/IOException;
+            //  829    835    948    955    Any
+            //  835    847    955    962    Ljava/io/IOException;
+            //  835    847    948    955    Any
+            //  850    891    955    962    Ljava/io/IOException;
+            //  850    891    948    955    Any
+            //  891    903    955    962    Ljava/io/IOException;
+            //  891    903    948    955    Any
+            //  925    930    933    945    Ljava/io/IOException;
+            //  1000   1018   1052   1054   Any
+            //  1030   1034   1037   1049   Ljava/io/IOException;
+            //  1073   1078   1081   1093   Ljava/io/IOException;
+            //
+            // The error that occurred was:
+            //
+            // java.lang.IndexOutOfBoundsException: Index 540 out of bounds for length 540
+            //     at java.base/jdk.internal.util.Preconditions.outOfBounds(Preconditions.java:64)
+            //     at java.base/jdk.internal.util.Preconditions.outOfBoundsCheckIndex(Preconditions.java:70)
+            //     at java.base/jdk.internal.util.Preconditions.checkIndex(Preconditions.java:248)
+            //     at java.base/java.util.Objects.checkIndex(Objects.java:372)
+            //     at java.base/java.util.ArrayList.get(ArrayList.java:458)
+            //     at com.strobel.decompiler.ast.AstBuilder.convertToAst(AstBuilder.java:3321)
+            //     at com.strobel.decompiler.ast.AstBuilder.build(AstBuilder.java:113)
+            //     at com.strobel.decompiler.languages.java.ast.AstMethodBodyBuilder.createMethodBody(AstMethodBodyBuilder.java:211)
+            //     at com.strobel.decompiler.languages.java.ast.AstMethodBodyBuilder.createMethodBody(AstMethodBodyBuilder.java:99)
+            //     at com.strobel.decompiler.languages.java.ast.AstBuilder.createMethodBody(AstBuilder.java:782)
+            //     at com.strobel.decompiler.languages.java.ast.AstBuilder.createMethod(AstBuilder.java:675)
+            //     at com.strobel.decompiler.languages.java.ast.AstBuilder.addTypeMembers(AstBuilder.java:552)
+            //     at com.strobel.decompiler.languages.java.ast.AstBuilder.createTypeCore(AstBuilder.java:519)
+            //     at com.strobel.decompiler.languages.java.ast.AstBuilder.createTypeNoCache(AstBuilder.java:161)
+            //     at com.strobel.decompiler.languages.java.ast.AstBuilder.addTypeMembers(AstBuilder.java:576)
+            //     at com.strobel.decompiler.languages.java.ast.AstBuilder.createTypeCore(AstBuilder.java:519)
+            //     at com.strobel.decompiler.languages.java.ast.AstBuilder.createTypeNoCache(AstBuilder.java:161)
+            //     at com.strobel.decompiler.languages.java.ast.AstBuilder.createType(AstBuilder.java:150)
+            //     at com.strobel.decompiler.languages.java.ast.AstBuilder.addType(AstBuilder.java:125)
+            //     at com.strobel.decompiler.languages.java.JavaLanguage.buildAst(JavaLanguage.java:71)
+            //     at com.strobel.decompiler.languages.java.JavaLanguage.decompileType(JavaLanguage.java:59)
+            //     at com.strobel.decompiler.DecompilerDriver.decompileType(DecompilerDriver.java:330)
+            //     at com.strobel.decompiler.DecompilerDriver.decompileJar(DecompilerDriver.java:251)
+            //     at com.strobel.decompiler.DecompilerDriver.main(DecompilerDriver.java:126)
+            //
+            throw new IllegalStateException("An error occurred while decompiling this method.");
         }
 
-        protected void onPostExecute(Integer param1Integer) {
-            if (param1Integer.intValue() > 0) {
-                WelkomSoarCast.access$2802(WelkomSoarCast.this, Integer.valueOf(WelkomSoarCast.this.mLocatie.size() - 1));
-                if (WelkomSoarCast.this.locIndex.intValue() > WelkomSoarCast.this.locIndexMax.intValue())
-                    WelkomSoarCast.access$1602(WelkomSoarCast.this, Integer.valueOf(WelkomSoarCast.this.locIndexMax.intValue() / 2));
+        protected void onPostExecute(final Integer n) {
+            if (n > 0) {
+                WelkomSoarCast.this.locIndexMax = WelkomSoarCast.this.mLocatie.size() - 1;
+                if (WelkomSoarCast.this.locIndex > WelkomSoarCast.this.locIndexMax) {
+                    WelkomSoarCast.this.locIndex = WelkomSoarCast.this.locIndexMax / 2;
+                }
                 WelkomSoarCast.this.updateLocatieWindRichting();
                 return;
             }
-            Toast.makeText(WelkomSoarCast.this.getBaseContext(), WelkomSoarCast.this.getResources().getString(2131427361), 0).show();
+            Toast.makeText(WelkomSoarCast.this.getBaseContext(), (CharSequence)WelkomSoarCast.this.getResources().getString(R.string.check_connection), Toast.LENGTH_SHORT).show();
         }
     }
 
-    private class LeesRichting extends AsyncTask<Integer, Void, Integer> {
-        private final String LOG_TAG = LeesRichting.class.getSimpleName();
+    private class LeesRichting extends AsyncTask<Integer, Void, Integer>
+    {
+        private final String LOG_TAG;
 
-        private LeesRichting() {}
-
-        protected Integer doInBackground(Integer... param1VarArgs) {
-            Integer integer = param1VarArgs[0];
-            String str = WelkomSoarCast.this.getResources().getString(2131427328);
-            byte b = 0;
-            Double double_3 = Double.valueOf(0.0D);
-            Double double_2 = Double.valueOf(0.0D);
-            Double double_1 = Double.valueOf(0.0D);
-            while (true) {
-                if (b < 4) {
-                    StringBuilder stringBuilder = new StringBuilder();
-                    stringBuilder.append(WelkomSoarCast.this.getResources().getString(2131427396));
-                    stringBuilder.append(WelkomSoarCast.this.getResources().getString(2131427381));
-                    String str1 = Uri.parse(stringBuilder.toString()).buildUpon().appendQueryParameter(WelkomSoarCast.this.getResources().getString(2131427387), WelkomSoarCast.this.getResources().getString(2131427374)).appendQueryParameter(WelkomSoarCast.this.getResources().getString(2131427385), integer.toString()).appendQueryParameter(WelkomSoarCast.this.getResources().getString(2131427384), WelkomSoarCast.this.queryDag[b]).appendQueryParameter(WelkomSoarCast.this.getResources().getString(2131427386), WelkomSoarCast.this.getResources().getString(2131427373)).appendQueryParameter(WelkomSoarCast.this.getResources().getString(2131427382), WelkomSoarCast.this.getResources().getString(2131427371)).appendQueryParameter(WelkomSoarCast.this.getResources().getString(2131427383), "").build().toString();
-                    try {
-
-                    } catch (IOException iOException) {
-
-                    } finally {
-                        str = null;
-                        double_1 = null;
-                        str1 = null;
-                    }
-                } else {
-                    if (WelkomSoarCast.this.mRichting.size() < 1) {
-                        WelkomSoarCast.this.mRichting.add(new WelkomSoarCast.Richting(Long.valueOf(1512514800L), Integer.valueOf(0), integer, double_2, double_1, double_3));
-                        return Integer.valueOf(-2);
-                    }
-                    return Integer.valueOf(1);
-                }
-                double_1 = null;
-                continue;
-            }
+        private LeesRichting() {
+            this.LOG_TAG = LeesRichting.class.getSimpleName();
         }
 
-        protected void onPostExecute(Integer param1Integer) {
-            if (param1Integer.intValue() < 1) {
-                if (param1Integer.intValue() == -2) {
-                    Toast.makeText(WelkomSoarCast.this.getBaseContext(), WelkomSoarCast.this.getResources().getString(2131427370), 0).show();
-                } else {
-                    Toast.makeText(WelkomSoarCast.this.getBaseContext(), WelkomSoarCast.this.getResources().getString(2131427361), 0).show();
+        protected Integer doInBackground(final Integer... p0) {
+            //
+            // This method could not be decompiled.
+            //
+            // Original Bytecode:
+            //
+            //     1: iconst_0
+            //     2: aaload
+            //     3: astore          18
+            //     5: aload_0
+            //     6: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesRichting.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
+            //     9: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
+            //    12: ldc             R.string.csv_separator
+            //    14: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
+            //    17: astore_1
+            //    18: iconst_0
+            //    19: istore_2
+            //    20: dconst_0
+            //    21: invokestatic    java/lang/Double.valueOf:(D)Ljava/lang/Double;
+            //    24: astore          9
+            //    26: dconst_0
+            //    27: invokestatic    java/lang/Double.valueOf:(D)Ljava/lang/Double;
+            //    30: astore          8
+            //    32: dconst_0
+            //    33: invokestatic    java/lang/Double.valueOf:(D)Ljava/lang/Double;
+            //    36: astore          6
+            //    38: iload_2
+            //    39: iconst_4
+            //    40: if_icmpge       1165
+            //    43: new             Ljava/lang/StringBuilder;
+            //    46: dup
+            //    47: invokespecial   java/lang/StringBuilder.<init>:()V
+            //    50: astore          7
+            //    52: aload           7
+            //    54: aload_0
+            //    55: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesRichting.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
+            //    58: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
+            //    61: ldc             2131427396
+            //    63: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
+            //    66: invokevirtual   java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+            //    69: pop
+            //    70: aload           7
+            //    72: aload_0
+            //    73: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesRichting.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
+            //    76: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
+            //    79: ldc             2131427381
+            //    81: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
+            //    84: invokevirtual   java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+            //    87: pop
+            //    88: aload           7
+            //    90: invokevirtual   java/lang/StringBuilder.toString:()Ljava/lang/String;
+            //    93: invokestatic    android/net/Uri.parse:(Ljava/lang/String;)Landroid/net/Uri;
+            //    96: invokevirtual   android/net/Uri.buildUpon:()Landroid/net/Uri.Builder;
+            //    99: aload_0
+            //   100: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesRichting.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
+            //   103: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
+            //   106: ldc             2131427387
+            //   108: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
+            //   111: aload_0
+            //   112: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesRichting.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
+            //   115: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
+            //   118: ldc             2131427374
+            //   120: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
+            //   123: invokevirtual   android/net/Uri.Builder.appendQueryParameter:(Ljava/lang/String;Ljava/lang/String;)Landroid/net/Uri.Builder;
+            //   126: aload_0
+            //   127: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesRichting.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
+            //   130: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
+            //   133: ldc             2131427385
+            //   135: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
+            //   138: aload           18
+            //   140: invokevirtual   java/lang/Integer.toString:()Ljava/lang/String;
+            //   143: invokevirtual   android/net/Uri.Builder.appendQueryParameter:(Ljava/lang/String;Ljava/lang/String;)Landroid/net/Uri.Builder;
+            //   146: aload_0
+            //   147: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesRichting.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
+            //   150: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
+            //   153: ldc             2131427384
+            //   155: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
+            //   158: aload_0
+            //   159: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesRichting.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
+            //   162: invokestatic    com/erwinvoogt/soarcast/WelkomSoarCast.access$4500:(Lcom/erwinvoogt/soarcast/WelkomSoarCast;)[Ljava/lang/String;
+            //   165: iload_2
+            //   166: aaload
+            //   167: invokevirtual   android/net/Uri.Builder.appendQueryParameter:(Ljava/lang/String;Ljava/lang/String;)Landroid/net/Uri.Builder;
+            //   170: aload_0
+            //   171: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesRichting.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
+            //   174: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
+            //   177: ldc             2131427386
+            //   179: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
+            //   182: aload_0
+            //   183: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesRichting.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
+            //   186: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
+            //   189: ldc             2131427373
+            //   191: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
+            //   194: invokevirtual   android/net/Uri.Builder.appendQueryParameter:(Ljava/lang/String;Ljava/lang/String;)Landroid/net/Uri.Builder;
+            //   197: aload_0
+            //   198: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesRichting.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
+            //   201: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
+            //   204: ldc             2131427382
+            //   206: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
+            //   209: aload_0
+            //   210: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesRichting.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
+            //   213: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
+            //   216: ldc             2131427371
+            //   218: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
+            //   221: invokevirtual   android/net/Uri.Builder.appendQueryParameter:(Ljava/lang/String;Ljava/lang/String;)Landroid/net/Uri.Builder;
+            //   224: aload_0
+            //   225: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesRichting.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
+            //   228: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
+            //   231: ldc             2131427383
+            //   233: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
+            //   236: ldc             ""
+            //   238: invokevirtual   android/net/Uri.Builder.appendQueryParameter:(Ljava/lang/String;Ljava/lang/String;)Landroid/net/Uri.Builder;
+            //   241: invokevirtual   android/net/Uri.Builder.build:()Landroid/net/Uri;
+            //   244: invokevirtual   android/net/Uri.toString:()Ljava/lang/String;
+            //   247: astore          7
+            //   249: new             Ljava/net/URL;
+            //   252: dup
+            //   253: aload           7
+            //   255: invokespecial   java/net/URL.<init>:(Ljava/lang/String;)V
+            //   258: invokevirtual   java/net/URL.openConnection:()Ljava/net/URLConnection;
+            //   261: checkcast       Ljava/net/HttpURLConnection;
+            //   264: astore          7
+            //   266: aload           7
+            //   268: ldc             "GET"
+            //   270: invokevirtual   java/net/HttpURLConnection.setRequestMethod:(Ljava/lang/String;)V
+            //   273: aload           7
+            //   275: invokevirtual   java/net/HttpURLConnection.connect:()V
+            //   278: aload           7
+            //   280: invokevirtual   java/net/HttpURLConnection.getInputStream:()Ljava/io/InputStream;
+            //   283: astore          10
+            //   285: aload           10
+            //   287: ifnull          979
+            //   290: new             Ljava/io/BufferedReader;
+            //   293: dup
+            //   294: new             Ljava/io/InputStreamReader;
+            //   297: dup
+            //   298: aload           10
+            //   300: invokespecial   java/io/InputStreamReader.<init>:(Ljava/io/InputStream;)V
+            //   303: invokespecial   java/io/BufferedReader.<init>:(Ljava/io/Reader;)V
+            //   306: astore          11
+            //   308: aload           11
+            //   310: astore          12
+            //   312: aload           11
+            //   314: astore          13
+            //   316: bipush          7
+            //   318: anewarray       Ljava/lang/Integer;
+            //   321: dup
+            //   322: iconst_0
+            //   323: iconst_m1
+            //   324: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //   327: aastore
+            //   328: dup
+            //   329: iconst_1
+            //   330: iconst_m1
+            //   331: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //   334: aastore
+            //   335: dup
+            //   336: iconst_2
+            //   337: iconst_m1
+            //   338: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //   341: aastore
+            //   342: dup
+            //   343: iconst_3
+            //   344: iconst_m1
+            //   345: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //   348: aastore
+            //   349: dup
+            //   350: iconst_4
+            //   351: iconst_m1
+            //   352: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //   355: aastore
+            //   356: dup
+            //   357: iconst_5
+            //   358: iconst_m1
+            //   359: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //   362: aastore
+            //   363: dup
+            //   364: bipush          6
+            //   366: iconst_m1
+            //   367: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //   370: aastore
+            //   371: astore          15
+            //   373: aload           11
+            //   375: astore          12
+            //   377: aload           11
+            //   379: astore          13
+            //   381: iconst_0
+            //   382: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //   385: astore          14
+            //   387: aload_1
+            //   388: astore          10
+            //   390: aload           11
+            //   392: astore_1
+            //   393: aload           15
+            //   395: astore          11
+            //   397: aload_1
+            //   398: astore          12
+            //   400: aload_1
+            //   401: astore          13
+            //   403: aload_1
+            //   404: invokevirtual   java/io/BufferedReader.readLine:()Ljava/lang/String;
+            //   407: astore          19
+            //   409: aload           19
+            //   411: ifnull          942
+            //   414: aload_1
+            //   415: astore          12
+            //   417: aload_1
+            //   418: astore          13
+            //   420: aload           14
+            //   422: invokevirtual   java/lang/Integer.intValue:()I
+            //   425: istore_3
+            //   426: iload_3
+            //   427: ifne            473
+            //   430: aload_0
+            //   431: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesRichting.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
+            //   434: aload           19
+            //   436: invokestatic    com/erwinvoogt/soarcast/WelkomSoarCast.access$4600:(Lcom/erwinvoogt/soarcast/WelkomSoarCast;Ljava/lang/String;)[Ljava/lang/Integer;
+            //   439: astore          11
+            //   441: aload           11
+            //   443: iconst_0
+            //   444: aaload
+            //   445: invokevirtual   java/lang/Integer.intValue:()I
+            //   448: istore_3
+            //   449: iload_3
+            //   450: iconst_m1
+            //   451: if_icmpne       473
+            //   454: goto            942
+            //   457: astore          8
+            //   459: aload_1
+            //   460: astore          6
+            //   462: goto            957
+            //   465: astore          8
+            //   467: aload_1
+            //   468: astore          6
+            //   470: goto            969
+            //   473: aload_1
+            //   474: astore          12
+            //   476: aload_1
+            //   477: astore          13
+            //   479: aload           14
+            //   481: invokevirtual   java/lang/Integer.intValue:()I
+            //   484: ifle            1274
+            //   487: aload_1
+            //   488: astore          12
+            //   490: aload_1
+            //   491: astore          13
+            //   493: aload           19
+            //   495: invokevirtual   java/lang/String.length:()I
+            //   498: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //   501: astore          17
+            //   503: aload_1
+            //   504: astore          12
+            //   506: aload_1
+            //   507: astore          13
+            //   509: ldc2_w          -1.0
+            //   512: invokestatic    java/lang/Double.valueOf:(D)Ljava/lang/Double;
+            //   515: astore          8
+            //   517: aload_1
+            //   518: astore          12
+            //   520: aload_1
+            //   521: astore          13
+            //   523: ldc2_w          -1.0
+            //   526: invokestatic    java/lang/Double.valueOf:(D)Ljava/lang/Double;
+            //   529: astore          6
+            //   531: aload_1
+            //   532: astore          12
+            //   534: aload_1
+            //   535: astore          13
+            //   537: lconst_0
+            //   538: invokestatic    java/lang/Long.valueOf:(J)Ljava/lang/Long;
+            //   541: astore          15
+            //   543: aload_1
+            //   544: astore          12
+            //   546: aload_1
+            //   547: astore          13
+            //   549: iconst_0
+            //   550: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //   553: astore          16
+            //   555: aload_1
+            //   556: astore          12
+            //   558: aload_1
+            //   559: astore          13
+            //   561: ldc2_w          -1.0
+            //   564: invokestatic    java/lang/Double.valueOf:(D)Ljava/lang/Double;
+            //   567: astore          9
+            //   569: iconst_0
+            //   570: istore_3
+            //   571: aload_1
+            //   572: astore          12
+            //   574: aload_1
+            //   575: astore          13
+            //   577: aload           16
+            //   579: invokevirtual   java/lang/Integer.intValue:()I
+            //   582: istore          4
+            //   584: aload_1
+            //   585: astore          12
+            //   587: aload_1
+            //   588: astore          13
+            //   590: aload           17
+            //   592: invokevirtual   java/lang/Integer.intValue:()I
+            //   595: istore          5
+            //   597: iload           4
+            //   599: iload           5
+            //   601: if_icmpge       813
+            //   604: iload_3
+            //   605: iconst_4
+            //   606: if_icmpge       813
+            //   609: aload           19
+            //   611: aload           10
+            //   613: aload           16
+            //   615: invokevirtual   java/lang/Integer.intValue:()I
+            //   618: invokevirtual   java/lang/String.indexOf:(Ljava/lang/String;I)I
+            //   621: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //   624: astore          12
+            //   626: aload           12
+            //   628: astore          13
+            //   630: aload           12
+            //   632: invokevirtual   java/lang/Integer.intValue:()I
+            //   635: ifge            642
+            //   638: aload           17
+            //   640: astore          13
+            //   642: aload           19
+            //   644: aload           16
+            //   646: invokevirtual   java/lang/Integer.intValue:()I
+            //   649: aload           13
+            //   651: invokevirtual   java/lang/Integer.intValue:()I
+            //   654: invokevirtual   java/lang/String.substring:(II)Ljava/lang/String;
+            //   657: astore          12
+            //   659: aload           11
+            //   661: iload_3
+            //   662: aaload
+            //   663: invokevirtual   java/lang/Integer.intValue:()I
+            //   666: istore          4
+            //   668: iload           4
+            //   670: ifeq            774
+            //   673: iload           4
+            //   675: tableswitch {
+            //               14: 749
+            //               15: 728
+            //               16: 707
+            //          default: 700
+            //        }
+            //   700: aload           15
+            //   702: astore          12
+            //   704: goto            790
+            //   707: aload           12
+            //   709: invokestatic    java/lang/Double.valueOf:(Ljava/lang/String;)Ljava/lang/Double;
+            //   712: astore          6
+            //   714: goto            700
+            //   717: ldc2_w          -1.0
+            //   720: invokestatic    java/lang/Double.valueOf:(D)Ljava/lang/Double;
+            //   723: astore          6
+            //   725: goto            700
+            //   728: aload           12
+            //   730: invokestatic    java/lang/Double.valueOf:(Ljava/lang/String;)Ljava/lang/Double;
+            //   733: astore          8
+            //   735: goto            700
+            //   738: ldc2_w          -1.0
+            //   741: invokestatic    java/lang/Double.valueOf:(D)Ljava/lang/Double;
+            //   744: astore          8
+            //   746: goto            700
+            //   749: aload           12
+            //   751: invokestatic    java/lang/Double.valueOf:(Ljava/lang/String;)Ljava/lang/Double;
+            //   754: astore          9
+            //   756: goto            700
+            //   759: ldc2_w          -1.0
+            //   762: invokestatic    java/lang/Double.valueOf:(D)Ljava/lang/Double;
+            //   765: astore          9
+            //   767: aload           15
+            //   769: astore          12
+            //   771: goto            790
+            //   774: aload           12
+            //   776: invokestatic    java/lang/Long.valueOf:(Ljava/lang/String;)Ljava/lang/Long;
+            //   779: astore          12
+            //   781: goto            790
+            //   784: lconst_0
+            //   785: invokestatic    java/lang/Long.valueOf:(J)Ljava/lang/Long;
+            //   788: astore          12
+            //   790: iload_3
+            //   791: iconst_1
+            //   792: iadd
+            //   793: istore_3
+            //   794: aload           13
+            //   796: invokevirtual   java/lang/Integer.intValue:()I
+            //   799: iconst_1
+            //   800: iadd
+            //   801: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //   804: astore          16
+            //   806: aload           12
+            //   808: astore          15
+            //   810: goto            571
+            //   813: aload_1
+            //   814: astore          12
+            //   816: aload_1
+            //   817: astore          13
+            //   819: aload           15
+            //   821: invokevirtual   java/lang/Long.longValue:()J
+            //   824: lconst_0
+            //   825: lcmp
+            //   826: ifle            1251
+            //   829: aload_1
+            //   830: astore          12
+            //   832: aload_1
+            //   833: astore          13
+            //   835: aload_0
+            //   836: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesRichting.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
+            //   839: invokestatic    com/erwinvoogt/soarcast/WelkomSoarCast.access$2000:(Lcom/erwinvoogt/soarcast/WelkomSoarCast;)Ljava/util/ArrayList;
+            //   842: astore          16
+            //   844: aload_1
+            //   845: astore          12
+            //   847: aload_1
+            //   848: astore          13
+            //   850: aload_0
+            //   851: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesRichting.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
+            //   854: astore          17
+            //   856: aload           16
+            //   858: new             Lcom/erwinvoogt/soarcast/WelkomSoarCast$Richting;
+            //   861: dup
+            //   862: aload           17
+            //   864: aload           15
+            //   866: iload_2
+            //   867: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //   870: aload           18
+            //   872: aload           9
+            //   874: aload           8
+            //   876: aload           6
+            //   878: aconst_null
+            //   879: invokespecial   com/erwinvoogt/soarcast/WelkomSoarCast$Richting.<init>:(Lcom/erwinvoogt/soarcast/WelkomSoarCast;Ljava/lang/Long;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Double;Ljava/lang/Double;Ljava/lang/Double;Lcom/erwinvoogt/soarcast/WelkomSoarCast$1;)V
+            //   882: invokevirtual   java/util/ArrayList.add:(Ljava/lang/Object;)Z
+            //   885: pop
+            //   886: goto            1251
+            //   889: aload           14
+            //   891: invokevirtual   java/lang/Integer.intValue:()I
+            //   894: iconst_1
+            //   895: iadd
+            //   896: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //   899: astore          14
+            //   901: goto            397
+            //   904: astore          6
+            //   906: aload_1
+            //   907: astore          8
+            //   909: aload           6
+            //   911: astore_1
+            //   912: aload           8
+            //   914: astore          6
+            //   916: goto            1126
+            //   919: astore          6
+            //   921: aload           7
+            //   923: astore          8
+            //   925: aload_1
+            //   926: astore          9
+            //   928: aload           6
+            //   930: astore          7
+            //   932: aload           8
+            //   934: astore_1
+            //   935: aload           9
+            //   937: astore          6
+            //   939: goto            1064
+            //   942: aload_1
+            //   943: astore          11
+            //   945: aload           10
+            //   947: astore_1
+            //   948: goto            982
+            //   951: astore          8
+            //   953: aload           12
+            //   955: astore          6
+            //   957: aload           8
+            //   959: astore_1
+            //   960: goto            1126
+            //   963: astore          8
+            //   965: aload           13
+            //   967: astore          6
+            //   969: aload           7
+            //   971: astore_1
+            //   972: aload           8
+            //   974: astore          7
+            //   976: goto            1064
+            //   979: aconst_null
+            //   980: astore          11
+            //   982: aload           7
+            //   984: ifnull          992
+            //   987: aload           7
+            //   989: invokevirtual   java/net/HttpURLConnection.disconnect:()V
+            //   992: aload           11
+            //   994: ifnull          1019
+            //   997: aload           11
+            //   999: invokevirtual   java/io/BufferedReader.close:()V
+            //  1002: goto            1019
+            //  1005: astore          7
+            //  1007: aload_0
+            //  1008: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesRichting.LOG_TAG:Ljava/lang/String;
+            //  1011: ldc             "Error closing stream"
+            //  1013: aload           7
+            //  1015: invokestatic    android/util/Log.e:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
+            //  1018: pop
+            //  1019: iload_2
+            //  1020: iconst_1
+            //  1021: iadd
+            //  1022: istore_2
+            //  1023: goto            38
+            //  1026: astore_1
+            //  1027: aconst_null
+            //  1028: astore          6
+            //  1030: goto            1126
+            //  1033: astore_1
+            //  1034: aload           7
+            //  1036: astore          6
+            //  1038: aload_1
+            //  1039: astore          7
+            //  1041: aload           6
+            //  1043: astore_1
+            //  1044: goto            1061
+            //  1047: astore_1
+            //  1048: aconst_null
+            //  1049: astore          6
+            //  1051: aconst_null
+            //  1052: astore          7
+            //  1054: goto            1126
+            //  1057: astore          7
+            //  1059: aconst_null
+            //  1060: astore_1
+            //  1061: aconst_null
+            //  1062: astore          6
+            //  1064: aload_0
+            //  1065: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesRichting.LOG_TAG:Ljava/lang/String;
+            //  1068: ldc             "Error "
+            //  1070: aload           7
+            //  1072: invokestatic    android/util/Log.e:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
+            //  1075: pop
+            //  1076: iconst_m1
+            //  1077: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //  1080: astore          7
+            //  1082: aload_1
+            //  1083: ifnull          1090
+            //  1086: aload_1
+            //  1087: invokevirtual   java/net/HttpURLConnection.disconnect:()V
+            //  1090: aload           6
+            //  1092: ifnull          1115
+            //  1095: aload           6
+            //  1097: invokevirtual   java/io/BufferedReader.close:()V
+            //  1100: aload           7
+            //  1102: areturn
+            //  1103: astore_1
+            //  1104: aload_0
+            //  1105: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesRichting.LOG_TAG:Ljava/lang/String;
+            //  1108: ldc             "Error closing stream"
+            //  1110: aload_1
+            //  1111: invokestatic    android/util/Log.e:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
+            //  1114: pop
+            //  1115: aload           7
+            //  1117: areturn
+            //  1118: astore          8
+            //  1120: aload_1
+            //  1121: astore          7
+            //  1123: aload           8
+            //  1125: astore_1
+            //  1126: aload           7
+            //  1128: ifnull          1136
+            //  1131: aload           7
+            //  1133: invokevirtual   java/net/HttpURLConnection.disconnect:()V
+            //  1136: aload           6
+            //  1138: ifnull          1163
+            //  1141: aload           6
+            //  1143: invokevirtual   java/io/BufferedReader.close:()V
+            //  1146: goto            1163
+            //  1149: astore          6
+            //  1151: aload_0
+            //  1152: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesRichting.LOG_TAG:Ljava/lang/String;
+            //  1155: ldc             "Error closing stream"
+            //  1157: aload           6
+            //  1159: invokestatic    android/util/Log.e:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
+            //  1162: pop
+            //  1163: aload_1
+            //  1164: athrow
+            //  1165: aload_0
+            //  1166: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesRichting.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
+            //  1169: invokestatic    com/erwinvoogt/soarcast/WelkomSoarCast.access$2000:(Lcom/erwinvoogt/soarcast/WelkomSoarCast;)Ljava/util/ArrayList;
+            //  1172: invokevirtual   java/util/ArrayList.size:()I
+            //  1175: iconst_1
+            //  1176: if_icmpge       1226
+            //  1179: aload_0
+            //  1180: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesRichting.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
+            //  1183: invokestatic    com/erwinvoogt/soarcast/WelkomSoarCast.access$2000:(Lcom/erwinvoogt/soarcast/WelkomSoarCast;)Ljava/util/ArrayList;
+            //  1186: new             Lcom/erwinvoogt/soarcast/WelkomSoarCast$Richting;
+            //  1189: dup
+            //  1190: aload_0
+            //  1191: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesRichting.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
+            //  1194: ldc2_w          1512514800
+            //  1197: invokestatic    java/lang/Long.valueOf:(J)Ljava/lang/Long;
+            //  1200: iconst_0
+            //  1201: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //  1204: aload           18
+            //  1206: aload           8
+            //  1208: aload           6
+            //  1210: aload           9
+            //  1212: aconst_null
+            //  1213: invokespecial   com/erwinvoogt/soarcast/WelkomSoarCast$Richting.<init>:(Lcom/erwinvoogt/soarcast/WelkomSoarCast;Ljava/lang/Long;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Double;Ljava/lang/Double;Ljava/lang/Double;Lcom/erwinvoogt/soarcast/WelkomSoarCast$1;)V
+            //  1216: invokevirtual   java/util/ArrayList.add:(Ljava/lang/Object;)Z
+            //  1219: pop
+            //  1220: bipush          -2
+            //  1222: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //  1225: areturn
+            //  1226: iconst_1
+            //  1227: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //  1230: areturn
+            //  1231: astore          6
+            //  1233: goto            717
+            //  1236: astore          8
+            //  1238: goto            738
+            //  1241: astore          9
+            //  1243: goto            759
+            //  1246: astore          12
+            //  1248: goto            784
+            //  1251: aload           9
+            //  1253: astore          12
+            //  1255: aload           8
+            //  1257: astore          13
+            //  1259: aload           6
+            //  1261: astore          9
+            //  1263: aload           12
+            //  1265: astore          8
+            //  1267: aload           13
+            //  1269: astore          6
+            //  1271: goto            889
+            //  1274: goto            889
+            //    Exceptions:
+            //  Try           Handler
+            //  Start  End    Start  End    Type
+            //  -----  -----  -----  -----  ---------------------------------
+            //  249    266    1057   1061   Ljava/io/IOException;
+            //  249    266    1047   1057   Any
+            //  266    285    1033   1047   Ljava/io/IOException;
+            //  266    285    1026   1033   Any
+            //  290    308    1033   1047   Ljava/io/IOException;
+            //  290    308    1026   1033   Any
+            //  316    373    963    969    Ljava/io/IOException;
+            //  316    373    951    957    Any
+            //  381    387    963    969    Ljava/io/IOException;
+            //  381    387    951    957    Any
+            //  403    409    963    969    Ljava/io/IOException;
+            //  403    409    951    957    Any
+            //  420    426    963    969    Ljava/io/IOException;
+            //  420    426    951    957    Any
+            //  430    449    465    473    Ljava/io/IOException;
+            //  430    449    457    465    Any
+            //  479    487    963    969    Ljava/io/IOException;
+            //  479    487    951    957    Any
+            //  493    503    963    969    Ljava/io/IOException;
+            //  493    503    951    957    Any
+            //  509    517    963    969    Ljava/io/IOException;
+            //  509    517    951    957    Any
+            //  523    531    963    969    Ljava/io/IOException;
+            //  523    531    951    957    Any
+            //  537    543    963    969    Ljava/io/IOException;
+            //  537    543    951    957    Any
+            //  549    555    963    969    Ljava/io/IOException;
+            //  549    555    951    957    Any
+            //  561    569    963    969    Ljava/io/IOException;
+            //  561    569    951    957    Any
+            //  577    584    963    969    Ljava/io/IOException;
+            //  577    584    951    957    Any
+            //  590    597    963    969    Ljava/io/IOException;
+            //  590    597    951    957    Any
+            //  609    626    465    473    Ljava/io/IOException;
+            //  609    626    457    465    Any
+            //  630    638    465    473    Ljava/io/IOException;
+            //  630    638    457    465    Any
+            //  642    668    465    473    Ljava/io/IOException;
+            //  642    668    457    465    Any
+            //  707    714    1231   728    Ljava/lang/NumberFormatException;
+            //  707    714    465    473    Ljava/io/IOException;
+            //  707    714    457    465    Any
+            //  717    725    465    473    Ljava/io/IOException;
+            //  717    725    457    465    Any
+            //  728    735    1236   749    Ljava/lang/NumberFormatException;
+            //  728    735    465    473    Ljava/io/IOException;
+            //  728    735    457    465    Any
+            //  738    746    465    473    Ljava/io/IOException;
+            //  738    746    457    465    Any
+            //  749    756    1241   774    Ljava/lang/NumberFormatException;
+            //  749    756    465    473    Ljava/io/IOException;
+            //  749    756    457    465    Any
+            //  759    767    465    473    Ljava/io/IOException;
+            //  759    767    457    465    Any
+            //  774    781    1246   790    Ljava/lang/NumberFormatException;
+            //  774    781    465    473    Ljava/io/IOException;
+            //  774    781    457    465    Any
+            //  784    790    465    473    Ljava/io/IOException;
+            //  784    790    457    465    Any
+            //  794    806    465    473    Ljava/io/IOException;
+            //  794    806    457    465    Any
+            //  819    829    963    969    Ljava/io/IOException;
+            //  819    829    951    957    Any
+            //  835    844    963    969    Ljava/io/IOException;
+            //  835    844    951    957    Any
+            //  850    856    963    969    Ljava/io/IOException;
+            //  850    856    951    957    Any
+            //  856    886    919    942    Ljava/io/IOException;
+            //  856    886    904    919    Any
+            //  889    901    919    942    Ljava/io/IOException;
+            //  889    901    904    919    Any
+            //  997    1002   1005   1019   Ljava/io/IOException;
+            //  1064   1082   1118   1126   Any
+            //  1095   1100   1103   1115   Ljava/io/IOException;
+            //  1141   1146   1149   1163   Ljava/io/IOException;
+            //
+            // The error that occurred was:
+            //
+            // java.lang.NullPointerException
+            //     at com.strobel.assembler.ir.StackMappingVisitor.push(StackMappingVisitor.java:290)
+            //     at com.strobel.assembler.ir.StackMappingVisitor$InstructionAnalyzer.execute(StackMappingVisitor.java:833)
+            //     at com.strobel.assembler.ir.StackMappingVisitor$InstructionAnalyzer.visit(StackMappingVisitor.java:398)
+            //     at com.strobel.decompiler.ast.AstBuilder.performStackAnalysis(AstBuilder.java:2030)
+            //     at com.strobel.decompiler.ast.AstBuilder.build(AstBuilder.java:108)
+            //     at com.strobel.decompiler.languages.java.ast.AstMethodBodyBuilder.createMethodBody(AstMethodBodyBuilder.java:211)
+            //     at com.strobel.decompiler.languages.java.ast.AstMethodBodyBuilder.createMethodBody(AstMethodBodyBuilder.java:99)
+            //     at com.strobel.decompiler.languages.java.ast.AstBuilder.createMethodBody(AstBuilder.java:782)
+            //     at com.strobel.decompiler.languages.java.ast.AstBuilder.createMethod(AstBuilder.java:675)
+            //     at com.strobel.decompiler.languages.java.ast.AstBuilder.addTypeMembers(AstBuilder.java:552)
+            //     at com.strobel.decompiler.languages.java.ast.AstBuilder.createTypeCore(AstBuilder.java:519)
+            //     at com.strobel.decompiler.languages.java.ast.AstBuilder.createTypeNoCache(AstBuilder.java:161)
+            //     at com.strobel.decompiler.languages.java.ast.AstBuilder.addTypeMembers(AstBuilder.java:576)
+            //     at com.strobel.decompiler.languages.java.ast.AstBuilder.createTypeCore(AstBuilder.java:519)
+            //     at com.strobel.decompiler.languages.java.ast.AstBuilder.createTypeNoCache(AstBuilder.java:161)
+            //     at com.strobel.decompiler.languages.java.ast.AstBuilder.createType(AstBuilder.java:150)
+            //     at com.strobel.decompiler.languages.java.ast.AstBuilder.addType(AstBuilder.java:125)
+            //     at com.strobel.decompiler.languages.java.JavaLanguage.buildAst(JavaLanguage.java:71)
+            //     at com.strobel.decompiler.languages.java.JavaLanguage.decompileType(JavaLanguage.java:59)
+            //     at com.strobel.decompiler.DecompilerDriver.decompileType(DecompilerDriver.java:330)
+            //     at com.strobel.decompiler.DecompilerDriver.decompileJar(DecompilerDriver.java:251)
+            //     at com.strobel.decompiler.DecompilerDriver.main(DecompilerDriver.java:126)
+            //
+            throw new IllegalStateException("An error occurred while decompiling this method.");
+        }
+
+        protected void onPostExecute(final Integer n) {
+            if (n < 1) {
+                if (n == -2) {
+                    Toast.makeText(WelkomSoarCast.this.getBaseContext(), (CharSequence)WelkomSoarCast.this.getResources().getString(R.string.no_data), Toast.LENGTH_SHORT).show();
                 }
-            } else {
-                WelkomSoarCast.access$4802(WelkomSoarCast.this, (WelkomSoarCast.this.mRichting.get(0)).unixTimestamp);
+                else {
+                    Toast.makeText(WelkomSoarCast.this.getBaseContext(), (CharSequence)WelkomSoarCast.this.getResources().getString(R.string.check_connection), Toast.LENGTH_SHORT).show();
+                }
+            }
+            else {
+                WelkomSoarCast.this.tijdNul = ((Richting)WelkomSoarCast.this.mRichting.get(0)).unixTimestamp;
             }
             WelkomSoarCast.this.updateRichting();
             WelkomSoarCast.this.updateRichtingModel();
-            ((richtingKaderView)WelkomSoarCast.this.findViewById(2131165274)).update((WelkomSoarCast.this.mLocatie.get(WelkomSoarCast.this.locIndex.intValue())).mindeg.intValue(), (WelkomSoarCast.this.mLocatie.get(WelkomSoarCast.this.locIndex.intValue())).maxdeg.intValue(), WelkomSoarCast.this.richt.intValue(), WelkomSoarCast.this.uurVanaf.intValue(), ((WelkomSoarCast.Richting)WelkomSoarCast.this.mRichting.get(0)).geefZonOpOnder());
+            ((RichtingKaderView)WelkomSoarCast.this.findViewById(R.id.richtingKaderView)).update(((Locatie)WelkomSoarCast.this.mLocatie.get(WelkomSoarCast.this.locIndex)).mindeg, ((Locatie)WelkomSoarCast.this.mLocatie.get(WelkomSoarCast.this.locIndex)).maxdeg, WelkomSoarCast.this.richt, WelkomSoarCast.this.uurVanaf, ((Richting)WelkomSoarCast.this.mRichting.get(0)).geefZonOpOnder());
             WelkomSoarCast.this.ikBenKlaar();
         }
     }
 
-    private class LeesWind extends AsyncTask<Integer, Void, Integer> {
-        private final String LOG_TAG = LeesWind.class.getSimpleName();
+    private class LeesWind extends AsyncTask<Integer, Void, Integer>
+    {
+        private final String LOG_TAG;
 
-        private LeesWind() {}
+        private LeesWind() {
+            this.LOG_TAG = LeesWind.class.getSimpleName();
+        }
 
-        protected Integer doInBackground(Integer... param1VarArgs) {
-            // Byte code:
-            //   0: aload_1
-            //   1: iconst_0
-            //   2: aaload
-            //   3: astore_1
-            //   4: aload_0
-            //   5: getfield this$0 : Lcom/erwinvoogt/soarcast/WelkomSoarCast;
-            //   8: invokevirtual getResources : ()Landroid/content/res/Resources;
-            //   11: ldc 2131427328
-            //   13: invokevirtual getString : (I)Ljava/lang/String;
-            //   16: astore #8
-            //   18: lconst_0
-            //   19: lstore #5
-            //   21: lconst_0
-            //   22: invokestatic valueOf : (J)Ljava/lang/Long;
-            //   25: astore #15
-            //   27: dconst_0
-            //   28: invokestatic valueOf : (D)Ljava/lang/Double;
-            //   31: astore #9
-            //   33: dconst_0
-            //   34: invokestatic valueOf : (D)Ljava/lang/Double;
-            //   37: astore #10
-            //   39: dconst_0
-            //   40: invokestatic valueOf : (D)Ljava/lang/Double;
-            //   43: astore #11
-            //   45: dconst_0
-            //   46: invokestatic valueOf : (D)Ljava/lang/Double;
-            //   49: astore #12
-            //   51: dconst_0
-            //   52: invokestatic valueOf : (D)Ljava/lang/Double;
-            //   55: astore #13
-            //   57: iconst_0
-            //   58: istore_2
-            //   59: dconst_0
-            //   60: invokestatic valueOf : (D)Ljava/lang/Double;
-            //   63: astore #14
-            //   65: iload_2
-            //   66: iconst_4
-            //   67: if_icmpge -> 1785
-            //   70: new java/lang/StringBuilder
-            //   73: dup
-            //   74: invokespecial <init> : ()V
-            //   77: astore #7
-            //   79: aload #7
-            //   81: aload_0
-            //   82: getfield this$0 : Lcom/erwinvoogt/soarcast/WelkomSoarCast;
-            //   85: invokevirtual getResources : ()Landroid/content/res/Resources;
-            //   88: ldc 2131427396
-            //   90: invokevirtual getString : (I)Ljava/lang/String;
-            //   93: invokevirtual append : (Ljava/lang/String;)Ljava/lang/StringBuilder;
-            //   96: pop
-            //   97: aload #7
-            //   99: aload_0
-            //   100: getfield this$0 : Lcom/erwinvoogt/soarcast/WelkomSoarCast;
-            //   103: invokevirtual getResources : ()Landroid/content/res/Resources;
-            //   106: ldc 2131427381
-            //   108: invokevirtual getString : (I)Ljava/lang/String;
-            //   111: invokevirtual append : (Ljava/lang/String;)Ljava/lang/StringBuilder;
+        protected Integer doInBackground(final Integer... p0) {
+            //
+            // This method could not be decompiled.
+            //
+            // Original Bytecode:
+            //
+            //     1: iconst_0
+            //     2: aaload
+            //     3: astore_1
+            //     4: aload_0
+            //     5: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesWind.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
+            //     8: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
+            //    11: ldc             R.string.csv_separator
+            //    13: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
+            //    16: astore          8
+            //    18: lconst_0
+            //    19: lstore          5
+            //    21: lconst_0
+            //    22: invokestatic    java/lang/Long.valueOf:(J)Ljava/lang/Long;
+            //    25: astore          15
+            //    27: dconst_0
+            //    28: invokestatic    java/lang/Double.valueOf:(D)Ljava/lang/Double;
+            //    31: astore          9
+            //    33: dconst_0
+            //    34: invokestatic    java/lang/Double.valueOf:(D)Ljava/lang/Double;
+            //    37: astore          10
+            //    39: dconst_0
+            //    40: invokestatic    java/lang/Double.valueOf:(D)Ljava/lang/Double;
+            //    43: astore          11
+            //    45: dconst_0
+            //    46: invokestatic    java/lang/Double.valueOf:(D)Ljava/lang/Double;
+            //    49: astore          12
+            //    51: dconst_0
+            //    52: invokestatic    java/lang/Double.valueOf:(D)Ljava/lang/Double;
+            //    55: astore          13
+            //    57: iconst_0
+            //    58: istore_2
+            //    59: dconst_0
+            //    60: invokestatic    java/lang/Double.valueOf:(D)Ljava/lang/Double;
+            //    63: astore          14
+            //    65: iload_2
+            //    66: iconst_4
+            //    67: if_icmpge       1785
+            //    70: new             Ljava/lang/StringBuilder;
+            //    73: dup
+            //    74: invokespecial   java/lang/StringBuilder.<init>:()V
+            //    77: astore          7
+            //    79: aload           7
+            //    81: aload_0
+            //    82: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesWind.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
+            //    85: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
+            //    88: ldc             2131427396
+            //    90: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
+            //    93: invokevirtual   java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+            //    96: pop
+            //    97: aload           7
+            //    99: aload_0
+            //   100: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesWind.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
+            //   103: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
+            //   106: ldc             2131427381
+            //   108: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
+            //   111: invokevirtual   java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
             //   114: pop
-            //   115: aload #7
-            //   117: invokevirtual toString : ()Ljava/lang/String;
-            //   120: invokestatic parse : (Ljava/lang/String;)Landroid/net/Uri;
-            //   123: invokevirtual buildUpon : ()Landroid/net/Uri$Builder;
+            //   115: aload           7
+            //   117: invokevirtual   java/lang/StringBuilder.toString:()Ljava/lang/String;
+            //   120: invokestatic    android/net/Uri.parse:(Ljava/lang/String;)Landroid/net/Uri;
+            //   123: invokevirtual   android/net/Uri.buildUpon:()Landroid/net/Uri.Builder;
             //   126: aload_0
-            //   127: getfield this$0 : Lcom/erwinvoogt/soarcast/WelkomSoarCast;
-            //   130: invokevirtual getResources : ()Landroid/content/res/Resources;
-            //   133: ldc 2131427387
-            //   135: invokevirtual getString : (I)Ljava/lang/String;
+            //   127: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesWind.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
+            //   130: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
+            //   133: ldc             2131427387
+            //   135: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
             //   138: aload_0
-            //   139: getfield this$0 : Lcom/erwinvoogt/soarcast/WelkomSoarCast;
-            //   142: invokevirtual getResources : ()Landroid/content/res/Resources;
-            //   145: ldc 2131427375
-            //   147: invokevirtual getString : (I)Ljava/lang/String;
-            //   150: invokevirtual appendQueryParameter : (Ljava/lang/String;Ljava/lang/String;)Landroid/net/Uri$Builder;
+            //   139: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesWind.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
+            //   142: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
+            //   145: ldc             2131427375
+            //   147: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
+            //   150: invokevirtual   android/net/Uri.Builder.appendQueryParameter:(Ljava/lang/String;Ljava/lang/String;)Landroid/net/Uri.Builder;
             //   153: aload_0
-            //   154: getfield this$0 : Lcom/erwinvoogt/soarcast/WelkomSoarCast;
-            //   157: invokevirtual getResources : ()Landroid/content/res/Resources;
-            //   160: ldc 2131427385
-            //   162: invokevirtual getString : (I)Ljava/lang/String;
+            //   154: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesWind.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
+            //   157: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
+            //   160: ldc             2131427385
+            //   162: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
             //   165: aload_1
-            //   166: invokevirtual toString : ()Ljava/lang/String;
-            //   169: invokevirtual appendQueryParameter : (Ljava/lang/String;Ljava/lang/String;)Landroid/net/Uri$Builder;
+            //   166: invokevirtual   java/lang/Integer.toString:()Ljava/lang/String;
+            //   169: invokevirtual   android/net/Uri.Builder.appendQueryParameter:(Ljava/lang/String;Ljava/lang/String;)Landroid/net/Uri.Builder;
             //   172: aload_0
-            //   173: getfield this$0 : Lcom/erwinvoogt/soarcast/WelkomSoarCast;
-            //   176: invokevirtual getResources : ()Landroid/content/res/Resources;
-            //   179: ldc 2131427384
-            //   181: invokevirtual getString : (I)Ljava/lang/String;
+            //   173: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesWind.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
+            //   176: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
+            //   179: ldc             2131427384
+            //   181: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
             //   184: aload_0
-            //   185: getfield this$0 : Lcom/erwinvoogt/soarcast/WelkomSoarCast;
-            //   188: invokestatic access$4500 : (Lcom/erwinvoogt/soarcast/WelkomSoarCast;)[Ljava/lang/String;
+            //   185: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesWind.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
+            //   188: invokestatic    com/erwinvoogt/soarcast/WelkomSoarCast.access$4500:(Lcom/erwinvoogt/soarcast/WelkomSoarCast;)[Ljava/lang/String;
             //   191: iload_2
             //   192: aaload
-            //   193: invokevirtual appendQueryParameter : (Ljava/lang/String;Ljava/lang/String;)Landroid/net/Uri$Builder;
+            //   193: invokevirtual   android/net/Uri.Builder.appendQueryParameter:(Ljava/lang/String;Ljava/lang/String;)Landroid/net/Uri.Builder;
             //   196: aload_0
-            //   197: getfield this$0 : Lcom/erwinvoogt/soarcast/WelkomSoarCast;
-            //   200: invokevirtual getResources : ()Landroid/content/res/Resources;
-            //   203: ldc 2131427386
-            //   205: invokevirtual getString : (I)Ljava/lang/String;
+            //   197: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesWind.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
+            //   200: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
+            //   203: ldc             2131427386
+            //   205: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
             //   208: aload_0
-            //   209: getfield this$0 : Lcom/erwinvoogt/soarcast/WelkomSoarCast;
-            //   212: invokevirtual getResources : ()Landroid/content/res/Resources;
-            //   215: ldc 2131427373
-            //   217: invokevirtual getString : (I)Ljava/lang/String;
-            //   220: invokevirtual appendQueryParameter : (Ljava/lang/String;Ljava/lang/String;)Landroid/net/Uri$Builder;
+            //   209: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesWind.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
+            //   212: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
+            //   215: ldc             2131427373
+            //   217: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
+            //   220: invokevirtual   android/net/Uri.Builder.appendQueryParameter:(Ljava/lang/String;Ljava/lang/String;)Landroid/net/Uri.Builder;
             //   223: aload_0
-            //   224: getfield this$0 : Lcom/erwinvoogt/soarcast/WelkomSoarCast;
-            //   227: invokevirtual getResources : ()Landroid/content/res/Resources;
-            //   230: ldc 2131427382
-            //   232: invokevirtual getString : (I)Ljava/lang/String;
+            //   224: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesWind.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
+            //   227: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
+            //   230: ldc             2131427382
+            //   232: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
             //   235: aload_0
-            //   236: getfield this$0 : Lcom/erwinvoogt/soarcast/WelkomSoarCast;
-            //   239: invokevirtual getResources : ()Landroid/content/res/Resources;
-            //   242: ldc 2131427371
-            //   244: invokevirtual getString : (I)Ljava/lang/String;
-            //   247: invokevirtual appendQueryParameter : (Ljava/lang/String;Ljava/lang/String;)Landroid/net/Uri$Builder;
+            //   236: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesWind.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
+            //   239: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
+            //   242: ldc             2131427371
+            //   244: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
+            //   247: invokevirtual   android/net/Uri.Builder.appendQueryParameter:(Ljava/lang/String;Ljava/lang/String;)Landroid/net/Uri.Builder;
             //   250: aload_0
-            //   251: getfield this$0 : Lcom/erwinvoogt/soarcast/WelkomSoarCast;
-            //   254: invokevirtual getResources : ()Landroid/content/res/Resources;
-            //   257: ldc 2131427383
-            //   259: invokevirtual getString : (I)Ljava/lang/String;
-            //   262: ldc ''
-            //   264: invokevirtual appendQueryParameter : (Ljava/lang/String;Ljava/lang/String;)Landroid/net/Uri$Builder;
-            //   267: invokevirtual build : ()Landroid/net/Uri;
-            //   270: invokevirtual toString : ()Ljava/lang/String;
-            //   273: astore #7
-            //   275: new java/net/URL
+            //   251: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesWind.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
+            //   254: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
+            //   257: ldc             2131427383
+            //   259: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
+            //   262: ldc             ""
+            //   264: invokevirtual   android/net/Uri.Builder.appendQueryParameter:(Ljava/lang/String;Ljava/lang/String;)Landroid/net/Uri.Builder;
+            //   267: invokevirtual   android/net/Uri.Builder.build:()Landroid/net/Uri;
+            //   270: invokevirtual   android/net/Uri.toString:()Ljava/lang/String;
+            //   273: astore          7
+            //   275: new             Ljava/net/URL;
             //   278: dup
-            //   279: aload #7
-            //   281: invokespecial <init> : (Ljava/lang/String;)V
-            //   284: invokevirtual openConnection : ()Ljava/net/URLConnection;
-            //   287: checkcast java/net/HttpURLConnection
-            //   290: astore #7
-            //   292: aload #7
-            //   294: ldc 'GET'
-            //   296: invokevirtual setRequestMethod : (Ljava/lang/String;)V
-            //   299: aload #7
-            //   301: invokevirtual connect : ()V
-            //   304: aload #7
-            //   306: invokevirtual getInputStream : ()Ljava/io/InputStream;
-            //   309: astore #16
-            //   311: aload #16
-            //   313: ifnull -> 1563
-            //   316: new java/io/BufferedReader
+            //   279: aload           7
+            //   281: invokespecial   java/net/URL.<init>:(Ljava/lang/String;)V
+            //   284: invokevirtual   java/net/URL.openConnection:()Ljava/net/URLConnection;
+            //   287: checkcast       Ljava/net/HttpURLConnection;
+            //   290: astore          7
+            //   292: aload           7
+            //   294: ldc             "GET"
+            //   296: invokevirtual   java/net/HttpURLConnection.setRequestMethod:(Ljava/lang/String;)V
+            //   299: aload           7
+            //   301: invokevirtual   java/net/HttpURLConnection.connect:()V
+            //   304: aload           7
+            //   306: invokevirtual   java/net/HttpURLConnection.getInputStream:()Ljava/io/InputStream;
+            //   309: astore          16
+            //   311: aload           16
+            //   313: ifnull          1563
+            //   316: new             Ljava/io/BufferedReader;
             //   319: dup
-            //   320: new java/io/InputStreamReader
+            //   320: new             Ljava/io/InputStreamReader;
             //   323: dup
-            //   324: aload #16
-            //   326: invokespecial <init> : (Ljava/io/InputStream;)V
-            //   329: invokespecial <init> : (Ljava/io/Reader;)V
-            //   332: astore #17
-            //   334: aload #7
-            //   336: astore #19
-            //   338: aload #17
-            //   340: astore #18
-            //   342: aload #7
-            //   344: astore #20
-            //   346: aload #17
-            //   348: astore #21
-            //   350: bipush #7
-            //   352: anewarray java/lang/Integer
-            //   355: astore #23
-            //   357: aload #7
-            //   359: astore #19
-            //   361: aload #17
-            //   363: astore #18
-            //   365: aload #7
-            //   367: astore #20
-            //   369: aload #17
-            //   371: astore #21
-            //   373: aload #23
+            //   324: aload           16
+            //   326: invokespecial   java/io/InputStreamReader.<init>:(Ljava/io/InputStream;)V
+            //   329: invokespecial   java/io/BufferedReader.<init>:(Ljava/io/Reader;)V
+            //   332: astore          17
+            //   334: aload           7
+            //   336: astore          19
+            //   338: aload           17
+            //   340: astore          18
+            //   342: aload           7
+            //   344: astore          20
+            //   346: aload           17
+            //   348: astore          21
+            //   350: bipush          7
+            //   352: anewarray       Ljava/lang/Integer;
+            //   355: astore          23
+            //   357: aload           7
+            //   359: astore          19
+            //   361: aload           17
+            //   363: astore          18
+            //   365: aload           7
+            //   367: astore          20
+            //   369: aload           17
+            //   371: astore          21
+            //   373: aload           23
             //   375: iconst_0
             //   376: iconst_m1
-            //   377: invokestatic valueOf : (I)Ljava/lang/Integer;
+            //   377: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
             //   380: aastore
-            //   381: aload #7
-            //   383: astore #19
-            //   385: aload #17
-            //   387: astore #18
-            //   389: aload #7
-            //   391: astore #20
-            //   393: aload #17
-            //   395: astore #21
-            //   397: aload #23
+            //   381: aload           7
+            //   383: astore          19
+            //   385: aload           17
+            //   387: astore          18
+            //   389: aload           7
+            //   391: astore          20
+            //   393: aload           17
+            //   395: astore          21
+            //   397: aload           23
             //   399: iconst_1
             //   400: iconst_m1
-            //   401: invokestatic valueOf : (I)Ljava/lang/Integer;
+            //   401: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
             //   404: aastore
-            //   405: aload #7
-            //   407: astore #19
-            //   409: aload #17
-            //   411: astore #18
-            //   413: aload #7
-            //   415: astore #20
-            //   417: aload #17
-            //   419: astore #21
-            //   421: aload #23
+            //   405: aload           7
+            //   407: astore          19
+            //   409: aload           17
+            //   411: astore          18
+            //   413: aload           7
+            //   415: astore          20
+            //   417: aload           17
+            //   419: astore          21
+            //   421: aload           23
             //   423: iconst_2
             //   424: iconst_m1
-            //   425: invokestatic valueOf : (I)Ljava/lang/Integer;
+            //   425: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
             //   428: aastore
-            //   429: aload #7
-            //   431: astore #19
-            //   433: aload #17
-            //   435: astore #18
-            //   437: aload #7
-            //   439: astore #20
-            //   441: aload #17
-            //   443: astore #21
-            //   445: aload #23
+            //   429: aload           7
+            //   431: astore          19
+            //   433: aload           17
+            //   435: astore          18
+            //   437: aload           7
+            //   439: astore          20
+            //   441: aload           17
+            //   443: astore          21
+            //   445: aload           23
             //   447: iconst_3
             //   448: iconst_m1
-            //   449: invokestatic valueOf : (I)Ljava/lang/Integer;
+            //   449: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
             //   452: aastore
-            //   453: aload #7
-            //   455: astore #19
-            //   457: aload #17
-            //   459: astore #18
-            //   461: aload #7
-            //   463: astore #20
-            //   465: aload #17
-            //   467: astore #21
-            //   469: aload #23
+            //   453: aload           7
+            //   455: astore          19
+            //   457: aload           17
+            //   459: astore          18
+            //   461: aload           7
+            //   463: astore          20
+            //   465: aload           17
+            //   467: astore          21
+            //   469: aload           23
             //   471: iconst_4
             //   472: iconst_m1
-            //   473: invokestatic valueOf : (I)Ljava/lang/Integer;
+            //   473: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
             //   476: aastore
-            //   477: aload #7
-            //   479: astore #19
-            //   481: aload #17
-            //   483: astore #18
-            //   485: aload #7
-            //   487: astore #20
-            //   489: aload #17
-            //   491: astore #21
-            //   493: aload #23
+            //   477: aload           7
+            //   479: astore          19
+            //   481: aload           17
+            //   483: astore          18
+            //   485: aload           7
+            //   487: astore          20
+            //   489: aload           17
+            //   491: astore          21
+            //   493: aload           23
             //   495: iconst_5
             //   496: iconst_m1
-            //   497: invokestatic valueOf : (I)Ljava/lang/Integer;
+            //   497: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
             //   500: aastore
-            //   501: aload #7
-            //   503: astore #19
-            //   505: aload #17
-            //   507: astore #18
-            //   509: aload #7
-            //   511: astore #20
-            //   513: aload #17
-            //   515: astore #21
-            //   517: aload #23
-            //   519: bipush #6
+            //   501: aload           7
+            //   503: astore          19
+            //   505: aload           17
+            //   507: astore          18
+            //   509: aload           7
+            //   511: astore          20
+            //   513: aload           17
+            //   515: astore          21
+            //   517: aload           23
+            //   519: bipush          6
             //   521: iconst_m1
-            //   522: invokestatic valueOf : (I)Ljava/lang/Integer;
+            //   522: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
             //   525: aastore
-            //   526: aload #7
-            //   528: astore #19
-            //   530: aload #17
-            //   532: astore #18
-            //   534: aload #7
-            //   536: astore #20
-            //   538: aload #17
-            //   540: astore #21
+            //   526: aload           7
+            //   528: astore          19
+            //   530: aload           17
+            //   532: astore          18
+            //   534: aload           7
+            //   536: astore          20
+            //   538: aload           17
+            //   540: astore          21
             //   542: iconst_0
-            //   543: invokestatic valueOf : (I)Ljava/lang/Integer;
-            //   546: astore #22
+            //   543: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //   546: astore          22
             //   548: aload_1
-            //   549: astore #16
-            //   551: aload #17
+            //   549: astore          16
+            //   551: aload           17
             //   553: astore_1
-            //   554: aload #23
-            //   556: astore #17
-            //   558: aload #7
-            //   560: astore #19
+            //   554: aload           23
+            //   556: astore          17
+            //   558: aload           7
+            //   560: astore          19
             //   562: aload_1
-            //   563: astore #18
-            //   565: aload #7
-            //   567: astore #20
+            //   563: astore          18
+            //   565: aload           7
+            //   567: astore          20
             //   569: aload_1
-            //   570: astore #21
+            //   570: astore          21
             //   572: aload_1
-            //   573: invokevirtual readLine : ()Ljava/lang/String;
-            //   576: astore #25
-            //   578: aload #25
-            //   580: ifnull -> 1523
-            //   583: aload #7
-            //   585: astore #19
+            //   573: invokevirtual   java/io/BufferedReader.readLine:()Ljava/lang/String;
+            //   576: astore          25
+            //   578: aload           25
+            //   580: ifnull          1523
+            //   583: aload           7
+            //   585: astore          19
             //   587: aload_1
-            //   588: astore #18
-            //   590: aload #7
-            //   592: astore #20
+            //   588: astore          18
+            //   590: aload           7
+            //   592: astore          20
             //   594: aload_1
-            //   595: astore #21
-            //   597: aload #22
-            //   599: invokevirtual intValue : ()I
+            //   595: astore          21
+            //   597: aload           22
+            //   599: invokevirtual   java/lang/Integer.intValue:()I
             //   602: istore_3
             //   603: iload_3
-            //   604: ifne -> 660
-            //   607: aload #7
-            //   609: astore #18
+            //   604: ifne            660
+            //   607: aload           7
+            //   609: astore          18
             //   611: aload_1
-            //   612: astore #19
+            //   612: astore          19
             //   614: aload_0
-            //   615: getfield this$0 : Lcom/erwinvoogt/soarcast/WelkomSoarCast;
-            //   618: aload #25
-            //   620: invokestatic access$4600 : (Lcom/erwinvoogt/soarcast/WelkomSoarCast;Ljava/lang/String;)[Ljava/lang/Integer;
-            //   623: astore #17
-            //   625: aload #7
-            //   627: astore #18
+            //   615: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesWind.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
+            //   618: aload           25
+            //   620: invokestatic    com/erwinvoogt/soarcast/WelkomSoarCast.access$4600:(Lcom/erwinvoogt/soarcast/WelkomSoarCast;Ljava/lang/String;)[Ljava/lang/Integer;
+            //   623: astore          17
+            //   625: aload           7
+            //   627: astore          18
             //   629: aload_1
-            //   630: astore #19
-            //   632: aload #17
+            //   630: astore          19
+            //   632: aload           17
             //   634: iconst_0
             //   635: aaload
-            //   636: invokevirtual intValue : ()I
+            //   636: invokevirtual   java/lang/Integer.intValue:()I
             //   639: istore_3
             //   640: iload_3
             //   641: iconst_m1
-            //   642: if_icmpne -> 660
-            //   645: goto -> 1523
-            //   648: astore #8
-            //   650: aload #7
-            //   652: astore #20
+            //   642: if_icmpne       660
+            //   645: goto            1523
+            //   648: astore          8
+            //   650: aload           7
+            //   652: astore          20
             //   654: aload_1
-            //   655: astore #7
-            //   657: goto -> 1557
-            //   660: aload #7
-            //   662: astore #19
+            //   655: astore          7
+            //   657: goto            1557
+            //   660: aload           7
+            //   662: astore          19
             //   664: aload_1
-            //   665: astore #18
-            //   667: aload #7
-            //   669: astore #20
+            //   665: astore          18
+            //   667: aload           7
+            //   669: astore          20
             //   671: aload_1
-            //   672: astore #21
-            //   674: aload #22
-            //   676: invokevirtual intValue : ()I
+            //   672: astore          21
+            //   674: aload           22
+            //   676: invokevirtual   java/lang/Integer.intValue:()I
             //   679: istore_3
             //   680: iload_3
-            //   681: ifle -> 1272
-            //   684: aload #7
-            //   686: astore #18
+            //   681: ifle            1272
+            //   684: aload           7
+            //   686: astore          18
             //   688: aload_1
-            //   689: astore #19
+            //   689: astore          19
             //   691: iconst_0
-            //   692: invokestatic valueOf : (I)Ljava/lang/Integer;
-            //   695: astore #23
-            //   697: aload #7
-            //   699: astore #18
+            //   692: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //   695: astore          23
+            //   697: aload           7
+            //   699: astore          18
             //   701: aload_1
-            //   702: astore #19
-            //   704: aload #25
-            //   706: invokevirtual length : ()I
-            //   709: invokestatic valueOf : (I)Ljava/lang/Integer;
-            //   712: astore #15
-            //   714: aload #7
-            //   716: astore #18
+            //   702: astore          19
+            //   704: aload           25
+            //   706: invokevirtual   java/lang/String.length:()I
+            //   709: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //   712: astore          15
+            //   714: aload           7
+            //   716: astore          18
             //   718: aload_1
-            //   719: astore #19
+            //   719: astore          19
             //   721: dconst_0
-            //   722: invokestatic valueOf : (D)Ljava/lang/Double;
-            //   725: astore #21
-            //   727: aload #7
-            //   729: astore #18
+            //   722: invokestatic    java/lang/Double.valueOf:(D)Ljava/lang/Double;
+            //   725: astore          21
+            //   727: aload           7
+            //   729: astore          18
             //   731: aload_1
-            //   732: astore #19
+            //   732: astore          19
             //   734: dconst_0
-            //   735: invokestatic valueOf : (D)Ljava/lang/Double;
-            //   738: astore #14
-            //   740: aload #7
-            //   742: astore #18
+            //   735: invokestatic    java/lang/Double.valueOf:(D)Ljava/lang/Double;
+            //   738: astore          14
+            //   740: aload           7
+            //   742: astore          18
             //   744: aload_1
-            //   745: astore #19
+            //   745: astore          19
             //   747: dconst_0
-            //   748: invokestatic valueOf : (D)Ljava/lang/Double;
-            //   751: astore #11
-            //   753: aload #7
-            //   755: astore #18
+            //   748: invokestatic    java/lang/Double.valueOf:(D)Ljava/lang/Double;
+            //   751: astore          11
+            //   753: aload           7
+            //   755: astore          18
             //   757: aload_1
-            //   758: astore #19
+            //   758: astore          19
             //   760: dconst_0
-            //   761: invokestatic valueOf : (D)Ljava/lang/Double;
-            //   764: astore #13
-            //   766: aload #7
-            //   768: astore #18
+            //   761: invokestatic    java/lang/Double.valueOf:(D)Ljava/lang/Double;
+            //   764: astore          13
+            //   766: aload           7
+            //   768: astore          18
             //   770: aload_1
-            //   771: astore #19
+            //   771: astore          19
             //   773: dconst_0
-            //   774: invokestatic valueOf : (D)Ljava/lang/Double;
-            //   777: astore #10
-            //   779: aload #7
-            //   781: astore #18
+            //   774: invokestatic    java/lang/Double.valueOf:(D)Ljava/lang/Double;
+            //   777: astore          10
+            //   779: aload           7
+            //   781: astore          18
             //   783: aload_1
-            //   784: astore #19
+            //   784: astore          19
             //   786: dconst_0
-            //   787: invokestatic valueOf : (D)Ljava/lang/Double;
-            //   790: astore #12
-            //   792: aload #7
-            //   794: astore #18
+            //   787: invokestatic    java/lang/Double.valueOf:(D)Ljava/lang/Double;
+            //   790: astore          12
+            //   792: aload           7
+            //   794: astore          18
             //   796: aload_1
-            //   797: astore #19
+            //   797: astore          19
             //   799: lconst_0
-            //   800: invokestatic valueOf : (J)Ljava/lang/Long;
-            //   803: astore #20
+            //   800: invokestatic    java/lang/Long.valueOf:(J)Ljava/lang/Long;
+            //   803: astore          20
             //   805: iconst_0
             //   806: istore_3
-            //   807: aload #8
-            //   809: astore #9
-            //   811: aload #21
-            //   813: astore #8
-            //   815: aload #7
-            //   817: astore #18
+            //   807: aload           8
+            //   809: astore          9
+            //   811: aload           21
+            //   813: astore          8
+            //   815: aload           7
+            //   817: astore          18
             //   819: aload_1
-            //   820: astore #19
-            //   822: aload #23
-            //   824: invokevirtual intValue : ()I
-            //   827: aload #15
-            //   829: invokevirtual intValue : ()I
-            //   832: if_icmpge -> 1237
+            //   820: astore          19
+            //   822: aload           23
+            //   824: invokevirtual   java/lang/Integer.intValue:()I
+            //   827: aload           15
+            //   829: invokevirtual   java/lang/Integer.intValue:()I
+            //   832: if_icmpge       1237
             //   835: iload_3
-            //   836: bipush #7
-            //   838: if_icmpge -> 1237
-            //   841: aload #7
-            //   843: astore #18
+            //   836: bipush          7
+            //   838: if_icmpge       1237
+            //   841: aload           7
+            //   843: astore          18
             //   845: aload_1
-            //   846: astore #19
-            //   848: aload #25
-            //   850: aload #9
-            //   852: aload #23
-            //   854: invokevirtual intValue : ()I
-            //   857: invokevirtual indexOf : (Ljava/lang/String;I)I
-            //   860: invokestatic valueOf : (I)Ljava/lang/Integer;
-            //   863: astore #24
-            //   865: aload #24
-            //   867: astore #21
-            //   869: aload #7
-            //   871: astore #18
+            //   846: astore          19
+            //   848: aload           25
+            //   850: aload           9
+            //   852: aload           23
+            //   854: invokevirtual   java/lang/Integer.intValue:()I
+            //   857: invokevirtual   java/lang/String.indexOf:(Ljava/lang/String;I)I
+            //   860: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //   863: astore          24
+            //   865: aload           24
+            //   867: astore          21
+            //   869: aload           7
+            //   871: astore          18
             //   873: aload_1
-            //   874: astore #19
-            //   876: aload #24
-            //   878: invokevirtual intValue : ()I
-            //   881: ifge -> 888
-            //   884: aload #15
-            //   886: astore #21
-            //   888: aload #7
-            //   890: astore #18
+            //   874: astore          19
+            //   876: aload           24
+            //   878: invokevirtual   java/lang/Integer.intValue:()I
+            //   881: ifge            888
+            //   884: aload           15
+            //   886: astore          21
+            //   888: aload           7
+            //   890: astore          18
             //   892: aload_1
-            //   893: astore #19
-            //   895: aload #25
-            //   897: aload #23
-            //   899: invokevirtual intValue : ()I
-            //   902: aload #21
-            //   904: invokevirtual intValue : ()I
-            //   907: invokevirtual substring : (II)Ljava/lang/String;
-            //   910: astore #23
-            //   912: aload #7
-            //   914: astore #18
+            //   893: astore          19
+            //   895: aload           25
+            //   897: aload           23
+            //   899: invokevirtual   java/lang/Integer.intValue:()I
+            //   902: aload           21
+            //   904: invokevirtual   java/lang/Integer.intValue:()I
+            //   907: invokevirtual   java/lang/String.substring:(II)Ljava/lang/String;
+            //   910: astore          23
+            //   912: aload           7
+            //   914: astore          18
             //   916: aload_1
-            //   917: astore #19
-            //   919: aload #17
+            //   917: astore          19
+            //   919: aload           17
             //   921: iload_3
             //   922: aaload
-            //   923: invokevirtual intValue : ()I
-            //   926: istore #4
-            //   928: iload #4
-            //   930: tableswitch default -> 972, 0 -> 1166, 1 -> 1133, 2 -> 1100, 3 -> 1067, 4 -> 1034, 5 -> 1001, 6 -> 975
-            //   972: goto -> 1211
-            //   975: aload #7
-            //   977: astore #18
+            //   923: invokevirtual   java/lang/Integer.intValue:()I
+            //   926: istore          4
+            //   928: iload           4
+            //   930: tableswitch {
+            //                0: 1166
+            //                1: 1133
+            //                2: 1100
+            //                3: 1067
+            //                4: 1034
+            //                5: 1001
+            //                6: 975
+            //          default: 972
+            //        }
+            //   972: goto            1211
+            //   975: aload           7
+            //   977: astore          18
             //   979: aload_1
-            //   980: astore #19
-            //   982: aload #23
-            //   984: invokestatic valueOf : (Ljava/lang/String;)Ljava/lang/Double;
-            //   987: astore #8
-            //   989: goto -> 972
+            //   980: astore          19
+            //   982: aload           23
+            //   984: invokestatic    java/lang/Double.valueOf:(Ljava/lang/String;)Ljava/lang/Double;
+            //   987: astore          8
+            //   989: goto            972
             //   992: dconst_0
-            //   993: invokestatic valueOf : (D)Ljava/lang/Double;
-            //   996: astore #8
-            //   998: goto -> 1211
-            //   1001: aload #7
-            //   1003: astore #18
-            //   1005: aload_1
-            //   1006: astore #19
-            //   1008: aload #23
-            //   1010: invokestatic valueOf : (Ljava/lang/String;)Ljava/lang/Double;
-            //   1013: astore #14
-            //   1015: goto -> 1211
-            //   1018: aload #7
-            //   1020: astore #18
-            //   1022: aload_1
-            //   1023: astore #19
-            //   1025: dconst_0
-            //   1026: invokestatic valueOf : (D)Ljava/lang/Double;
-            //   1029: astore #14
-            //   1031: goto -> 1015
-            //   1034: aload #7
-            //   1036: astore #18
-            //   1038: aload_1
-            //   1039: astore #19
-            //   1041: aload #23
-            //   1043: invokestatic valueOf : (Ljava/lang/String;)Ljava/lang/Double;
-            //   1046: astore #11
-            //   1048: goto -> 1211
-            //   1051: aload #7
-            //   1053: astore #18
-            //   1055: aload_1
-            //   1056: astore #19
-            //   1058: dconst_0
-            //   1059: invokestatic valueOf : (D)Ljava/lang/Double;
-            //   1062: astore #11
-            //   1064: goto -> 1048
-            //   1067: aload #7
-            //   1069: astore #18
-            //   1071: aload_1
-            //   1072: astore #19
-            //   1074: aload #23
-            //   1076: invokestatic valueOf : (Ljava/lang/String;)Ljava/lang/Double;
-            //   1079: astore #13
-            //   1081: goto -> 1211
-            //   1084: aload #7
-            //   1086: astore #18
-            //   1088: aload_1
-            //   1089: astore #19
-            //   1091: dconst_0
-            //   1092: invokestatic valueOf : (D)Ljava/lang/Double;
-            //   1095: astore #13
-            //   1097: goto -> 1081
-            //   1100: aload #7
-            //   1102: astore #18
-            //   1104: aload_1
-            //   1105: astore #19
-            //   1107: aload #23
-            //   1109: invokestatic valueOf : (Ljava/lang/String;)Ljava/lang/Double;
-            //   1112: astore #10
-            //   1114: goto -> 1211
-            //   1117: aload #7
-            //   1119: astore #18
-            //   1121: aload_1
-            //   1122: astore #19
-            //   1124: dconst_0
-            //   1125: invokestatic valueOf : (D)Ljava/lang/Double;
-            //   1128: astore #10
-            //   1130: goto -> 1114
-            //   1133: aload #7
-            //   1135: astore #18
-            //   1137: aload_1
-            //   1138: astore #19
-            //   1140: aload #23
-            //   1142: invokestatic valueOf : (Ljava/lang/String;)Ljava/lang/Double;
-            //   1145: astore #12
-            //   1147: goto -> 1211
-            //   1150: aload #7
-            //   1152: astore #18
-            //   1154: aload_1
-            //   1155: astore #19
-            //   1157: dconst_0
-            //   1158: invokestatic valueOf : (D)Ljava/lang/Double;
-            //   1161: astore #12
-            //   1163: goto -> 1147
-            //   1166: aload #7
-            //   1168: astore #18
-            //   1170: aload_1
-            //   1171: astore #19
-            //   1173: aload #23
-            //   1175: invokestatic valueOf : (Ljava/lang/String;)Ljava/lang/Long;
-            //   1178: astore #20
-            //   1180: aload #20
-            //   1182: astore #18
-            //   1184: aload #18
-            //   1186: astore #20
-            //   1188: goto -> 1211
-            //   1191: aload #7
-            //   1193: astore #18
-            //   1195: aload_1
-            //   1196: astore #19
-            //   1198: lconst_0
-            //   1199: invokestatic valueOf : (J)Ljava/lang/Long;
-            //   1202: astore #20
-            //   1204: aload #20
-            //   1206: astore #18
-            //   1208: goto -> 1184
-            //   1211: iload_3
-            //   1212: iconst_1
-            //   1213: iadd
-            //   1214: istore_3
-            //   1215: aload #7
-            //   1217: astore #18
-            //   1219: aload_1
-            //   1220: astore #19
-            //   1222: aload #21
-            //   1224: invokevirtual intValue : ()I
-            //   1227: iconst_1
-            //   1228: iadd
-            //   1229: invokestatic valueOf : (I)Ljava/lang/Integer;
-            //   1232: astore #23
-            //   1234: goto -> 815
-            //   1237: aload #14
-            //   1239: astore #18
-            //   1241: aload #8
-            //   1243: astore #19
-            //   1245: aload #20
-            //   1247: astore #8
-            //   1249: aload #12
-            //   1251: astore #15
-            //   1253: aload #10
-            //   1255: astore #14
-            //   1257: aload #11
-            //   1259: astore #12
-            //   1261: aload #18
-            //   1263: astore #11
-            //   1265: aload #19
-            //   1267: astore #10
-            //   1269: goto -> 1324
-            //   1272: aload #8
-            //   1274: astore #18
-            //   1276: aload #15
-            //   1278: astore #8
-            //   1280: aload #11
-            //   1282: astore #15
-            //   1284: aload #10
-            //   1286: astore #19
-            //   1288: aload #9
-            //   1290: astore #20
-            //   1292: aload #14
-            //   1294: astore #21
-            //   1296: aload #18
-            //   1298: astore #9
-            //   1300: aload #13
-            //   1302: astore #10
-            //   1304: aload #12
-            //   1306: astore #11
-            //   1308: aload #15
-            //   1310: astore #12
-            //   1312: aload #19
-            //   1314: astore #13
-            //   1316: aload #20
-            //   1318: astore #14
-            //   1320: aload #21
-            //   1322: astore #15
-            //   1324: aload #7
-            //   1326: astore #19
-            //   1328: aload_1
-            //   1329: astore #18
-            //   1331: aload #7
-            //   1333: astore #20
-            //   1335: aload_1
-            //   1336: astore #21
-            //   1338: aload #8
-            //   1340: invokevirtual longValue : ()J
-            //   1343: lconst_0
-            //   1344: lcmp
-            //   1345: ifle -> 1891
-            //   1348: aload #7
-            //   1350: astore #19
-            //   1352: aload_1
-            //   1353: astore #18
-            //   1355: aload #7
-            //   1357: astore #20
-            //   1359: aload_1
-            //   1360: astore #21
-            //   1362: aload_0
-            //   1363: getfield this$0 : Lcom/erwinvoogt/soarcast/WelkomSoarCast;
-            //   1366: invokestatic access$1100 : (Lcom/erwinvoogt/soarcast/WelkomSoarCast;)Ljava/util/ArrayList;
-            //   1369: astore #23
-            //   1371: aload #7
-            //   1373: astore #19
-            //   1375: aload_1
-            //   1376: astore #18
-            //   1378: aload #7
-            //   1380: astore #20
-            //   1382: aload_1
-            //   1383: astore #21
-            //   1385: aload_0
-            //   1386: getfield this$0 : Lcom/erwinvoogt/soarcast/WelkomSoarCast;
-            //   1389: astore #24
-            //   1391: aload #23
-            //   1393: new com/erwinvoogt/soarcast/WelkomSoarCast$Wind
-            //   1396: dup
-            //   1397: aload #24
-            //   1399: aload #8
-            //   1401: iload_2
-            //   1402: invokestatic valueOf : (I)Ljava/lang/Integer;
-            //   1405: aload #16
-            //   1407: aload #15
-            //   1409: aload #14
-            //   1411: aload #13
-            //   1413: aload #12
-            //   1415: aload #11
-            //   1417: aload #10
-            //   1419: aconst_null
-            //   1420: invokespecial <init> : (Lcom/erwinvoogt/soarcast/WelkomSoarCast;Ljava/lang/Long;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Double;Ljava/lang/Double;Ljava/lang/Double;Ljava/lang/Double;Ljava/lang/Double;Ljava/lang/Double;Lcom/erwinvoogt/soarcast/WelkomSoarCast$1;)V
-            //   1423: invokevirtual add : (Ljava/lang/Object;)Z
-            //   1426: pop
-            //   1427: goto -> 1430
-            //   1430: aload #22
-            //   1432: invokevirtual intValue : ()I
-            //   1435: iconst_1
-            //   1436: iadd
-            //   1437: invokestatic valueOf : (I)Ljava/lang/Integer;
-            //   1440: astore #22
-            //   1442: aload #14
-            //   1444: astore #18
-            //   1446: aload #11
-            //   1448: astore #19
-            //   1450: aload #10
-            //   1452: astore #20
-            //   1454: aload #15
-            //   1456: astore #14
-            //   1458: aload #8
-            //   1460: astore #15
-            //   1462: aload #9
-            //   1464: astore #8
-            //   1466: aload #18
-            //   1468: astore #9
-            //   1470: aload #13
-            //   1472: astore #10
-            //   1474: aload #12
-            //   1476: astore #11
-            //   1478: aload #19
-            //   1480: astore #12
-            //   1482: aload #20
-            //   1484: astore #13
-            //   1486: goto -> 558
-            //   1489: astore #8
-            //   1491: aload_1
-            //   1492: astore #9
-            //   1494: aload #8
-            //   1496: astore_1
-            //   1497: aload #7
-            //   1499: astore #19
-            //   1501: aload #9
-            //   1503: astore #7
-            //   1505: goto -> 1746
-            //   1508: astore #8
-            //   1510: aload_1
-            //   1511: astore #9
-            //   1513: aload #7
-            //   1515: astore_1
-            //   1516: aload #9
-            //   1518: astore #7
-            //   1520: goto -> 1659
-            //   1523: lconst_0
-            //   1524: lstore #5
-            //   1526: aload_1
-            //   1527: astore #17
-            //   1529: aload #7
-            //   1531: astore #18
-            //   1533: aload #8
-            //   1535: astore #7
-            //   1537: aload #16
-            //   1539: astore_1
-            //   1540: goto -> 1574
-            //   1543: astore #7
-            //   1545: aload #18
-            //   1547: astore_1
-            //   1548: goto -> 1736
-            //   1551: astore #8
-            //   1553: aload #21
-            //   1555: astore #7
-            //   1557: aload #20
-            //   1559: astore_1
-            //   1560: goto -> 1659
-            //   1563: aload #7
-            //   1565: astore #18
-            //   1567: aconst_null
-            //   1568: astore #17
-            //   1570: aload #8
-            //   1572: astore #7
-            //   1574: aload #18
-            //   1576: ifnull -> 1584
-            //   1579: aload #18
-            //   1581: invokevirtual disconnect : ()V
-            //   1584: aload #17
-            //   1586: ifnull -> 1611
-            //   1589: aload #17
-            //   1591: invokevirtual close : ()V
-            //   1594: goto -> 1611
-            //   1597: astore #8
-            //   1599: aload_0
-            //   1600: getfield LOG_TAG : Ljava/lang/String;
-            //   1603: ldc 'Error closing stream'
-            //   1605: aload #8
-            //   1607: invokestatic e : (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
-            //   1610: pop
-            //   1611: iload_2
-            //   1612: iconst_1
-            //   1613: iadd
-            //   1614: istore_2
-            //   1615: aload #7
-            //   1617: astore #8
-            //   1619: goto -> 65
-            //   1622: astore_1
-            //   1623: goto -> 1638
-            //   1626: astore #8
-            //   1628: aload #7
-            //   1630: astore_1
-            //   1631: goto -> 1656
-            //   1634: astore_1
-            //   1635: aconst_null
-            //   1636: astore #7
-            //   1638: aconst_null
-            //   1639: astore #8
-            //   1641: aload #7
-            //   1643: astore #19
-            //   1645: aload #8
-            //   1647: astore #7
-            //   1649: goto -> 1746
-            //   1652: astore #8
-            //   1654: aconst_null
-            //   1655: astore_1
-            //   1656: aconst_null
-            //   1657: astore #7
-            //   1659: aload_1
-            //   1660: astore #18
-            //   1662: aload #7
-            //   1664: astore #19
-            //   1666: aload_0
-            //   1667: getfield LOG_TAG : Ljava/lang/String;
-            //   1670: ldc 'Error '
-            //   1672: aload #8
-            //   1674: invokestatic e : (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
-            //   1677: pop
-            //   1678: aload_1
-            //   1679: astore #18
-            //   1681: aload #7
-            //   1683: astore #19
-            //   1685: iconst_m1
-            //   1686: invokestatic valueOf : (I)Ljava/lang/Integer;
-            //   1689: astore #8
-            //   1691: aload_1
-            //   1692: ifnull -> 1699
-            //   1695: aload_1
-            //   1696: invokevirtual disconnect : ()V
-            //   1699: aload #7
-            //   1701: ifnull -> 1724
-            //   1704: aload #7
-            //   1706: invokevirtual close : ()V
-            //   1709: aload #8
-            //   1711: areturn
-            //   1712: astore_1
-            //   1713: aload_0
-            //   1714: getfield LOG_TAG : Ljava/lang/String;
-            //   1717: ldc 'Error closing stream'
-            //   1719: aload_1
-            //   1720: invokestatic e : (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
-            //   1723: pop
-            //   1724: aload #8
-            //   1726: areturn
-            //   1727: astore #7
-            //   1729: aload #19
-            //   1731: astore_1
-            //   1732: aload #18
-            //   1734: astore #19
-            //   1736: aload #7
-            //   1738: astore #8
-            //   1740: aload_1
-            //   1741: astore #7
-            //   1743: aload #8
-            //   1745: astore_1
-            //   1746: aload #19
-            //   1748: ifnull -> 1756
-            //   1751: aload #19
-            //   1753: invokevirtual disconnect : ()V
-            //   1756: aload #7
-            //   1758: ifnull -> 1783
-            //   1761: aload #7
-            //   1763: invokevirtual close : ()V
-            //   1766: goto -> 1783
-            //   1769: astore #7
-            //   1771: aload_0
-            //   1772: getfield LOG_TAG : Ljava/lang/String;
-            //   1775: ldc 'Error closing stream'
-            //   1777: aload #7
-            //   1779: invokestatic e : (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
-            //   1782: pop
-            //   1783: aload_1
-            //   1784: athrow
-            //   1785: aload_0
-            //   1786: getfield this$0 : Lcom/erwinvoogt/soarcast/WelkomSoarCast;
-            //   1789: invokestatic access$1100 : (Lcom/erwinvoogt/soarcast/WelkomSoarCast;)Ljava/util/ArrayList;
-            //   1792: invokevirtual size : ()I
-            //   1795: iconst_1
-            //   1796: if_icmpge -> 1851
-            //   1799: aload_0
-            //   1800: getfield this$0 : Lcom/erwinvoogt/soarcast/WelkomSoarCast;
-            //   1803: invokestatic access$1100 : (Lcom/erwinvoogt/soarcast/WelkomSoarCast;)Ljava/util/ArrayList;
-            //   1806: new com/erwinvoogt/soarcast/WelkomSoarCast$Wind
-            //   1809: dup
-            //   1810: aload_0
-            //   1811: getfield this$0 : Lcom/erwinvoogt/soarcast/WelkomSoarCast;
-            //   1814: ldc2_w 1512514800
-            //   1817: invokestatic valueOf : (J)Ljava/lang/Long;
-            //   1820: iconst_0
-            //   1821: invokestatic valueOf : (I)Ljava/lang/Integer;
-            //   1824: aload_1
-            //   1825: aload #14
-            //   1827: aload #9
-            //   1829: aload #10
-            //   1831: aload #11
-            //   1833: aload #12
-            //   1835: aload #13
-            //   1837: aconst_null
-            //   1838: invokespecial <init> : (Lcom/erwinvoogt/soarcast/WelkomSoarCast;Ljava/lang/Long;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Double;Ljava/lang/Double;Ljava/lang/Double;Ljava/lang/Double;Ljava/lang/Double;Ljava/lang/Double;Lcom/erwinvoogt/soarcast/WelkomSoarCast$1;)V
-            //   1841: invokevirtual add : (Ljava/lang/Object;)Z
-            //   1844: pop
-            //   1845: bipush #-2
-            //   1847: invokestatic valueOf : (I)Ljava/lang/Integer;
-            //   1850: areturn
-            //   1851: iconst_1
-            //   1852: invokestatic valueOf : (I)Ljava/lang/Integer;
-            //   1855: areturn
-            //   1856: astore #8
-            //   1858: goto -> 992
-            //   1861: astore #14
-            //   1863: goto -> 1018
-            //   1866: astore #11
-            //   1868: goto -> 1051
-            //   1871: astore #13
-            //   1873: goto -> 1084
-            //   1876: astore #10
-            //   1878: goto -> 1117
-            //   1881: astore #12
-            //   1883: goto -> 1150
-            //   1886: astore #18
-            //   1888: goto -> 1191
-            //   1891: goto -> 1430
-            // Exception table:
-            //   from	to	target	type
-            //   275	292	1652	java/io/IOException
-            //   275	292	1634	finally
-            //   292	311	1626	java/io/IOException
-            //   292	311	1622	finally
-            //   316	334	1626	java/io/IOException
-            //   316	334	1622	finally
-            //   350	357	1551	java/io/IOException
-            //   350	357	1543	finally
-            //   373	381	1551	java/io/IOException
-            //   373	381	1543	finally
-            //   397	405	1551	java/io/IOException
-            //   397	405	1543	finally
-            //   421	429	1551	java/io/IOException
-            //   421	429	1543	finally
-            //   445	453	1551	java/io/IOException
-            //   445	453	1543	finally
-            //   469	477	1551	java/io/IOException
-            //   469	477	1543	finally
-            //   493	501	1551	java/io/IOException
-            //   493	501	1543	finally
-            //   517	526	1551	java/io/IOException
-            //   517	526	1543	finally
-            //   542	548	1551	java/io/IOException
-            //   542	548	1543	finally
-            //   572	578	1551	java/io/IOException
-            //   572	578	1543	finally
-            //   597	603	1551	java/io/IOException
-            //   597	603	1543	finally
-            //   614	625	648	java/io/IOException
-            //   614	625	1727	finally
-            //   632	640	648	java/io/IOException
-            //   632	640	1727	finally
-            //   674	680	1551	java/io/IOException
-            //   674	680	1543	finally
-            //   691	697	648	java/io/IOException
-            //   691	697	1727	finally
-            //   704	714	648	java/io/IOException
-            //   704	714	1727	finally
-            //   721	727	648	java/io/IOException
-            //   721	727	1727	finally
-            //   734	740	648	java/io/IOException
-            //   734	740	1727	finally
-            //   747	753	648	java/io/IOException
-            //   747	753	1727	finally
-            //   760	766	648	java/io/IOException
-            //   760	766	1727	finally
-            //   773	779	648	java/io/IOException
-            //   773	779	1727	finally
-            //   786	792	648	java/io/IOException
-            //   786	792	1727	finally
-            //   799	805	648	java/io/IOException
-            //   799	805	1727	finally
-            //   822	835	648	java/io/IOException
-            //   822	835	1727	finally
-            //   848	865	648	java/io/IOException
-            //   848	865	1727	finally
-            //   876	884	648	java/io/IOException
-            //   876	884	1727	finally
-            //   895	912	648	java/io/IOException
-            //   895	912	1727	finally
-            //   919	928	648	java/io/IOException
-            //   919	928	1727	finally
-            //   982	989	1856	java/lang/NumberFormatException
-            //   982	989	648	java/io/IOException
-            //   982	989	1727	finally
-            //   1008	1015	1861	java/lang/NumberFormatException
-            //   1008	1015	648	java/io/IOException
-            //   1008	1015	1727	finally
-            //   1025	1031	648	java/io/IOException
-            //   1025	1031	1727	finally
-            //   1041	1048	1866	java/lang/NumberFormatException
-            //   1041	1048	648	java/io/IOException
-            //   1041	1048	1727	finally
-            //   1058	1064	648	java/io/IOException
-            //   1058	1064	1727	finally
-            //   1074	1081	1871	java/lang/NumberFormatException
-            //   1074	1081	648	java/io/IOException
-            //   1074	1081	1727	finally
-            //   1091	1097	648	java/io/IOException
-            //   1091	1097	1727	finally
-            //   1107	1114	1876	java/lang/NumberFormatException
-            //   1107	1114	648	java/io/IOException
-            //   1107	1114	1727	finally
-            //   1124	1130	648	java/io/IOException
-            //   1124	1130	1727	finally
-            //   1140	1147	1881	java/lang/NumberFormatException
-            //   1140	1147	648	java/io/IOException
-            //   1140	1147	1727	finally
-            //   1157	1163	648	java/io/IOException
-            //   1157	1163	1727	finally
-            //   1173	1180	1886	java/lang/NumberFormatException
-            //   1173	1180	648	java/io/IOException
-            //   1173	1180	1727	finally
-            //   1198	1204	648	java/io/IOException
-            //   1198	1204	1727	finally
-            //   1222	1234	648	java/io/IOException
-            //   1222	1234	1727	finally
-            //   1338	1348	1551	java/io/IOException
-            //   1338	1348	1543	finally
-            //   1362	1371	1551	java/io/IOException
-            //   1362	1371	1543	finally
-            //   1385	1391	1551	java/io/IOException
-            //   1385	1391	1543	finally
-            //   1391	1427	1508	java/io/IOException
-            //   1391	1427	1489	finally
-            //   1430	1442	1508	java/io/IOException
-            //   1430	1442	1489	finally
-            //   1589	1594	1597	java/io/IOException
-            //   1666	1678	1727	finally
-            //   1685	1691	1727	finally
-            //   1704	1709	1712	java/io/IOException
-            //   1761	1766	1769	java/io/IOException
+            //   993: invokestatic    java/lang/Double.valueOf:(D)Ljava/lang/Double;
+            //   996: astore          8
+            //   998: goto            1211
+            //  1001: aload           7
+            //  1003: astore          18
+            //  1005: aload_1
+            //  1006: astore          19
+            //  1008: aload           23
+            //  1010: invokestatic    java/lang/Double.valueOf:(Ljava/lang/String;)Ljava/lang/Double;
+            //  1013: astore          14
+            //  1015: goto            1211
+            //  1018: aload           7
+            //  1020: astore          18
+            //  1022: aload_1
+            //  1023: astore          19
+            //  1025: dconst_0
+            //  1026: invokestatic    java/lang/Double.valueOf:(D)Ljava/lang/Double;
+            //  1029: astore          14
+            //  1031: goto            1015
+            //  1034: aload           7
+            //  1036: astore          18
+            //  1038: aload_1
+            //  1039: astore          19
+            //  1041: aload           23
+            //  1043: invokestatic    java/lang/Double.valueOf:(Ljava/lang/String;)Ljava/lang/Double;
+            //  1046: astore          11
+            //  1048: goto            1211
+            //  1051: aload           7
+            //  1053: astore          18
+            //  1055: aload_1
+            //  1056: astore          19
+            //  1058: dconst_0
+            //  1059: invokestatic    java/lang/Double.valueOf:(D)Ljava/lang/Double;
+            //  1062: astore          11
+            //  1064: goto            1048
+            //  1067: aload           7
+            //  1069: astore          18
+            //  1071: aload_1
+            //  1072: astore          19
+            //  1074: aload           23
+            //  1076: invokestatic    java/lang/Double.valueOf:(Ljava/lang/String;)Ljava/lang/Double;
+            //  1079: astore          13
+            //  1081: goto            1211
+            //  1084: aload           7
+            //  1086: astore          18
+            //  1088: aload_1
+            //  1089: astore          19
+            //  1091: dconst_0
+            //  1092: invokestatic    java/lang/Double.valueOf:(D)Ljava/lang/Double;
+            //  1095: astore          13
+            //  1097: goto            1081
+            //  1100: aload           7
+            //  1102: astore          18
+            //  1104: aload_1
+            //  1105: astore          19
+            //  1107: aload           23
+            //  1109: invokestatic    java/lang/Double.valueOf:(Ljava/lang/String;)Ljava/lang/Double;
+            //  1112: astore          10
+            //  1114: goto            1211
+            //  1117: aload           7
+            //  1119: astore          18
+            //  1121: aload_1
+            //  1122: astore          19
+            //  1124: dconst_0
+            //  1125: invokestatic    java/lang/Double.valueOf:(D)Ljava/lang/Double;
+            //  1128: astore          10
+            //  1130: goto            1114
+            //  1133: aload           7
+            //  1135: astore          18
+            //  1137: aload_1
+            //  1138: astore          19
+            //  1140: aload           23
+            //  1142: invokestatic    java/lang/Double.valueOf:(Ljava/lang/String;)Ljava/lang/Double;
+            //  1145: astore          12
+            //  1147: goto            1211
+            //  1150: aload           7
+            //  1152: astore          18
+            //  1154: aload_1
+            //  1155: astore          19
+            //  1157: dconst_0
+            //  1158: invokestatic    java/lang/Double.valueOf:(D)Ljava/lang/Double;
+            //  1161: astore          12
+            //  1163: goto            1147
+            //  1166: aload           7
+            //  1168: astore          18
+            //  1170: aload_1
+            //  1171: astore          19
+            //  1173: aload           23
+            //  1175: invokestatic    java/lang/Long.valueOf:(Ljava/lang/String;)Ljava/lang/Long;
+            //  1178: astore          20
+            //  1180: aload           20
+            //  1182: astore          18
+            //  1184: aload           18
+            //  1186: astore          20
+            //  1188: goto            1211
+            //  1191: aload           7
+            //  1193: astore          18
+            //  1195: aload_1
+            //  1196: astore          19
+            //  1198: lconst_0
+            //  1199: invokestatic    java/lang/Long.valueOf:(J)Ljava/lang/Long;
+            //  1202: astore          20
+            //  1204: aload           20
+            //  1206: astore          18
+            //  1208: goto            1184
+            //  1211: iload_3
+            //  1212: iconst_1
+            //  1213: iadd
+            //  1214: istore_3
+            //  1215: aload           7
+            //  1217: astore          18
+            //  1219: aload_1
+            //  1220: astore          19
+            //  1222: aload           21
+            //  1224: invokevirtual   java/lang/Integer.intValue:()I
+            //  1227: iconst_1
+            //  1228: iadd
+            //  1229: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //  1232: astore          23
+            //  1234: goto            815
+            //  1237: aload           14
+            //  1239: astore          18
+            //  1241: aload           8
+            //  1243: astore          19
+            //  1245: aload           20
+            //  1247: astore          8
+            //  1249: aload           12
+            //  1251: astore          15
+            //  1253: aload           10
+            //  1255: astore          14
+            //  1257: aload           11
+            //  1259: astore          12
+            //  1261: aload           18
+            //  1263: astore          11
+            //  1265: aload           19
+            //  1267: astore          10
+            //  1269: goto            1324
+            //  1272: aload           8
+            //  1274: astore          18
+            //  1276: aload           15
+            //  1278: astore          8
+            //  1280: aload           11
+            //  1282: astore          15
+            //  1284: aload           10
+            //  1286: astore          19
+            //  1288: aload           9
+            //  1290: astore          20
+            //  1292: aload           14
+            //  1294: astore          21
+            //  1296: aload           18
+            //  1298: astore          9
+            //  1300: aload           13
+            //  1302: astore          10
+            //  1304: aload           12
+            //  1306: astore          11
+            //  1308: aload           15
+            //  1310: astore          12
+            //  1312: aload           19
+            //  1314: astore          13
+            //  1316: aload           20
+            //  1318: astore          14
+            //  1320: aload           21
+            //  1322: astore          15
+            //  1324: aload           7
+            //  1326: astore          19
+            //  1328: aload_1
+            //  1329: astore          18
+            //  1331: aload           7
+            //  1333: astore          20
+            //  1335: aload_1
+            //  1336: astore          21
+            //  1338: aload           8
+            //  1340: invokevirtual   java/lang/Long.longValue:()J
+            //  1343: lconst_0
+            //  1344: lcmp
+            //  1345: ifle            1891
+            //  1348: aload           7
+            //  1350: astore          19
+            //  1352: aload_1
+            //  1353: astore          18
+            //  1355: aload           7
+            //  1357: astore          20
+            //  1359: aload_1
+            //  1360: astore          21
+            //  1362: aload_0
+            //  1363: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesWind.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
+            //  1366: invokestatic    com/erwinvoogt/soarcast/WelkomSoarCast.access$1100:(Lcom/erwinvoogt/soarcast/WelkomSoarCast;)Ljava/util/ArrayList;
+            //  1369: astore          23
+            //  1371: aload           7
+            //  1373: astore          19
+            //  1375: aload_1
+            //  1376: astore          18
+            //  1378: aload           7
+            //  1380: astore          20
+            //  1382: aload_1
+            //  1383: astore          21
+            //  1385: aload_0
+            //  1386: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesWind.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
+            //  1389: astore          24
+            //  1391: aload           23
+            //  1393: new             Lcom/erwinvoogt/soarcast/WelkomSoarCast$Wind;
+            //  1396: dup
+            //  1397: aload           24
+            //  1399: aload           8
+            //  1401: iload_2
+            //  1402: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //  1405: aload           16
+            //  1407: aload           15
+            //  1409: aload           14
+            //  1411: aload           13
+            //  1413: aload           12
+            //  1415: aload           11
+            //  1417: aload           10
+            //  1419: aconst_null
+            //  1420: invokespecial   com/erwinvoogt/soarcast/WelkomSoarCast$Wind.<init>:(Lcom/erwinvoogt/soarcast/WelkomSoarCast;Ljava/lang/Long;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Double;Ljava/lang/Double;Ljava/lang/Double;Ljava/lang/Double;Ljava/lang/Double;Ljava/lang/Double;Lcom/erwinvoogt/soarcast/WelkomSoarCast$1;)V
+            //  1423: invokevirtual   java/util/ArrayList.add:(Ljava/lang/Object;)Z
+            //  1426: pop
+            //  1427: goto            1430
+            //  1430: aload           22
+            //  1432: invokevirtual   java/lang/Integer.intValue:()I
+            //  1435: iconst_1
+            //  1436: iadd
+            //  1437: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //  1440: astore          22
+            //  1442: aload           14
+            //  1444: astore          18
+            //  1446: aload           11
+            //  1448: astore          19
+            //  1450: aload           10
+            //  1452: astore          20
+            //  1454: aload           15
+            //  1456: astore          14
+            //  1458: aload           8
+            //  1460: astore          15
+            //  1462: aload           9
+            //  1464: astore          8
+            //  1466: aload           18
+            //  1468: astore          9
+            //  1470: aload           13
+            //  1472: astore          10
+            //  1474: aload           12
+            //  1476: astore          11
+            //  1478: aload           19
+            //  1480: astore          12
+            //  1482: aload           20
+            //  1484: astore          13
+            //  1486: goto            558
+            //  1489: astore          8
+            //  1491: aload_1
+            //  1492: astore          9
+            //  1494: aload           8
+            //  1496: astore_1
+            //  1497: aload           7
+            //  1499: astore          19
+            //  1501: aload           9
+            //  1503: astore          7
+            //  1505: goto            1746
+            //  1508: astore          8
+            //  1510: aload_1
+            //  1511: astore          9
+            //  1513: aload           7
+            //  1515: astore_1
+            //  1516: aload           9
+            //  1518: astore          7
+            //  1520: goto            1659
+            //  1523: lconst_0
+            //  1524: lstore          5
+            //  1526: aload_1
+            //  1527: astore          17
+            //  1529: aload           7
+            //  1531: astore          18
+            //  1533: aload           8
+            //  1535: astore          7
+            //  1537: aload           16
+            //  1539: astore_1
+            //  1540: goto            1574
+            //  1543: astore          7
+            //  1545: aload           18
+            //  1547: astore_1
+            //  1548: goto            1736
+            //  1551: astore          8
+            //  1553: aload           21
+            //  1555: astore          7
+            //  1557: aload           20
+            //  1559: astore_1
+            //  1560: goto            1659
+            //  1563: aload           7
+            //  1565: astore          18
+            //  1567: aconst_null
+            //  1568: astore          17
+            //  1570: aload           8
+            //  1572: astore          7
+            //  1574: aload           18
+            //  1576: ifnull          1584
+            //  1579: aload           18
+            //  1581: invokevirtual   java/net/HttpURLConnection.disconnect:()V
+            //  1584: aload           17
+            //  1586: ifnull          1611
+            //  1589: aload           17
+            //  1591: invokevirtual   java/io/BufferedReader.close:()V
+            //  1594: goto            1611
+            //  1597: astore          8
+            //  1599: aload_0
+            //  1600: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesWind.LOG_TAG:Ljava/lang/String;
+            //  1603: ldc             "Error closing stream"
+            //  1605: aload           8
+            //  1607: invokestatic    android/util/Log.e:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
+            //  1610: pop
+            //  1611: iload_2
+            //  1612: iconst_1
+            //  1613: iadd
+            //  1614: istore_2
+            //  1615: aload           7
+            //  1617: astore          8
+            //  1619: goto            65
+            //  1622: astore_1
+            //  1623: goto            1638
+            //  1626: astore          8
+            //  1628: aload           7
+            //  1630: astore_1
+            //  1631: goto            1656
+            //  1634: astore_1
+            //  1635: aconst_null
+            //  1636: astore          7
+            //  1638: aconst_null
+            //  1639: astore          8
+            //  1641: aload           7
+            //  1643: astore          19
+            //  1645: aload           8
+            //  1647: astore          7
+            //  1649: goto            1746
+            //  1652: astore          8
+            //  1654: aconst_null
+            //  1655: astore_1
+            //  1656: aconst_null
+            //  1657: astore          7
+            //  1659: aload_1
+            //  1660: astore          18
+            //  1662: aload           7
+            //  1664: astore          19
+            //  1666: aload_0
+            //  1667: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesWind.LOG_TAG:Ljava/lang/String;
+            //  1670: ldc             "Error "
+            //  1672: aload           8
+            //  1674: invokestatic    android/util/Log.e:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
+            //  1677: pop
+            //  1678: aload_1
+            //  1679: astore          18
+            //  1681: aload           7
+            //  1683: astore          19
+            //  1685: iconst_m1
+            //  1686: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //  1689: astore          8
+            //  1691: aload_1
+            //  1692: ifnull          1699
+            //  1695: aload_1
+            //  1696: invokevirtual   java/net/HttpURLConnection.disconnect:()V
+            //  1699: aload           7
+            //  1701: ifnull          1724
+            //  1704: aload           7
+            //  1706: invokevirtual   java/io/BufferedReader.close:()V
+            //  1709: aload           8
+            //  1711: areturn
+            //  1712: astore_1
+            //  1713: aload_0
+            //  1714: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesWind.LOG_TAG:Ljava/lang/String;
+            //  1717: ldc             "Error closing stream"
+            //  1719: aload_1
+            //  1720: invokestatic    android/util/Log.e:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
+            //  1723: pop
+            //  1724: aload           8
+            //  1726: areturn
+            //  1727: astore          7
+            //  1729: aload           19
+            //  1731: astore_1
+            //  1732: aload           18
+            //  1734: astore          19
+            //  1736: aload           7
+            //  1738: astore          8
+            //  1740: aload_1
+            //  1741: astore          7
+            //  1743: aload           8
+            //  1745: astore_1
+            //  1746: aload           19
+            //  1748: ifnull          1756
+            //  1751: aload           19
+            //  1753: invokevirtual   java/net/HttpURLConnection.disconnect:()V
+            //  1756: aload           7
+            //  1758: ifnull          1783
+            //  1761: aload           7
+            //  1763: invokevirtual   java/io/BufferedReader.close:()V
+            //  1766: goto            1783
+            //  1769: astore          7
+            //  1771: aload_0
+            //  1772: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesWind.LOG_TAG:Ljava/lang/String;
+            //  1775: ldc             "Error closing stream"
+            //  1777: aload           7
+            //  1779: invokestatic    android/util/Log.e:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
+            //  1782: pop
+            //  1783: aload_1
+            //  1784: athrow
+            //  1785: aload_0
+            //  1786: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesWind.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
+            //  1789: invokestatic    com/erwinvoogt/soarcast/WelkomSoarCast.access$1100:(Lcom/erwinvoogt/soarcast/WelkomSoarCast;)Ljava/util/ArrayList;
+            //  1792: invokevirtual   java/util/ArrayList.size:()I
+            //  1795: iconst_1
+            //  1796: if_icmpge       1851
+            //  1799: aload_0
+            //  1800: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesWind.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
+            //  1803: invokestatic    com/erwinvoogt/soarcast/WelkomSoarCast.access$1100:(Lcom/erwinvoogt/soarcast/WelkomSoarCast;)Ljava/util/ArrayList;
+            //  1806: new             Lcom/erwinvoogt/soarcast/WelkomSoarCast$Wind;
+            //  1809: dup
+            //  1810: aload_0
+            //  1811: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesWind.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
+            //  1814: ldc2_w          1512514800
+            //  1817: invokestatic    java/lang/Long.valueOf:(J)Ljava/lang/Long;
+            //  1820: iconst_0
+            //  1821: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //  1824: aload_1
+            //  1825: aload           14
+            //  1827: aload           9
+            //  1829: aload           10
+            //  1831: aload           11
+            //  1833: aload           12
+            //  1835: aload           13
+            //  1837: aconst_null
+            //  1838: invokespecial   com/erwinvoogt/soarcast/WelkomSoarCast$Wind.<init>:(Lcom/erwinvoogt/soarcast/WelkomSoarCast;Ljava/lang/Long;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Double;Ljava/lang/Double;Ljava/lang/Double;Ljava/lang/Double;Ljava/lang/Double;Ljava/lang/Double;Lcom/erwinvoogt/soarcast/WelkomSoarCast$1;)V
+            //  1841: invokevirtual   java/util/ArrayList.add:(Ljava/lang/Object;)Z
+            //  1844: pop
+            //  1845: bipush          -2
+            //  1847: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //  1850: areturn
+            //  1851: iconst_1
+            //  1852: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+            //  1855: areturn
+            //  1856: astore          8
+            //  1858: goto            992
+            //  1861: astore          14
+            //  1863: goto            1018
+            //  1866: astore          11
+            //  1868: goto            1051
+            //  1871: astore          13
+            //  1873: goto            1084
+            //  1876: astore          10
+            //  1878: goto            1117
+            //  1881: astore          12
+            //  1883: goto            1150
+            //  1886: astore          18
+            //  1888: goto            1191
+            //  1891: goto            1430
+            //    Exceptions:
+            //  Try           Handler
+            //  Start  End    Start  End    Type
+            //  -----  -----  -----  -----  ---------------------------------
+            //  275    292    1652   1656   Ljava/io/IOException;
+            //  275    292    1634   1638   Any
+            //  292    311    1626   1634   Ljava/io/IOException;
+            //  292    311    1622   1626   Any
+            //  316    334    1626   1634   Ljava/io/IOException;
+            //  316    334    1622   1626   Any
+            //  350    357    1551   1557   Ljava/io/IOException;
+            //  350    357    1543   1551   Any
+            //  373    381    1551   1557   Ljava/io/IOException;
+            //  373    381    1543   1551   Any
+            //  397    405    1551   1557   Ljava/io/IOException;
+            //  397    405    1543   1551   Any
+            //  421    429    1551   1557   Ljava/io/IOException;
+            //  421    429    1543   1551   Any
+            //  445    453    1551   1557   Ljava/io/IOException;
+            //  445    453    1543   1551   Any
+            //  469    477    1551   1557   Ljava/io/IOException;
+            //  469    477    1543   1551   Any
+            //  493    501    1551   1557   Ljava/io/IOException;
+            //  493    501    1543   1551   Any
+            //  517    526    1551   1557   Ljava/io/IOException;
+            //  517    526    1543   1551   Any
+            //  542    548    1551   1557   Ljava/io/IOException;
+            //  542    548    1543   1551   Any
+            //  572    578    1551   1557   Ljava/io/IOException;
+            //  572    578    1543   1551   Any
+            //  597    603    1551   1557   Ljava/io/IOException;
+            //  597    603    1543   1551   Any
+            //  614    625    648    660    Ljava/io/IOException;
+            //  614    625    1727   1736   Any
+            //  632    640    648    660    Ljava/io/IOException;
+            //  632    640    1727   1736   Any
+            //  674    680    1551   1557   Ljava/io/IOException;
+            //  674    680    1543   1551   Any
+            //  691    697    648    660    Ljava/io/IOException;
+            //  691    697    1727   1736   Any
+            //  704    714    648    660    Ljava/io/IOException;
+            //  704    714    1727   1736   Any
+            //  721    727    648    660    Ljava/io/IOException;
+            //  721    727    1727   1736   Any
+            //  734    740    648    660    Ljava/io/IOException;
+            //  734    740    1727   1736   Any
+            //  747    753    648    660    Ljava/io/IOException;
+            //  747    753    1727   1736   Any
+            //  760    766    648    660    Ljava/io/IOException;
+            //  760    766    1727   1736   Any
+            //  773    779    648    660    Ljava/io/IOException;
+            //  773    779    1727   1736   Any
+            //  786    792    648    660    Ljava/io/IOException;
+            //  786    792    1727   1736   Any
+            //  799    805    648    660    Ljava/io/IOException;
+            //  799    805    1727   1736   Any
+            //  822    835    648    660    Ljava/io/IOException;
+            //  822    835    1727   1736   Any
+            //  848    865    648    660    Ljava/io/IOException;
+            //  848    865    1727   1736   Any
+            //  876    884    648    660    Ljava/io/IOException;
+            //  876    884    1727   1736   Any
+            //  895    912    648    660    Ljava/io/IOException;
+            //  895    912    1727   1736   Any
+            //  919    928    648    660    Ljava/io/IOException;
+            //  919    928    1727   1736   Any
+            //  982    989    1856   1001   Ljava/lang/NumberFormatException;
+            //  982    989    648    660    Ljava/io/IOException;
+            //  982    989    1727   1736   Any
+            //  1008   1015   1861   1034   Ljava/lang/NumberFormatException;
+            //  1008   1015   648    660    Ljava/io/IOException;
+            //  1008   1015   1727   1736   Any
+            //  1025   1031   648    660    Ljava/io/IOException;
+            //  1025   1031   1727   1736   Any
+            //  1041   1048   1866   1067   Ljava/lang/NumberFormatException;
+            //  1041   1048   648    660    Ljava/io/IOException;
+            //  1041   1048   1727   1736   Any
+            //  1058   1064   648    660    Ljava/io/IOException;
+            //  1058   1064   1727   1736   Any
+            //  1074   1081   1871   1100   Ljava/lang/NumberFormatException;
+            //  1074   1081   648    660    Ljava/io/IOException;
+            //  1074   1081   1727   1736   Any
+            //  1091   1097   648    660    Ljava/io/IOException;
+            //  1091   1097   1727   1736   Any
+            //  1107   1114   1876   1133   Ljava/lang/NumberFormatException;
+            //  1107   1114   648    660    Ljava/io/IOException;
+            //  1107   1114   1727   1736   Any
+            //  1124   1130   648    660    Ljava/io/IOException;
+            //  1124   1130   1727   1736   Any
+            //  1140   1147   1881   1166   Ljava/lang/NumberFormatException;
+            //  1140   1147   648    660    Ljava/io/IOException;
+            //  1140   1147   1727   1736   Any
+            //  1157   1163   648    660    Ljava/io/IOException;
+            //  1157   1163   1727   1736   Any
+            //  1173   1180   1886   1211   Ljava/lang/NumberFormatException;
+            //  1173   1180   648    660    Ljava/io/IOException;
+            //  1173   1180   1727   1736   Any
+            //  1198   1204   648    660    Ljava/io/IOException;
+            //  1198   1204   1727   1736   Any
+            //  1222   1234   648    660    Ljava/io/IOException;
+            //  1222   1234   1727   1736   Any
+            //  1338   1348   1551   1557   Ljava/io/IOException;
+            //  1338   1348   1543   1551   Any
+            //  1362   1371   1551   1557   Ljava/io/IOException;
+            //  1362   1371   1543   1551   Any
+            //  1385   1391   1551   1557   Ljava/io/IOException;
+            //  1385   1391   1543   1551   Any
+            //  1391   1427   1508   1523   Ljava/io/IOException;
+            //  1391   1427   1489   1508   Any
+            //  1430   1442   1508   1523   Ljava/io/IOException;
+            //  1430   1442   1489   1508   Any
+            //  1589   1594   1597   1611   Ljava/io/IOException;
+            //  1666   1678   1727   1736   Any
+            //  1685   1691   1727   1736   Any
+            //  1704   1709   1712   1724   Ljava/io/IOException;
+            //  1761   1766   1769   1783   Ljava/io/IOException;
+            //
+            // The error that occurred was:
+            //
+            // java.lang.NullPointerException
+            //     at com.strobel.assembler.ir.StackMappingVisitor.push(StackMappingVisitor.java:290)
+            //     at com.strobel.assembler.ir.StackMappingVisitor$InstructionAnalyzer.execute(StackMappingVisitor.java:833)
+            //     at com.strobel.assembler.ir.StackMappingVisitor$InstructionAnalyzer.visit(StackMappingVisitor.java:398)
+            //     at com.strobel.decompiler.ast.AstBuilder.performStackAnalysis(AstBuilder.java:2030)
+            //     at com.strobel.decompiler.ast.AstBuilder.build(AstBuilder.java:108)
+            //     at com.strobel.decompiler.languages.java.ast.AstMethodBodyBuilder.createMethodBody(AstMethodBodyBuilder.java:211)
+            //     at com.strobel.decompiler.languages.java.ast.AstMethodBodyBuilder.createMethodBody(AstMethodBodyBuilder.java:99)
+            //     at com.strobel.decompiler.languages.java.ast.AstBuilder.createMethodBody(AstBuilder.java:782)
+            //     at com.strobel.decompiler.languages.java.ast.AstBuilder.createMethod(AstBuilder.java:675)
+            //     at com.strobel.decompiler.languages.java.ast.AstBuilder.addTypeMembers(AstBuilder.java:552)
+            //     at com.strobel.decompiler.languages.java.ast.AstBuilder.createTypeCore(AstBuilder.java:519)
+            //     at com.strobel.decompiler.languages.java.ast.AstBuilder.createTypeNoCache(AstBuilder.java:161)
+            //     at com.strobel.decompiler.languages.java.ast.AstBuilder.addTypeMembers(AstBuilder.java:576)
+            //     at com.strobel.decompiler.languages.java.ast.AstBuilder.createTypeCore(AstBuilder.java:519)
+            //     at com.strobel.decompiler.languages.java.ast.AstBuilder.createTypeNoCache(AstBuilder.java:161)
+            //     at com.strobel.decompiler.languages.java.ast.AstBuilder.createType(AstBuilder.java:150)
+            //     at com.strobel.decompiler.languages.java.ast.AstBuilder.addType(AstBuilder.java:125)
+            //     at com.strobel.decompiler.languages.java.JavaLanguage.buildAst(JavaLanguage.java:71)
+            //     at com.strobel.decompiler.languages.java.JavaLanguage.decompileType(JavaLanguage.java:59)
+            //     at com.strobel.decompiler.DecompilerDriver.decompileType(DecompilerDriver.java:330)
+            //     at com.strobel.decompiler.DecompilerDriver.decompileJar(DecompilerDriver.java:251)
+            //     at com.strobel.decompiler.DecompilerDriver.main(DecompilerDriver.java:126)
+            //
+            throw new IllegalStateException("An error occurred while decompiling this method.");
         }
 
-        protected void onPostExecute(Integer param1Integer) {
-            // Byte code:
-            //   0: aload_1
-            //   1: invokevirtual intValue : ()I
-            //   4: iconst_1
-            //   5: if_icmpge -> 75
-            //   8: aload_1
-            //   9: invokevirtual intValue : ()I
-            //   12: bipush #-2
-            //   14: if_icmpne -> 46
-            //   17: aload_0
-            //   18: getfield this$0 : Lcom/erwinvoogt/soarcast/WelkomSoarCast;
-            //   21: invokevirtual getBaseContext : ()Landroid/content/Context;
-            //   24: aload_0
-            //   25: getfield this$0 : Lcom/erwinvoogt/soarcast/WelkomSoarCast;
-            //   28: invokevirtual getResources : ()Landroid/content/res/Resources;
-            //   31: ldc 2131427370
-            //   33: invokevirtual getString : (I)Ljava/lang/String;
-            //   36: iconst_0
-            //   37: invokestatic makeText : (Landroid/content/Context;Ljava/lang/CharSequence;I)Landroid/widget/Toast;
-            //   40: invokevirtual show : ()V
-            //   43: goto -> 100
-            //   46: aload_0
-            //   47: getfield this$0 : Lcom/erwinvoogt/soarcast/WelkomSoarCast;
-            //   50: invokevirtual getBaseContext : ()Landroid/content/Context;
-            //   53: aload_0
-            //   54: getfield this$0 : Lcom/erwinvoogt/soarcast/WelkomSoarCast;
-            //   57: invokevirtual getResources : ()Landroid/content/res/Resources;
-            //   60: ldc 2131427361
-            //   62: invokevirtual getString : (I)Ljava/lang/String;
-            //   65: iconst_0
-            //   66: invokestatic makeText : (Landroid/content/Context;Ljava/lang/CharSequence;I)Landroid/widget/Toast;
-            //   69: invokevirtual show : ()V
-            //   72: goto -> 100
-            //   75: aload_0
-            //   76: getfield this$0 : Lcom/erwinvoogt/soarcast/WelkomSoarCast;
-            //   79: aload_0
-            //   80: getfield this$0 : Lcom/erwinvoogt/soarcast/WelkomSoarCast;
-            //   83: invokestatic access$1100 : (Lcom/erwinvoogt/soarcast/WelkomSoarCast;)Ljava/util/ArrayList;
-            //   86: iconst_0
-            //   87: invokevirtual get : (I)Ljava/lang/Object;
-            //   90: checkcast com/erwinvoogt/soarcast/WelkomSoarCast$Wind
-            //   93: invokestatic access$3400 : (Lcom/erwinvoogt/soarcast/WelkomSoarCast$Wind;)Ljava/lang/Long;
-            //   96: invokestatic access$4802 : (Lcom/erwinvoogt/soarcast/WelkomSoarCast;Ljava/lang/Long;)Ljava/lang/Long;
-            //   99: pop
-            //   100: aload_0
-            //   101: getfield this$0 : Lcom/erwinvoogt/soarcast/WelkomSoarCast;
-            //   104: iconst_0
-            //   105: invokestatic valueOf : (I)Ljava/lang/Integer;
-            //   108: invokestatic access$902 : (Lcom/erwinvoogt/soarcast/WelkomSoarCast;Ljava/lang/Integer;)Ljava/lang/Integer;
-            //   111: pop
-            //   112: aload_0
-            //   113: getfield this$0 : Lcom/erwinvoogt/soarcast/WelkomSoarCast;
-            //   116: invokestatic access$1100 : (Lcom/erwinvoogt/soarcast/WelkomSoarCast;)Ljava/util/ArrayList;
-            //   119: invokevirtual size : ()I
-            //   122: istore #4
-            //   124: iconst_0
-            //   125: istore_2
-            //   126: iload_2
-            //   127: iload #4
-            //   129: if_icmpge -> 318
-            //   132: aload_0
-            //   133: getfield this$0 : Lcom/erwinvoogt/soarcast/WelkomSoarCast;
-            //   136: invokestatic access$1100 : (Lcom/erwinvoogt/soarcast/WelkomSoarCast;)Ljava/util/ArrayList;
-            //   139: iload_2
-            //   140: invokevirtual get : (I)Ljava/lang/Object;
-            //   143: checkcast com/erwinvoogt/soarcast/WelkomSoarCast$Wind
-            //   146: invokestatic access$3500 : (Lcom/erwinvoogt/soarcast/WelkomSoarCast$Wind;)Ljava/lang/Double;
-            //   149: invokevirtual doubleValue : ()D
-            //   152: ldc2_w 15.0
-            //   155: dcmpl
-            //   156: ifgt -> 296
-            //   159: aload_0
-            //   160: getfield this$0 : Lcom/erwinvoogt/soarcast/WelkomSoarCast;
-            //   163: invokestatic access$1100 : (Lcom/erwinvoogt/soarcast/WelkomSoarCast;)Ljava/util/ArrayList;
-            //   166: iload_2
-            //   167: invokevirtual get : (I)Ljava/lang/Object;
-            //   170: checkcast com/erwinvoogt/soarcast/WelkomSoarCast$Wind
-            //   173: invokestatic access$3600 : (Lcom/erwinvoogt/soarcast/WelkomSoarCast$Wind;)Ljava/lang/Double;
-            //   176: invokevirtual doubleValue : ()D
-            //   179: ldc2_w 15.0
-            //   182: dcmpl
-            //   183: ifgt -> 296
-            //   186: aload_0
-            //   187: getfield this$0 : Lcom/erwinvoogt/soarcast/WelkomSoarCast;
-            //   190: invokestatic access$1100 : (Lcom/erwinvoogt/soarcast/WelkomSoarCast;)Ljava/util/ArrayList;
-            //   193: iload_2
-            //   194: invokevirtual get : (I)Ljava/lang/Object;
-            //   197: checkcast com/erwinvoogt/soarcast/WelkomSoarCast$Wind
-            //   200: invokestatic access$3900 : (Lcom/erwinvoogt/soarcast/WelkomSoarCast$Wind;)Ljava/lang/Double;
-            //   203: invokevirtual doubleValue : ()D
-            //   206: ldc2_w 15.0
-            //   209: dcmpl
-            //   210: ifgt -> 296
-            //   213: aload_0
-            //   214: getfield this$0 : Lcom/erwinvoogt/soarcast/WelkomSoarCast;
-            //   217: invokestatic access$1100 : (Lcom/erwinvoogt/soarcast/WelkomSoarCast;)Ljava/util/ArrayList;
-            //   220: iload_2
-            //   221: invokevirtual get : (I)Ljava/lang/Object;
-            //   224: checkcast com/erwinvoogt/soarcast/WelkomSoarCast$Wind
-            //   227: invokestatic access$4000 : (Lcom/erwinvoogt/soarcast/WelkomSoarCast$Wind;)Ljava/lang/Double;
-            //   230: invokevirtual doubleValue : ()D
-            //   233: ldc2_w 15.0
-            //   236: dcmpl
-            //   237: ifgt -> 296
-            //   240: aload_0
-            //   241: getfield this$0 : Lcom/erwinvoogt/soarcast/WelkomSoarCast;
-            //   244: invokestatic access$1100 : (Lcom/erwinvoogt/soarcast/WelkomSoarCast;)Ljava/util/ArrayList;
-            //   247: iload_2
-            //   248: invokevirtual get : (I)Ljava/lang/Object;
-            //   251: checkcast com/erwinvoogt/soarcast/WelkomSoarCast$Wind
-            //   254: invokestatic access$3700 : (Lcom/erwinvoogt/soarcast/WelkomSoarCast$Wind;)Ljava/lang/Double;
-            //   257: invokevirtual doubleValue : ()D
-            //   260: ldc2_w 15.0
-            //   263: dcmpl
-            //   264: ifgt -> 296
-            //   267: iload_2
-            //   268: istore_3
-            //   269: aload_0
-            //   270: getfield this$0 : Lcom/erwinvoogt/soarcast/WelkomSoarCast;
-            //   273: invokestatic access$1100 : (Lcom/erwinvoogt/soarcast/WelkomSoarCast;)Ljava/util/ArrayList;
-            //   276: iload_2
-            //   277: invokevirtual get : (I)Ljava/lang/Object;
-            //   280: checkcast com/erwinvoogt/soarcast/WelkomSoarCast$Wind
-            //   283: invokestatic access$3800 : (Lcom/erwinvoogt/soarcast/WelkomSoarCast$Wind;)Ljava/lang/Double;
-            //   286: invokevirtual doubleValue : ()D
-            //   289: ldc2_w 15.0
-            //   292: dcmpl
-            //   293: ifle -> 311
-            //   296: aload_0
-            //   297: getfield this$0 : Lcom/erwinvoogt/soarcast/WelkomSoarCast;
-            //   300: iconst_1
-            //   301: invokestatic valueOf : (I)Ljava/lang/Integer;
-            //   304: invokestatic access$902 : (Lcom/erwinvoogt/soarcast/WelkomSoarCast;Ljava/lang/Integer;)Ljava/lang/Integer;
-            //   307: pop
-            //   308: iload #4
-            //   310: istore_3
-            //   311: iload_3
-            //   312: iconst_1
-            //   313: iadd
-            //   314: istore_2
-            //   315: goto -> 126
-            //   318: aload_0
-            //   319: getfield this$0 : Lcom/erwinvoogt/soarcast/WelkomSoarCast;
-            //   322: ldc_w 2131165327
-            //   325: invokevirtual findViewById : (I)Landroid/view/View;
-            //   328: checkcast com/erwinvoogt/soarcast/windKaderView
-            //   331: aload_0
-            //   332: getfield this$0 : Lcom/erwinvoogt/soarcast/WelkomSoarCast;
-            //   335: invokestatic access$700 : (Lcom/erwinvoogt/soarcast/WelkomSoarCast;)Ljava/lang/Integer;
-            //   338: invokevirtual intValue : ()I
-            //   341: aload_0
-            //   342: getfield this$0 : Lcom/erwinvoogt/soarcast/WelkomSoarCast;
-            //   345: invokestatic access$900 : (Lcom/erwinvoogt/soarcast/WelkomSoarCast;)Ljava/lang/Integer;
-            //   348: invokevirtual intValue : ()I
-            //   351: aload_0
-            //   352: getfield this$0 : Lcom/erwinvoogt/soarcast/WelkomSoarCast;
-            //   355: invokestatic access$1000 : (Lcom/erwinvoogt/soarcast/WelkomSoarCast;)Ljava/lang/Integer;
-            //   358: invokevirtual intValue : ()I
-            //   361: aload_0
-            //   362: getfield this$0 : Lcom/erwinvoogt/soarcast/WelkomSoarCast;
-            //   365: invokestatic access$1100 : (Lcom/erwinvoogt/soarcast/WelkomSoarCast;)Ljava/util/ArrayList;
-            //   368: iconst_0
-            //   369: invokevirtual get : (I)Ljava/lang/Object;
-            //   372: checkcast com/erwinvoogt/soarcast/WelkomSoarCast$Wind
-            //   375: invokestatic access$1200 : (Lcom/erwinvoogt/soarcast/WelkomSoarCast$Wind;)[Ljava/lang/Integer;
-            //   378: invokevirtual update : (III[Ljava/lang/Integer;)V
-            //   381: aload_0
-            //   382: getfield this$0 : Lcom/erwinvoogt/soarcast/WelkomSoarCast;
-            //   385: invokestatic access$2500 : (Lcom/erwinvoogt/soarcast/WelkomSoarCast;)V
-            //   388: aload_0
-            //   389: getfield this$0 : Lcom/erwinvoogt/soarcast/WelkomSoarCast;
-            //   392: invokestatic access$500 : (Lcom/erwinvoogt/soarcast/WelkomSoarCast;)V
-            //   395: aload_0
-            //   396: getfield this$0 : Lcom/erwinvoogt/soarcast/WelkomSoarCast;
-            //   399: invokestatic access$4900 : (Lcom/erwinvoogt/soarcast/WelkomSoarCast;)V
-            //   402: return
+        protected void onPostExecute(final Integer n) {
+            if (n < 1) {
+                if (n == -2) {
+                    Toast.makeText(WelkomSoarCast.this.getBaseContext(), (CharSequence)WelkomSoarCast.this.getResources().getString(R.string.no_data), Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Toast.makeText(WelkomSoarCast.this.getBaseContext(), (CharSequence)WelkomSoarCast.this.getResources().getString(R.string.check_connection), Toast.LENGTH_SHORT).show();
+                }
+            }
+            else {
+                WelkomSoarCast.this.tijdNul = ((Wind)WelkomSoarCast.this.mWind.get(0)).unixTimestamp;
+            }
+            WelkomSoarCast.this.schaal = 0;
+            int n2;
+            for (int size = WelkomSoarCast.this.mWind.size(), i = 0; i < size; i = n2 + 1) {
+                if (((Wind)WelkomSoarCast.this.mWind.get(i)).snelheidMeting <= 15.0 && ((Wind)WelkomSoarCast.this.mWind.get(i)).vlaagMeting <= 15.0 && ((Wind)WelkomSoarCast.this.mWind.get(i)).snelheidHarmonie <= 15.0 && ((Wind)WelkomSoarCast.this.mWind.get(i)).vlaagHarmonie <= 15.0 && ((Wind)WelkomSoarCast.this.mWind.get(i)).snelheidGFS <= 15.0) {
+                    n2 = i;
+                    if (((Wind)WelkomSoarCast.this.mWind.get(i)).vlaagGFS <= 15.0) {
+                        continue;
+                    }
+                }
+                WelkomSoarCast.this.schaal = 1;
+                n2 = size;
+            }
+            ((WindKaderView)WelkomSoarCast.this.findViewById(R.id.windKaderView)).update(WelkomSoarCast.this.eenheid, WelkomSoarCast.this.schaal, WelkomSoarCast.this.uurVanaf, ((Wind)WelkomSoarCast.this.mWind.get(0)).geefZonOpOnder());
+            WelkomSoarCast.this.updateWindmeting();
+            WelkomSoarCast.this.updateWindModel();
+            WelkomSoarCast.this.ikBenKlaar();
         }
     }
 
-    private class Locatie {
+    private class Locatie
+    {
         private Integer id;
-
         private Double lat;
-
         private Double lon;
-
         private Integer maxdeg;
-
         private Integer mindeg;
-
         private String naam;
 
-        private Locatie(String param1String, Integer param1Integer1, Double param1Double1, Double param1Double2, Integer param1Integer2, Integer param1Integer3) {
-            this.naam = param1String;
-            this.id = param1Integer1;
-            this.lat = param1Double1;
-            this.lon = param1Double2;
-            this.mindeg = param1Integer2;
-            this.maxdeg = param1Integer3;
+        private Locatie(final String naam, final Integer id, final Double lat, final Double lon, final Integer mindeg, final Integer maxdeg) {
+            this.naam = naam;
+            this.id = id;
+            this.lat = lat;
+            this.lon = lon;
+            this.mindeg = mindeg;
+            this.maxdeg = maxdeg;
         }
     }
 
-    private class Richting {
+    private class Richting
+    {
         private Integer dag;
-
         private Integer locatieID;
-
         private Double richtingGFS;
-
         private Double richtingHarmonie;
-
         private Double richtingMeting;
-
         private Long unixTimestamp;
 
-        private Richting(Long param1Long, Integer param1Integer1, Integer param1Integer2, Double param1Double1, Double param1Double2, Double param1Double3) {
-            this.unixTimestamp = param1Long;
-            this.dag = param1Integer1;
-            this.locatieID = param1Integer2;
-            this.richtingMeting = param1Double1;
-            this.richtingHarmonie = param1Double2;
-            this.richtingGFS = param1Double3;
+        private Richting(final Long unixTimestamp, final Integer dag, final Integer locatieID, final Double richtingMeting, final Double richtingHarmonie, final Double richtingGFS) {
+            this.unixTimestamp = unixTimestamp;
+            this.dag = dag;
+            this.locatieID = locatieID;
+            this.richtingMeting = richtingMeting;
+            this.richtingHarmonie = richtingHarmonie;
+            this.richtingGFS = richtingGFS;
         }
 
         private Integer[] geefZonOpOnder() {
-            Date date = new Date(this.unixTimestamp.longValue() * 1000L);
-            String str = (new SimpleDateFormat("MM")).format(date);
-            try {
-                integer1 = Integer.valueOf(Integer.parseInt(str));
-            } catch (NumberFormatException numberFormatException) {
-                integer1 = Integer.valueOf(0);
+            final String format = new SimpleDateFormat("MM").format(new Date(this.unixTimestamp * 1000L));
+            while (true) {
+                try {
+                    Integer n = Integer.parseInt(format);
+                    while (true) {
+                        Integer n2 = null;
+                        Integer n3 = null;
+                        switch (n) {
+                            case 12: {
+                                n2 = 8;
+                                n3 = 16;
+                                break;
+                            }
+                            case 11: {
+                                n2 = 7;
+                                n3 = 17;
+                                break;
+                            }
+                            case 10: {
+                                n2 = 7;
+                                n3 = 19;
+                                break;
+                            }
+                            case 9: {
+                                n2 = 7;
+                                n3 = 20;
+                                break;
+                            }
+                            case 8: {
+                                n2 = 6;
+                                n3 = 21;
+                                break;
+                            }
+                            case 7: {
+                                n2 = 5;
+                                n3 = 22;
+                                break;
+                            }
+                            case 6: {
+                                n2 = 5;
+                                n3 = 22;
+                                break;
+                            }
+                            case 5: {
+                                n2 = 6;
+                                n3 = 21;
+                                break;
+                            }
+                            case 4: {
+                                n2 = 7;
+                                n3 = 20;
+                                break;
+                            }
+                            case 3: {
+                                n2 = 7;
+                                n3 = 18;
+                                break;
+                            }
+                            case 2: {
+                                n2 = 8;
+                                n3 = 17;
+                                break;
+                            }
+                            case 1: {
+                                n2 = 8;
+                                n3 = 16;
+                                break;
+                            }
+                            default: {
+                                n2 = 8;
+                                n3 = 16;
+                                break;
+                            }
+                        }
+                        return new Integer[] { n2, n3 };
+//                        n = 0;
+//                        continue;
+                    }
+                }
+                catch (NumberFormatException ex) {}
+                continue;
             }
-            switch (integer1.intValue()) {
-                default:
-                    integer1 = Integer.valueOf(8);
-                    integer2 = Integer.valueOf(16);
-                    return new Integer[] { integer1, integer2 };
-                case 12:
-                    integer1 = Integer.valueOf(8);
-                    integer2 = Integer.valueOf(16);
-                    return new Integer[] { integer1, integer2 };
-                case 11:
-                    integer1 = Integer.valueOf(7);
-                    integer2 = Integer.valueOf(17);
-                    return new Integer[] { integer1, integer2 };
-                case 10:
-                    integer1 = Integer.valueOf(7);
-                    integer2 = Integer.valueOf(19);
-                    return new Integer[] { integer1, integer2 };
-                case 9:
-                    integer1 = Integer.valueOf(7);
-                    integer2 = Integer.valueOf(20);
-                    return new Integer[] { integer1, integer2 };
-                case 8:
-                    integer1 = Integer.valueOf(6);
-                    integer2 = Integer.valueOf(21);
-                    return new Integer[] { integer1, integer2 };
-                case 7:
-                    integer1 = Integer.valueOf(5);
-                    integer2 = Integer.valueOf(22);
-                    return new Integer[] { integer1, integer2 };
-                case 6:
-                    integer1 = Integer.valueOf(5);
-                    integer2 = Integer.valueOf(22);
-                    return new Integer[] { integer1, integer2 };
-                case 5:
-                    integer1 = Integer.valueOf(6);
-                    integer2 = Integer.valueOf(21);
-                    return new Integer[] { integer1, integer2 };
-                case 4:
-                    integer1 = Integer.valueOf(7);
-                    integer2 = Integer.valueOf(20);
-                    return new Integer[] { integer1, integer2 };
-                case 3:
-                    integer1 = Integer.valueOf(7);
-                    integer2 = Integer.valueOf(18);
-                    return new Integer[] { integer1, integer2 };
-                case 2:
-                    integer1 = Integer.valueOf(8);
-                    integer2 = Integer.valueOf(17);
-                    return new Integer[] { integer1, integer2 };
-                case 1:
-                    break;
-            }
-            Integer integer1 = Integer.valueOf(8);
-            Integer integer2 = Integer.valueOf(16);
-            return new Integer[] { integer1, integer2 };
         }
     }
 
-    private class Wind {
+    private class Wind
+    {
         private Integer dag;
-
         private Integer locatieID;
-
         private Double snelheidGFS;
-
         private Double snelheidHarmonie;
-
         private Double snelheidMeting;
-
         private Long unixTimestamp;
-
         private Double vlaagGFS;
-
         private Double vlaagHarmonie;
-
         private Double vlaagMeting;
 
-        private Wind(Long param1Long, Integer param1Integer1, Integer param1Integer2, Double param1Double1, Double param1Double2, Double param1Double3, Double param1Double4, Double param1Double5, Double param1Double6) {
-            this.unixTimestamp = param1Long;
-            this.dag = param1Integer1;
-            this.locatieID = param1Integer2;
-            this.snelheidMeting = param1Double1;
-            this.vlaagMeting = param1Double2;
-            this.snelheidHarmonie = param1Double3;
-            this.vlaagHarmonie = param1Double4;
-            this.snelheidGFS = param1Double5;
-            this.vlaagGFS = param1Double6;
+        private Wind(final Long unixTimestamp, final Integer dag, final Integer locatieID, final Double snelheidMeting, final Double vlaagMeting, final Double snelheidHarmonie, final Double vlaagHarmonie, final Double snelheidGFS, final Double vlaagGFS) {
+            this.unixTimestamp = unixTimestamp;
+            this.dag = dag;
+            this.locatieID = locatieID;
+            this.snelheidMeting = snelheidMeting;
+            this.vlaagMeting = vlaagMeting;
+            this.snelheidHarmonie = snelheidHarmonie;
+            this.vlaagHarmonie = vlaagHarmonie;
+            this.snelheidGFS = snelheidGFS;
+            this.vlaagGFS = vlaagGFS;
         }
 
         private Integer[] geefZonOpOnder() {
-            Date date = new Date(this.unixTimestamp.longValue() * 1000L);
-            String str = (new SimpleDateFormat("MM")).format(date);
-            try {
-                integer1 = Integer.valueOf(Integer.parseInt(str));
-            } catch (NumberFormatException numberFormatException) {
-                integer1 = Integer.valueOf(0);
+            final String format = new SimpleDateFormat("MM").format(new Date(this.unixTimestamp * 1000L));
+            while (true) {
+                try {
+                    Integer n = Integer.parseInt(format);
+                    while (true) {
+                        Integer n2 = null;
+                        Integer n3 = null;
+                        switch (n) {
+                            case 12: {
+                                n2 = 8;
+                                n3 = 16;
+                                break;
+                            }
+                            case 11: {
+                                n2 = 7;
+                                n3 = 17;
+                                break;
+                            }
+                            case 10: {
+                                n2 = 7;
+                                n3 = 19;
+                                break;
+                            }
+                            case 9: {
+                                n2 = 7;
+                                n3 = 20;
+                                break;
+                            }
+                            case 8: {
+                                n2 = 6;
+                                n3 = 21;
+                                break;
+                            }
+                            case 7: {
+                                n2 = 5;
+                                n3 = 22;
+                                break;
+                            }
+                            case 6: {
+                                n2 = 5;
+                                n3 = 22;
+                                break;
+                            }
+                            case 5: {
+                                n2 = 6;
+                                n3 = 21;
+                                break;
+                            }
+                            case 4: {
+                                n2 = 7;
+                                n3 = 20;
+                                break;
+                            }
+                            case 3: {
+                                n2 = 7;
+                                n3 = 18;
+                                break;
+                            }
+                            case 2: {
+                                n2 = 8;
+                                n3 = 17;
+                                break;
+                            }
+                            case 1: {
+                                n2 = 8;
+                                n3 = 16;
+                                break;
+                            }
+                            default: {
+                                n2 = 8;
+                                n3 = 16;
+                                break;
+                            }
+                        }
+                        return new Integer[] { n2, n3 };
+//                        n = 0;
+//                        continue;
+                    }
+                }
+                catch (NumberFormatException ex) {}
+                continue;
             }
-            switch (integer1.intValue()) {
-                default:
-                    integer1 = Integer.valueOf(8);
-                    integer2 = Integer.valueOf(16);
-                    return new Integer[] { integer1, integer2 };
-                case 12:
-                    integer1 = Integer.valueOf(8);
-                    integer2 = Integer.valueOf(16);
-                    return new Integer[] { integer1, integer2 };
-                case 11:
-                    integer1 = Integer.valueOf(7);
-                    integer2 = Integer.valueOf(17);
-                    return new Integer[] { integer1, integer2 };
-                case 10:
-                    integer1 = Integer.valueOf(7);
-                    integer2 = Integer.valueOf(19);
-                    return new Integer[] { integer1, integer2 };
-                case 9:
-                    integer1 = Integer.valueOf(7);
-                    integer2 = Integer.valueOf(20);
-                    return new Integer[] { integer1, integer2 };
-                case 8:
-                    integer1 = Integer.valueOf(6);
-                    integer2 = Integer.valueOf(21);
-                    return new Integer[] { integer1, integer2 };
-                case 7:
-                    integer1 = Integer.valueOf(5);
-                    integer2 = Integer.valueOf(22);
-                    return new Integer[] { integer1, integer2 };
-                case 6:
-                    integer1 = Integer.valueOf(5);
-                    integer2 = Integer.valueOf(22);
-                    return new Integer[] { integer1, integer2 };
-                case 5:
-                    integer1 = Integer.valueOf(6);
-                    integer2 = Integer.valueOf(21);
-                    return new Integer[] { integer1, integer2 };
-                case 4:
-                    integer1 = Integer.valueOf(7);
-                    integer2 = Integer.valueOf(20);
-                    return new Integer[] { integer1, integer2 };
-                case 3:
-                    integer1 = Integer.valueOf(7);
-                    integer2 = Integer.valueOf(18);
-                    return new Integer[] { integer1, integer2 };
-                case 2:
-                    integer1 = Integer.valueOf(8);
-                    integer2 = Integer.valueOf(17);
-                    return new Integer[] { integer1, integer2 };
-                case 1:
-                    break;
-            }
-            Integer integer1 = Integer.valueOf(8);
-            Integer integer2 = Integer.valueOf(16);
-            return new Integer[] { integer1, integer2 };
         }
     }
 }
