@@ -704,7 +704,7 @@ public class WelkomSoarCast extends Activity
             //     9: aload_0
             //    10: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesLocaties.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
             //    13: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
-            //    16: ldc             2131427395
+            //    16: ldc             2131427395 //TODO: url_login
             //    18: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
             //    21: invokevirtual   java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
             //    24: pop
@@ -718,7 +718,7 @@ public class WelkomSoarCast extends Activity
             //    34: aload_0
             //    35: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesLocaties.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
             //    38: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
-            //    41: ldc             2131427365
+            //    41: ldc             2131427365 //TODO: extensie
             //    43: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
             //    46: invokevirtual   java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
             //    49: pop
@@ -1374,6 +1374,16 @@ public class WelkomSoarCast extends Activity
             this.LOG_TAG = LeesRichting.class.getSimpleName();
         }
 
+        // todo: Test some urls:
+
+        // Plot
+        // http://www.soarcast.nl/sc/plotPerLocAndUnit.php?activity=238&day=2020-09-20&day=today&windUnits=ms&forecastToShow=harm&runsToShow=lastOnly&run=2020092000
+
+        // JSON
+        // http://www.soarcast.nl/sc/plotPerLocAndUnit.php?json&activity=238&day=2020-09-20&day=today&windUnits=ms&forecastToShow=harm&runsToShow=lastOnly&run=2020092000
+
+        // CSV
+        //http://www.soarcast.nl/sc/plotPerLocAndUnit.php?csv&unit=deg&location=61&day=today&windUnits=ms&forecastToShow=harm&runsToShow=lastOnly&activity_id=238&canvas=cnv_61_deg
         // TODO: Implement translation of bytecode
         protected Integer doInBackground(final Integer... p0) {
             //
@@ -1412,7 +1422,7 @@ public class WelkomSoarCast extends Activity
             //    54: aload_0
             //    55: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesRichting.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
             //    58: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
-            //    61: ldc             2131427396
+            //    61: ldc             2131427396 // TODO: url_soarcast (http://www.soarcast.nl/sc/)
             //    63: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
             //    66: invokevirtual   java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
             //    69: pop
@@ -1420,7 +1430,7 @@ public class WelkomSoarCast extends Activity
             //    72: aload_0
             //    73: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesRichting.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
             //    76: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
-            //    79: ldc             2131427381
+            //    79: ldc             2131427381 // TODO: php_soarcast (plotPerLocAndUnit.php?)
             //    81: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
             //    84: invokevirtual   java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
             //    87: pop
@@ -1431,18 +1441,18 @@ public class WelkomSoarCast extends Activity
             //    99: aload_0
             //   100: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesRichting.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
             //   103: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
-            //   106: ldc             2131427387
+            //   106: ldc             2131427387 // TODO: q_unit (unit)
             //   108: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
             //   111: aload_0
             //   112: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesRichting.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
             //   115: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
-            //   118: ldc             2131427374
+            //   118: ldc             2131427374 // TODO: p_unit_richting
             //   120: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
             //   123: invokevirtual   android/net/Uri.Builder.appendQueryParameter:(Ljava/lang/String;Ljava/lang/String;)Landroid/net/Uri.Builder;
             //   126: aload_0
             //   127: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesRichting.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
             //   130: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
-            //   133: ldc             2131427385
+            //   133: ldc             2131427385 // TODO: q_location
             //   135: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
             //   138: aload           18
             //   140: invokevirtual   java/lang/Integer.toString:()Ljava/lang/String;
@@ -1450,7 +1460,7 @@ public class WelkomSoarCast extends Activity
             //   146: aload_0
             //   147: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesRichting.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
             //   150: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
-            //   153: ldc             2131427384
+            //   153: ldc             2131427384 // TODO: q_day
             //   155: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
             //   158: aload_0
             //   159: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesRichting.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
@@ -1461,29 +1471,29 @@ public class WelkomSoarCast extends Activity
             //   170: aload_0
             //   171: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesRichting.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
             //   174: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
-            //   177: ldc             2131427386
+            //   177: ldc             2131427386 // TODO: q_runsToShow
             //   179: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
             //   182: aload_0
             //   183: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesRichting.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
             //   186: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
-            //   189: ldc             2131427373
+            //   189: ldc             2131427373 // TODO: p_runsToShow
             //   191: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
             //   194: invokevirtual   android/net/Uri.Builder.appendQueryParameter:(Ljava/lang/String;Ljava/lang/String;)Landroid/net/Uri.Builder;
             //   197: aload_0
             //   198: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesRichting.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
             //   201: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
-            //   204: ldc             2131427382
+            //   204: ldc             2131427382 // TODO: q_activity_id (1)
             //   206: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
             //   209: aload_0
             //   210: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesRichting.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
             //   213: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
-            //   216: ldc             2131427371
+            //   216: ldc             2131427371 // TODO: p_activity_id (activity_id)
             //   218: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
             //   221: invokevirtual   android/net/Uri.Builder.appendQueryParameter:(Ljava/lang/String;Ljava/lang/String;)Landroid/net/Uri.Builder;
             //   224: aload_0
             //   225: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesRichting.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
             //   228: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
-            //   231: ldc             2131427383
+            //   231: ldc             2131427383 // TODO: q_csv
             //   233: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
             //   236: ldc             ""
             //   238: invokevirtual   android/net/Uri.Builder.appendQueryParameter:(Ljava/lang/String;Ljava/lang/String;)Landroid/net/Uri.Builder;
