@@ -4,38 +4,43 @@ package geert.berkers.soarcast.decompiled;
  * Created by Zorgkluis (Geert Berkers)
  */
 
-import android.graphics.PorterDuff;
-import android.os.AsyncTask;
-import android.widget.Toast;
-import java.io.OutputStream;
-import java.io.FileOutputStream;
-import java.io.File;
-import android.os.Environment;
-import android.graphics.Bitmap;
-import android.content.SharedPreferences;
-import android.content.Context;
-import android.view.View;
-import android.widget.ImageButton;
-import android.widget.Button;
-import android.util.DisplayMetrics;
-import android.os.Bundle;
-import android.util.Log;
-import android.net.Uri;
-import android.content.Intent;
-import android.widget.TextView;
-import android.preference.PreferenceManager;
-import java.util.ArrayList;
-import android.view.GestureDetector;
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.PorterDuff;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.Environment;
+import android.preference.PreferenceManager;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.GestureDetector;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
 
-import geert.berkers.soarcast.model.Locatie;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+
 import geert.berkers.soarcast.R;
-import geert.berkers.soarcast.model.Richting;
-import geert.berkers.soarcast.model.Wind;
 import geert.berkers.soarcast.listener.Direction;
 import geert.berkers.soarcast.listener.OnSwipeListener;
+import geert.berkers.soarcast.model.Locatie;
+import geert.berkers.soarcast.model.Richting;
+import geert.berkers.soarcast.model.Wind;
 import geert.berkers.soarcast.views.RichtingKaderView;
 import geert.berkers.soarcast.views.RichtingMetingView;
 import geert.berkers.soarcast.views.RichtingModelView;
@@ -202,36 +207,34 @@ WelkomSoarCast extends Activity
         return array;
     }
 
+
+
     private void doeLocatieN() {
         if (this.klaar > 0 && !this.grafiekBezig && this.locID >= 0 && this.locIndex > 0) {
-            final SharedPreferences.Editor edit = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).edit();
-            // TODO: Text LocIndex
-            final Integer locIndex = this.locIndex;
-            --this.locIndex;
-            this.updateLocatieWindRichting();
-            edit.putInt("locatie", (int)this.locIndex);
-            edit.apply();
+            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit();
+            this.locIndex = this.locIndex - 1;
+            updateLocatieWindRichting();
+            editor.putInt("locatie", this.locIndex);
+            editor.apply();
         }
     }
 
     private void doeLocatieZ() {
         if (this.klaar > 0 && !this.grafiekBezig && this.locID >= 0 && this.locIndex < this.locIndexMax) {
             final SharedPreferences.Editor edit = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).edit();
-            // TODO: Text LocIndex
-            final Integer locIndex = this.locIndex;
-            ++this.locIndex;
+            this.locIndex = this.locIndex + 1;
             this.updateLocatieWindRichting();
-            edit.putInt("locatie", (int)this.locIndex);
+            edit.putInt("locatie", this.locIndex);
             edit.apply();
         }
     }
 
+
     private void ikBenKlaar() {
-        final Integer klaar = this.klaar;
-        ++this.klaar;
+        this.klaar = this.klaar + 1;
         if (this.klaar > 0) {
-            ((TextView)this.findViewById(R.id.txtLoading)).setText("");
-            ((WaardenView)this.findViewById(R.id.waardenView)).update(this.eenheid, this.schaal, this.uurVanaf, this.tIndicator);
+            ((TextView)findViewById(R.id.txtLoading)).setText("");
+            ((WaardenView)findViewById(R.id.waardenView)).update(this.eenheid, this.schaal, this.uurVanaf, this.tIndicator);
         }
     }
 
@@ -246,10 +249,9 @@ WelkomSoarCast extends Activity
         if (!this.mRichting.isEmpty()) {
             this.mRichting.clear();
         }
-        final LeesWind leesWind = new LeesWind();
-        final LeesRichting leesRichting = new LeesRichting();
-        leesWind.execute(this.locID);
-        leesRichting.execute(this.locID);
+
+        new LeesWind().execute(this.locID);
+        new LeesRichting().execute(this.locID);
     }
 
     private void updateRichting() {
@@ -498,10 +500,12 @@ WelkomSoarCast extends Activity
         this.eenheid = defaultSharedPreferences.getInt("eenheid", 0);
         this.richt = defaultSharedPreferences.getInt("richting", 0);
         this.locIndex = defaultSharedPreferences.getInt("locatie", 0);
+
         if (bundle == null) {
             this.setContentView(R.layout.activity_welkomsoarcast);
             ((TextView)this.findViewById(R.id.txtLoading)).setText(this.getResources().getString(R.string.laden));
             new LeesLocaties().execute(string);
+
             final Button button = this.findViewById(R.id.btnModel);
             final Button button2 = this.findViewById(R.id.btnEenheid);
             final Button button3 = this.findViewById(R.id.btnRichting);
@@ -517,10 +521,10 @@ WelkomSoarCast extends Activity
             final ImageButton imageButton3 = this.findViewById(R.id.locatieZ);
             button.setOnClickListener(view -> {
                 if (WelkomSoarCast.this.klaar > 0 && !WelkomSoarCast.this.grafiekBezig) {
-                    // TODO: Fix not a statement
-                    //WelkomSoarCast.this.weerModel;
-                    ++WelkomSoarCast.this.weerModel;
-                    WelkomSoarCast.this.weerModel %= 2;
+//                    WelkomSoarCast.this.weerModel;
+//                    ++WelkomSoarCast.this.weerModel;
+//                    WelkomSoarCast.this.weerModel %= 2;
+                    WelkomSoarCast.this.weerModel = this.weerModel % 2;
                     button.setText(WelkomSoarCast.this.tekstModel[WelkomSoarCast.this.weerModel]);
                     WelkomSoarCast.this.updateWindModel();
                     WelkomSoarCast.this.updateRichtingModel();
@@ -528,10 +532,11 @@ WelkomSoarCast extends Activity
             });
             button2.setOnClickListener(view -> {
                 if (WelkomSoarCast.this.klaar > 0 && !WelkomSoarCast.this.grafiekBezig) {
-                    // TODO: Fix not a statement
-                    //WelkomSoarCast.this.eenheid;
-                    ++WelkomSoarCast.this.eenheid;
-                    WelkomSoarCast.this.eenheid %= 4;
+//                    WelkomSoarCast.this.eenheid;
+//                    ++WelkomSoarCast.this.eenheid;
+//                    WelkomSoarCast.this.eenheid %= 4;
+                    WelkomSoarCast.this.eenheid = this.eenheid + 1;
+                    WelkomSoarCast.this.eenheid = this.eenheid % 4;
                     button2.setText(WelkomSoarCast.this.tekstEenheid[WelkomSoarCast.this.eenheid]);
                     ((WindKaderView)WelkomSoarCast.this.findViewById(R.id.windKaderView)).update(
                             WelkomSoarCast.this.eenheid,
@@ -551,10 +556,11 @@ WelkomSoarCast extends Activity
             });
             button3.setOnClickListener(view -> {
                 if (WelkomSoarCast.this.klaar > 0 && !WelkomSoarCast.this.grafiekBezig) {
-                    // TODO: Fix not a statement
-                    //WelkomSoarCast.this.richt;
-                    ++WelkomSoarCast.this.richt;
-                    WelkomSoarCast.this.richt %= 2;
+//                    WelkomSoarCast.this.richt;
+//                    ++WelkomSoarCast.this.richt;
+//                    WelkomSoarCast.this.richt %= 2;
+                    WelkomSoarCast.this.richt = this.richt + 1;
+                    WelkomSoarCast.this.richt = this.richt % 2;
                     button3.setText(WelkomSoarCast.this.tekstRicht[WelkomSoarCast.this.richt]);
                     ((RichtingKaderView)WelkomSoarCast.this.findViewById(R.id.richtingKaderView)).update(WelkomSoarCast.this.mLocatie.get(WelkomSoarCast.this.locIndex).mindeg, WelkomSoarCast.this.mLocatie.get(WelkomSoarCast.this.locIndex).maxdeg, WelkomSoarCast.this.richt, WelkomSoarCast.this.uurVanaf, WelkomSoarCast.this.mRichting.get(0).geefZonOpOnder());
                     edit.putInt("richting", WelkomSoarCast.this.richt);
@@ -694,7 +700,84 @@ WelkomSoarCast extends Activity
         }
 
         // TODO: Implement translation of bytecode
-        protected Integer doInBackground(final String... p0) {
+        protected Integer doInBackground(final String... params) {
+
+            // URL:
+            // http://www.erwinvoogt.com/SoarCastApp/locatie01.txt
+
+            // TODO: Make list of locations
+
+            // Result:
+            /*
+                naam;id;lat;long;mindeg;maxdeg
+                Texel (Q1);29;52.925338;4.150363;270;360
+                Wijk aan Zee (KNMI);52;52.462242867998;4.5549006792363;255;315
+                Langevelderslag (Schiphol);55;52.3154084;4.7902228;264;318
+                Langevelderslag (Katwijk);91;52.215426;4.402033;264;318
+                Slufter/Lichteiland Goeree;34;51.925748;3.669877;200;290
+                Westenschouwen (OS4);28;51.655883;3.693955;170;230
+                Zoutelande;14;51.503721;3.242052;225;260
+             */
+
+            final StringBuilder sb = new StringBuilder();
+            sb.append(WelkomSoarCast.this.getResources().getString(R.string.url_login));
+            sb.append(params[0]);
+            sb.append(WelkomSoarCast.this.getResources().getString(R.string.extensie));
+            String urlString = sb.toString();
+
+            String data = null;
+            try {
+                URL url = new URL(Uri.parse(urlString).buildUpon().build().toString());
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setRequestMethod("GET");
+                urlConnection.connect();
+
+
+                int responseCode = urlConnection.getResponseCode();
+                System.out.println("GET Response Code :: " + responseCode);
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    BufferedReader in = new BufferedReader(
+                            new InputStreamReader(
+                                    urlConnection.getInputStream()
+                            )
+                    );
+
+                    String inputLine;
+                    StringBuffer response = new StringBuffer();
+
+                    while ((inputLine = in.readLine()) != null) {
+                        System.out.println(inputLine);
+                        response.append(inputLine);
+
+                        if (inputLine.equals("naam;id;lat;long;mindeg;maxdeg")) {
+                            continue;
+                        } else {
+                            try {
+                                Locatie location = createLocation(inputLine.split(";"));
+                                mLocatie.add(location);
+                            } catch (Exception ex) {
+                                System.out.println("Could NOT parse location!");
+                            }
+                        }
+                    }
+                    in.close();
+
+                    // print result
+                    System.out.println(response.toString());
+
+                    return mLocatie.size();
+                } else {
+                    System.out.println("GET request not worked");
+                    return -1;
+                }
+
+
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+
+
             //
             // This method could not be decompiled.
             //
@@ -707,21 +790,21 @@ WelkomSoarCast extends Activity
             //     9: aload_0
             //    10: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesLocaties.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
             //    13: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
-            //    16: ldc             2131427395 //TODO: url_login
+            //    16: ldc             2131427395 //TODO: url_login (http://www.erwinvoogt.com/SoarCastApp/)
             //    18: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
             //    21: invokevirtual   java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
             //    24: pop
             //    25: aload_3
             //    26: aload_1
             //    27: iconst_0
-            //    28: aaload
+            //    28: aaload           // TODO: Load parameter from execute() -> locatie01
             //    29: invokevirtual   java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
             //    32: pop
             //    33: aload_3
             //    34: aload_0
             //    35: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesLocaties.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
             //    38: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
-            //    41: ldc             2131427365 //TODO: extensie
+            //    41: ldc             2131427365 //TODO: extensie (.txt)
             //    43: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
             //    46: invokevirtual   java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
             //    49: pop
@@ -746,7 +829,7 @@ WelkomSoarCast extends Activity
             //    88: astore_3
             //    89: new             Ljava/net/URL;
             //    92: dup
-            //    93: aload_1
+            //    93: aload_1           // TODO: Start HTTP Url Connection
             //    94: invokespecial   java/net/URL.<init>:(Ljava/lang/String;)V
             //    97: invokevirtual   java/net/URL.openConnection:()Ljava/net/URLConnection;
             //   100: checkcast       Ljava/net/HttpURLConnection;
@@ -767,7 +850,7 @@ WelkomSoarCast extends Activity
             //   134: invokevirtual   java/net/HttpURLConnection.disconnect:()V
             //   137: iconst_0
             //   138: invokestatic    java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
-            //   141: areturn
+            //   141: areturn           // TODO: Read bufferedreader
             //   142: new             Ljava/io/BufferedReader;
             //   145: dup
             //   146: new             Ljava/io/InputStreamReader;
@@ -799,7 +882,7 @@ WelkomSoarCast extends Activity
             //   197: aload_0
             //   198: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesLocaties.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
             //   201: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
-            //   204: ldc             R.string.csv_separator
+            //   204: ldc             R.string.csv_separator // TODO: Specify csv seperator
             //   206: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
             //   209: astore          17
             //   211: aload           14
@@ -1353,11 +1436,23 @@ WelkomSoarCast extends Activity
             //     at com.strobel.decompiler.DecompilerDriver.decompileJar(DecompilerDriver.java:251)
             //     at com.strobel.decompiler.DecompilerDriver.main(DecompilerDriver.java:126)
             //
+
             throw new IllegalStateException("An error occurred while decompiling this method.");
         }
 
-        protected void onPostExecute(final Integer n) {
-            if (n > 0) {
+        private Locatie createLocation(String[] metadata) {
+            String naam = metadata[0];
+            Integer id = Integer.valueOf(metadata[1]);
+            Double lat = Double.valueOf(metadata[2]);
+            Double lon = Double.valueOf(metadata[3]);
+            Integer mindeg = Integer.valueOf(metadata[4]);
+            Integer maxdeg = Integer.valueOf(metadata[5]);
+
+            return new Locatie(naam, id, lat, lon, maxdeg, mindeg);
+        }
+
+        protected void onPostExecute(final Integer result) {
+            if (result > 0) {
                 WelkomSoarCast.this.locIndexMax = WelkomSoarCast.this.mLocatie.size() - 1;
                 if (WelkomSoarCast.this.locIndex > WelkomSoarCast.this.locIndexMax) {
                     WelkomSoarCast.this.locIndex = WelkomSoarCast.this.locIndexMax / 2;
@@ -2202,7 +2297,7 @@ WelkomSoarCast extends Activity
             //    81: aload_0
             //    82: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesWind.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
             //    85: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
-            //    88: ldc             2131427396
+            //    88: ldc             2131427396 // TODO: url_soarcast (http://www.soarcast.nl/sc/)
             //    90: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
             //    93: invokevirtual   java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
             //    96: pop
@@ -2210,7 +2305,7 @@ WelkomSoarCast extends Activity
             //    99: aload_0
             //   100: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesWind.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
             //   103: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
-            //   106: ldc             2131427381
+            //   106: ldc             2131427381 // TODO php_soarcast (plotPerLocAndUnit.php?)
             //   108: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
             //   111: invokevirtual   java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
             //   114: pop
@@ -2221,18 +2316,18 @@ WelkomSoarCast extends Activity
             //   126: aload_0
             //   127: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesWind.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
             //   130: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
-            //   133: ldc             2131427387
+            //   133: ldc             2131427387 // TODO: q_unit (unit)
             //   135: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
             //   138: aload_0
             //   139: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesWind.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
             //   142: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
-            //   145: ldc             2131427375
+            //   145: ldc             2131427375 // TODO: p_unit_wind (m/s)
             //   147: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
             //   150: invokevirtual   android/net/Uri.Builder.appendQueryParameter:(Ljava/lang/String;Ljava/lang/String;)Landroid/net/Uri.Builder;
             //   153: aload_0
             //   154: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesWind.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
             //   157: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
-            //   160: ldc             2131427385
+            //   160: ldc             2131427385 // TODO: q_location (location)
             //   162: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
             //   165: aload_1
             //   166: invokevirtual   java/lang/Integer.toString:()Ljava/lang/String;
@@ -2240,7 +2335,7 @@ WelkomSoarCast extends Activity
             //   172: aload_0
             //   173: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesWind.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
             //   176: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
-            //   179: ldc             2131427384
+            //   179: ldc             2131427384 // TODO: q_day (day
             //   181: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
             //   184: aload_0
             //   185: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesWind.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
@@ -2251,29 +2346,29 @@ WelkomSoarCast extends Activity
             //   196: aload_0
             //   197: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesWind.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
             //   200: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
-            //   203: ldc             2131427386
+            //   203: ldc             2131427386 // TODO: q_runsToShow (runsToShow)
             //   205: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
             //   208: aload_0
             //   209: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesWind.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
             //   212: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
-            //   215: ldc             2131427373
+            //   215: ldc             2131427373 // TODO: p_runsToShow (lastOnly)
             //   217: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
             //   220: invokevirtual   android/net/Uri.Builder.appendQueryParameter:(Ljava/lang/String;Ljava/lang/String;)Landroid/net/Uri.Builder;
             //   223: aload_0
             //   224: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesWind.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
             //   227: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
-            //   230: ldc             2131427382
+            //   230: ldc             2131427382 TODO: q_activity_id (activity_id)
             //   232: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
             //   235: aload_0
             //   236: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesWind.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
             //   239: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
-            //   242: ldc             2131427371
+            //   242: ldc             2131427371 TODO: p_activity_id (1)
             //   244: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
             //   247: invokevirtual   android/net/Uri.Builder.appendQueryParameter:(Ljava/lang/String;Ljava/lang/String;)Landroid/net/Uri.Builder;
             //   250: aload_0
             //   251: getfield        com/erwinvoogt/soarcast/WelkomSoarCast$LeesWind.this$0:Lcom/erwinvoogt/soarcast/WelkomSoarCast;
             //   254: invokevirtual   com/erwinvoogt/soarcast/WelkomSoarCast.getResources:()Landroid/content/res/Resources;
-            //   257: ldc             2131427383
+            //   257: ldc             2131427383 TODO: q_csv (csv)
             //   259: invokevirtual   android/content/res/Resources.getString:(I)Ljava/lang/String;
             //   262: ldc             ""
             //   264: invokevirtual   android/net/Uri.Builder.appendQueryParameter:(Ljava/lang/String;Ljava/lang/String;)Landroid/net/Uri.Builder;
