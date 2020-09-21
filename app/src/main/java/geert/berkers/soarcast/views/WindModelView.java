@@ -1,9 +1,5 @@
 package geert.berkers.soarcast.views;
 
-/**
- * Created by Zorgkluis (Geert Berkers)
- */
-
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -11,20 +7,24 @@ import android.graphics.Path;
 import android.util.AttributeSet;
 import android.view.View;
 
+/**
+ * Created by Zorgkluis (Geert Berkers)
+ */
+
 public class WindModelView extends View {
     private Integer aantal;
 
     private Paint mModel;
 
-    private final Integer maxN = Integer.valueOf(288);
+    private final Integer maxN = 288;
 
     private int schaal;
 
-    private Integer[] tijd = new Integer[this.maxN.intValue()];
+    private Integer[] tijd = new Integer[this.maxN];
 
-    private Double[] vlaagModel = new Double[this.maxN.intValue()];
+    private Double[] vlaagModel = new Double[this.maxN];
 
-    private Double[] windModel = new Double[this.maxN.intValue()];
+    private Double[] windModel = new Double[this.maxN];
 
     public WindModelView(Context paramContext) {
         super(paramContext);
@@ -46,7 +46,7 @@ public class WindModelView extends View {
         this.mModel.setColor(-7829368);
         this.mModel.setStyle(Paint.Style.STROKE);
         this.mModel.setTextSize(30.0F);
-        this.aantal = Integer.valueOf(0);
+        this.aantal = 0;
     }
 
     protected void onDraw(Canvas paramCanvas) {
@@ -87,34 +87,34 @@ public class WindModelView extends View {
         }
     }
 
-    protected void onMeasure(int paramInt1, int paramInt2) {
-        int i = View.MeasureSpec.getMode(paramInt2);
-        paramInt2 = View.MeasureSpec.getSize(paramInt2);
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        int i = View.MeasureSpec.getMode(heightMeasureSpec);
+        heightMeasureSpec = View.MeasureSpec.getSize(heightMeasureSpec);
         byte b = 100;
         if (i != 1073741824)
             if (i == Integer.MIN_VALUE) {
-                paramInt2 = Math.min(100, paramInt2);
+                heightMeasureSpec = Math.min(100, heightMeasureSpec);
             } else {
-                paramInt2 = 100;
+                heightMeasureSpec = 100;
             }
-        int j = View.MeasureSpec.getMode(paramInt1);
-        i = View.MeasureSpec.getSize(paramInt1);
+        int j = View.MeasureSpec.getMode(widthMeasureSpec);
+        i = View.MeasureSpec.getSize(widthMeasureSpec);
         if (j == 1073741824) {
-            paramInt1 = i;
+            widthMeasureSpec = i;
         } else {
-            paramInt1 = b;
+            widthMeasureSpec = b;
             if (j == Integer.MIN_VALUE)
-                paramInt1 = Math.min(100, i);
+                widthMeasureSpec = Math.min(100, i);
         }
-        setMeasuredDimension(paramInt1, paramInt2);
+        setMeasuredDimension(widthMeasureSpec, heightMeasureSpec);
     }
 
-    public void update(int paramInt1, int paramInt2, Integer[] paramArrayOfInteger, Double[] paramArrayOfDouble1, Double[] paramArrayOfDouble2) {
-        this.schaal = paramInt1;
-        this.aantal = paramInt2;
-        this.tijd = paramArrayOfInteger;
-        this.windModel = paramArrayOfDouble1;
-        this.vlaagModel = paramArrayOfDouble2;
+    public void update(int schaal, int aantal, Integer[] tijd, Double[] windModel, Double[] vlaagModel) {
+        this.schaal = schaal;
+        this.aantal = aantal;
+        this.tijd = tijd;
+        this.windModel = windModel;
+        this.vlaagModel = vlaagModel;
         invalidate();
     }
 }

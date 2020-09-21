@@ -22,7 +22,7 @@ public class WindKaderView extends View {
 
     private int uurVanaf;
 
-    private Integer[] zonOpOnder = new Integer[] { Integer.valueOf(6), Integer.valueOf(18) };
+    private Integer[] zonOpOnder = new Integer[] {6, 18};
 
     public WindKaderView(Context paramContext) {
         super(paramContext);
@@ -89,7 +89,7 @@ public class WindKaderView extends View {
             if (i < 25) {
                 n = i - 1;
                 int i1 = (this.uurVanaf + n) % 24;
-                if (i1 < this.zonOpOnder[0].intValue() || i1 > this.zonOpOnder[j].intValue()) {
+                if (i1 < this.zonOpOnder[0] || i1 > this.zonOpOnder[j]) {
                     this.mAssen.setColor(268435711);
                     float f13 = f11 / 24.0F;
                     float f14 = n;
@@ -98,7 +98,7 @@ public class WindKaderView extends View {
                     j = 1;
                     paramCanvas.drawRect(f14 * f13 + f8, f10, f8 + f13 * f15, f9, paint);
                 }
-                if (i1 == this.zonOpOnder[0].intValue() || i1 == this.zonOpOnder[j].intValue()) {
+                if (i1 == this.zonOpOnder[0] || i1 == this.zonOpOnder[j]) {
                     this.mAssen.setColor(100663551);
                     float f13 = f11 / 24.0F;
                     paramCanvas.drawRect(n * f13 + f8, f10, f8 + f13 * i, f9, this.mAssen);
@@ -262,33 +262,33 @@ public class WindKaderView extends View {
         }
     }
 
-    protected void onMeasure(int paramInt1, int paramInt2) {
-        int i = View.MeasureSpec.getMode(paramInt2);
-        paramInt2 = View.MeasureSpec.getSize(paramInt2);
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        int i = View.MeasureSpec.getMode(heightMeasureSpec);
+        heightMeasureSpec = View.MeasureSpec.getSize(heightMeasureSpec);
         byte b = 100;
         if (i != 1073741824)
             if (i == Integer.MIN_VALUE) {
-                paramInt2 = Math.min(100, paramInt2);
+                heightMeasureSpec = Math.min(100, heightMeasureSpec);
             } else {
-                paramInt2 = 100;
+                heightMeasureSpec = 100;
             }
-        int j = View.MeasureSpec.getMode(paramInt1);
-        i = View.MeasureSpec.getSize(paramInt1);
+        int j = View.MeasureSpec.getMode(widthMeasureSpec);
+        i = View.MeasureSpec.getSize(widthMeasureSpec);
         if (j == 1073741824) {
-            paramInt1 = i;
+            widthMeasureSpec = i;
         } else {
-            paramInt1 = b;
+            widthMeasureSpec = b;
             if (j == Integer.MIN_VALUE)
-                paramInt1 = Math.min(100, i);
+                widthMeasureSpec = Math.min(100, i);
         }
-        setMeasuredDimension(paramInt1, paramInt2);
+        setMeasuredDimension(widthMeasureSpec, heightMeasureSpec);
     }
 
-    public void update(int paramInt1, int paramInt2, int paramInt3, Integer[] paramArrayOfInteger) {
-        this.eenheid = paramInt1;
-        this.schaal = paramInt2;
-        this.uurVanaf = paramInt3;
-        this.zonOpOnder = paramArrayOfInteger;
+    public void update(int eenheid, int schaal, int uurVanaf, Integer[] zonOpOnder) {
+        this.eenheid = eenheid;
+        this.schaal = schaal;
+        this.uurVanaf = uurVanaf;
+        this.zonOpOnder = zonOpOnder;
         invalidate();
     }
 }
