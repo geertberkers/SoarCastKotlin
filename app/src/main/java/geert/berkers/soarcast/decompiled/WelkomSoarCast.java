@@ -45,7 +45,8 @@ import geert.berkers.soarcast.views.WindMetingView;
 import geert.berkers.soarcast.views.WindModelView;
 
 @SuppressWarnings("deprecation")
-public class WelkomSoarCast extends Activity
+public class
+WelkomSoarCast extends Activity
 {
     private Integer eenheid;
     public GestureDetector gestureDetector1;
@@ -229,7 +230,7 @@ public class WelkomSoarCast extends Activity
         final Integer klaar = this.klaar;
         ++this.klaar;
         if (this.klaar > 0) {
-            ((TextView)this.findViewById(R.id.laden)).setText("");
+            ((TextView)this.findViewById(R.id.txtLoading)).setText("");
             ((WaardenView)this.findViewById(R.id.waardenView)).update(this.eenheid, this.schaal, this.uurVanaf, this.tIndicator);
         }
     }
@@ -237,7 +238,7 @@ public class WelkomSoarCast extends Activity
     private void updateLocatieWindRichting() {
         this.klaar = -1;
         this.locID = this.mLocatie.get(this.locIndex).id;
-        ((TextView)this.findViewById(R.id.laden)).setText(this.getResources().getString(R.string.laden));
+        ((TextView)this.findViewById(R.id.txtLoading)).setText(this.getResources().getString(R.string.laden));
         ((TextView)this.findViewById(R.id.locatie)).setText(this.mLocatie.get(this.locIndex).naam);
         if (!this.mWind.isEmpty()) {
             this.mWind.clear();
@@ -499,12 +500,12 @@ public class WelkomSoarCast extends Activity
         this.locIndex = defaultSharedPreferences.getInt("locatie", 0);
         if (bundle == null) {
             this.setContentView(R.layout.activity_welkomsoarcast);
-            ((TextView)this.findViewById(R.id.laden)).setText(this.getResources().getString(R.string.laden));
+            ((TextView)this.findViewById(R.id.txtLoading)).setText(this.getResources().getString(R.string.laden));
             new LeesLocaties().execute(string);
-            final Button button = this.findViewById(R.id.model);
-            final Button button2 = this.findViewById(R.id.eenheid);
-            final Button button3 = this.findViewById(R.id.richt);
-            final ImageButton imageButton = this.findViewById(R.id.delen);
+            final Button button = this.findViewById(R.id.btnModel);
+            final Button button2 = this.findViewById(R.id.btnEenheid);
+            final Button button3 = this.findViewById(R.id.btnRichting);
+            final ImageButton imageButton = this.findViewById(R.id.btnDelen);
             button.setText(this.tekstModel[this.weerModel]);
             button2.setText(this.tekstEenheid[this.eenheid]);
             button3.setText(this.tekstRicht[this.richt]);

@@ -183,7 +183,7 @@
         app:layout_constraintVertical_bias="0.0" />
 
     <TextView
-        android:id="@+id/laden"
+        android:id="@+id/txtLoading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="8.0dip"
@@ -200,7 +200,7 @@
         app:layout_constraintVertical_bias="0.3" />
 
     <Button
-        android:id="@+id/model"
+        android:id="@+id/btnModel"
         android:layout_width="54.0dip"
         android:layout_height="36.0dip"
         android:layout_marginTop="16.0dip"
@@ -213,7 +213,7 @@
         app:layout_constraintTop_toBottomOf="@+id/soarcastlogo" />
 
     <Button
-        android:id="@+id/eenheid"
+        android:id="@+id/btnEenheid"
         android:layout_width="54.0dip"
         android:layout_height="36.0dip"
         android:layout_marginLeft="24.0dip"
@@ -226,7 +226,7 @@
         app:layout_constraintTop_toBottomOf="@+id/soarcastlogo" />
 
     <Button
-        android:id="@+id/richt"
+        android:id="@+id/btnRichting"
         android:layout_width="54.0dip"
         android:layout_height="36.0dip"
         android:layout_marginLeft="24.0dip"
@@ -239,7 +239,7 @@
         app:layout_constraintTop_toBottomOf="@+id/guideline2" />
 
     <ImageButton
-        android:id="@+id/delen"
+        android:id="@+id/btnDelen"
         android:layout_width="54.0dip"
         android:layout_height="36.0dip"
         android:layout_marginTop="10.0dip"
