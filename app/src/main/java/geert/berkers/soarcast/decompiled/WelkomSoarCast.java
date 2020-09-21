@@ -699,13 +699,10 @@ WelkomSoarCast extends Activity
             this.LOG_TAG = LeesLocaties.class.getSimpleName();
         }
 
-        // TODO: Implement translation of bytecode
         protected Integer doInBackground(final String... params) {
 
             // URL:
             // http://www.erwinvoogt.com/SoarCastApp/locatie01.txt
-
-            // TODO: Make list of locations
 
             // Result:
             /*
@@ -725,13 +722,11 @@ WelkomSoarCast extends Activity
             sb.append(WelkomSoarCast.this.getResources().getString(R.string.extensie));
             String urlString = sb.toString();
 
-            String data = null;
             try {
                 URL url = new URL(Uri.parse(urlString).buildUpon().build().toString());
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");
                 urlConnection.connect();
-
 
                 int responseCode = urlConnection.getResponseCode();
                 System.out.println("GET Response Code :: " + responseCode);
@@ -743,7 +738,7 @@ WelkomSoarCast extends Activity
                     );
 
                     String inputLine;
-                    StringBuffer response = new StringBuffer();
+                    StringBuilder response = new StringBuilder();
 
                     while ((inputLine = in.readLine()) != null) {
                         System.out.println(inputLine);
