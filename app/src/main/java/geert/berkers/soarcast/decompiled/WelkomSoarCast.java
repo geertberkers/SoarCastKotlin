@@ -7,14 +7,12 @@ package geert.berkers.soarcast.decompiled;
 import android.graphics.PorterDuff;
 import android.os.AsyncTask;
 import android.widget.Toast;
-import android.os.Parcelable;
 import java.io.OutputStream;
 import java.io.FileOutputStream;
 import java.io.File;
 import android.os.Environment;
 import android.graphics.Bitmap;
 import android.content.SharedPreferences;
-import android.view.MotionEvent;
 import android.content.Context;
 import android.view.View;
 import android.widget.ImageButton;
@@ -229,7 +227,7 @@ public class WelkomSoarCast extends Activity
         final Integer klaar = this.klaar;
         ++this.klaar;
         if (this.klaar > 0) {
-            ((TextView)this.findViewById(R.id.laden)).setText((CharSequence)"");
+            ((TextView)this.findViewById(R.id.laden)).setText("");
             ((WaardenView)this.findViewById(R.id.waardenView)).update(this.eenheid, this.schaal, this.uurVanaf, this.tIndicator);
         }
     }
@@ -237,8 +235,8 @@ public class WelkomSoarCast extends Activity
     private void updateLocatieWindRichting() {
         this.klaar = -1;
         this.locID = this.mLocatie.get(this.locIndex).id;
-        ((TextView)this.findViewById(R.id.laden)).setText((CharSequence)this.getResources().getString(R.string.laden));
-        ((TextView)this.findViewById(R.id.locatie)).setText((CharSequence)this.mLocatie.get(this.locIndex).naam);
+        ((TextView)this.findViewById(R.id.laden)).setText(this.getResources().getString(R.string.laden));
+        ((TextView)this.findViewById(R.id.locatie)).setText(this.mLocatie.get(this.locIndex).naam);
         if (!this.mWind.isEmpty()) {
             this.mWind.clear();
         }
@@ -499,68 +497,76 @@ public class WelkomSoarCast extends Activity
         this.locIndex = defaultSharedPreferences.getInt("locatie", 0);
         if (bundle == null) {
             this.setContentView(R.layout.activity_welkomsoarcast);
-            ((TextView)this.findViewById(R.id.laden)).setText((CharSequence)this.getResources().getString(R.string.laden));
+            ((TextView)this.findViewById(R.id.laden)).setText(this.getResources().getString(R.string.laden));
             new LeesLocaties().execute(string);
-            final Button button = (Button)this.findViewById(R.id.model);
-            final Button button2 = (Button)this.findViewById(R.id.eenheid);
-            final Button button3 = (Button)this.findViewById(R.id.richt);
-            final ImageButton imageButton = (ImageButton)this.findViewById(R.id.delen);
-            button.setText((CharSequence)this.tekstModel[this.weerModel]);
-            button2.setText((CharSequence)this.tekstEenheid[this.eenheid]);
-            button3.setText((CharSequence)this.tekstRicht[this.richt]);
+            final Button button = this.findViewById(R.id.model);
+            final Button button2 = this.findViewById(R.id.eenheid);
+            final Button button3 = this.findViewById(R.id.richt);
+            final ImageButton imageButton = this.findViewById(R.id.delen);
+            button.setText(this.tekstModel[this.weerModel]);
+            button2.setText(this.tekstEenheid[this.eenheid]);
+            button3.setText(this.tekstRicht[this.richt]);
             button.getBackground().setColorFilter(-2047872, PorterDuff.Mode.MULTIPLY);
             button2.getBackground().setColorFilter(-2047872, PorterDuff.Mode.MULTIPLY);
             button3.getBackground().setColorFilter(-2047872, PorterDuff.Mode.MULTIPLY);
             imageButton.getBackground().setColorFilter(-2047872, PorterDuff.Mode.MULTIPLY);
-            final ImageButton imageButton2 = (ImageButton)this.findViewById(R.id.locatieN);
-            final ImageButton imageButton3 = (ImageButton)this.findViewById(R.id.locatieZ);
-            button.setOnClickListener((View.OnClickListener) view -> {
+            final ImageButton imageButton2 = this.findViewById(R.id.locatieN);
+            final ImageButton imageButton3 = this.findViewById(R.id.locatieZ);
+            button.setOnClickListener(view -> {
                 if (WelkomSoarCast.this.klaar > 0 && !WelkomSoarCast.this.grafiekBezig) {
                     // TODO: Fix not a statement
                     //WelkomSoarCast.this.weerModel;
                     ++WelkomSoarCast.this.weerModel;
                     WelkomSoarCast.this.weerModel %= 2;
-                    button.setText((CharSequence)WelkomSoarCast.this.tekstModel[WelkomSoarCast.this.weerModel]);
+                    button.setText(WelkomSoarCast.this.tekstModel[WelkomSoarCast.this.weerModel]);
                     WelkomSoarCast.this.updateWindModel();
                     WelkomSoarCast.this.updateRichtingModel();
                 }
             });
-            button2.setOnClickListener((View.OnClickListener) view -> {
+            button2.setOnClickListener(view -> {
                 if (WelkomSoarCast.this.klaar > 0 && !WelkomSoarCast.this.grafiekBezig) {
                     // TODO: Fix not a statement
                     //WelkomSoarCast.this.eenheid;
                     ++WelkomSoarCast.this.eenheid;
                     WelkomSoarCast.this.eenheid %= 4;
-                    button2.setText((CharSequence)WelkomSoarCast.this.tekstEenheid[WelkomSoarCast.this.eenheid]);
-                    ((WindKaderView)WelkomSoarCast.this.findViewById(R.id.windKaderView)).update(WelkomSoarCast.this.eenheid, WelkomSoarCast.this.schaal, WelkomSoarCast.this.uurVanaf, ((Wind)WelkomSoarCast.this.mWind.get(0)).geefZonOpOnder());
-                    ((WaardenView)WelkomSoarCast.this.findViewById(R.id.waardenView)).update(WelkomSoarCast.this.eenheid, WelkomSoarCast.this.schaal, WelkomSoarCast.this.uurVanaf, WelkomSoarCast.this.tIndicator);
-                    edit.putInt("eenheid", (int)WelkomSoarCast.this.eenheid);
+                    button2.setText(WelkomSoarCast.this.tekstEenheid[WelkomSoarCast.this.eenheid]);
+                    ((WindKaderView)WelkomSoarCast.this.findViewById(R.id.windKaderView)).update(
+                            WelkomSoarCast.this.eenheid,
+                            WelkomSoarCast.this.schaal,
+                            WelkomSoarCast.this.uurVanaf,
+                            WelkomSoarCast.this.mWind.get(0).geefZonOpOnder()
+                    );
+                    ((WaardenView)WelkomSoarCast.this.findViewById(R.id.waardenView)).update(
+                            WelkomSoarCast.this.eenheid,
+                            WelkomSoarCast.this.schaal,
+                            WelkomSoarCast.this.uurVanaf,
+                            WelkomSoarCast.this.tIndicator
+                    );
+                    edit.putInt("eenheid", WelkomSoarCast.this.eenheid);
                     edit.apply();
                 }
             });
-            button3.setOnClickListener((View.OnClickListener) view -> {
+            button3.setOnClickListener(view -> {
                 if (WelkomSoarCast.this.klaar > 0 && !WelkomSoarCast.this.grafiekBezig) {
                     // TODO: Fix not a statement
                     //WelkomSoarCast.this.richt;
                     ++WelkomSoarCast.this.richt;
                     WelkomSoarCast.this.richt %= 2;
-                    button3.setText((CharSequence)WelkomSoarCast.this.tekstRicht[WelkomSoarCast.this.richt]);
-                    ((RichtingKaderView)WelkomSoarCast.this.findViewById(R.id.richtingKaderView)).update(((Locatie)WelkomSoarCast.this.mLocatie.get(WelkomSoarCast.this.locIndex)).mindeg, ((Locatie)WelkomSoarCast.this.mLocatie.get(WelkomSoarCast.this.locIndex)).maxdeg, WelkomSoarCast.this.richt, WelkomSoarCast.this.uurVanaf, ((Richting)WelkomSoarCast.this.mRichting.get(0)).geefZonOpOnder());
-                    edit.putInt("richting", (int)WelkomSoarCast.this.richt);
+                    button3.setText(WelkomSoarCast.this.tekstRicht[WelkomSoarCast.this.richt]);
+                    ((RichtingKaderView)WelkomSoarCast.this.findViewById(R.id.richtingKaderView)).update(WelkomSoarCast.this.mLocatie.get(WelkomSoarCast.this.locIndex).mindeg, WelkomSoarCast.this.mLocatie.get(WelkomSoarCast.this.locIndex).maxdeg, WelkomSoarCast.this.richt, WelkomSoarCast.this.uurVanaf, WelkomSoarCast.this.mRichting.get(0).geefZonOpOnder());
+                    edit.putInt("richting", WelkomSoarCast.this.richt);
                     edit.apply();
                 }
             });
-            imageButton3.setOnClickListener((View.OnClickListener) view -> WelkomSoarCast.this.doeLocatieZ());
-            imageButton2.setOnClickListener((View.OnClickListener) view -> WelkomSoarCast.this.doeLocatieN());
-            imageButton.setOnClickListener((View.OnClickListener) view -> WelkomSoarCast.this.schermafdruk());
-            ((TextView)this.findViewById(R.id.locatie)).setOnClickListener((View.OnClickListener)new View.OnClickListener() {
-                public void onClick(final View view) {
-                    if (WelkomSoarCast.this.locID >= 0) {
-                        WelkomSoarCast.this.locatieOpMaps();
-                    }
+            imageButton3.setOnClickListener(view -> WelkomSoarCast.this.doeLocatieZ());
+            imageButton2.setOnClickListener(view -> WelkomSoarCast.this.doeLocatieN());
+            imageButton.setOnClickListener(view -> WelkomSoarCast.this.schermafdruk());
+            this.findViewById(R.id.locatie).setOnClickListener(view -> {
+                if (WelkomSoarCast.this.locID >= 0) {
+                    WelkomSoarCast.this.locatieOpMaps();
                 }
             });
-            this.gestureDetector1 = new GestureDetector((Context)this, (GestureDetector.OnGestureListener)new OnSwipeListener() {
+            this.gestureDetector1 = new GestureDetector(this, new OnSwipeListener() {
                 @Override
                 public boolean onSchuif(final float n) {
                     final int i = value / 24;
@@ -576,8 +582,8 @@ public class WelkomSoarCast extends Activity
                         if (WelkomSoarCast.this.uurVanaf > 72) {
                             WelkomSoarCast.this.uurVanaf = 72;
                         }
-                        ((WindKaderView)WelkomSoarCast.this.findViewById(R.id.windKaderView)).update(WelkomSoarCast.this.eenheid, WelkomSoarCast.this.schaal, WelkomSoarCast.this.uurVanaf, ((Wind)WelkomSoarCast.this.mWind.get(0)).geefZonOpOnder());
-                        ((RichtingKaderView)WelkomSoarCast.this.findViewById(R.id.richtingKaderView)).update(((Locatie)WelkomSoarCast.this.mLocatie.get(WelkomSoarCast.this.locIndex)).mindeg, ((Locatie)WelkomSoarCast.this.mLocatie.get(WelkomSoarCast.this.locIndex)).maxdeg, WelkomSoarCast.this.richt, WelkomSoarCast.this.uurVanaf, ((Richting)WelkomSoarCast.this.mRichting.get(0)).geefZonOpOnder());
+                        ((WindKaderView)WelkomSoarCast.this.findViewById(R.id.windKaderView)).update(WelkomSoarCast.this.eenheid, WelkomSoarCast.this.schaal, WelkomSoarCast.this.uurVanaf, WelkomSoarCast.this.mWind.get(0).geefZonOpOnder());
+                        ((RichtingKaderView)WelkomSoarCast.this.findViewById(R.id.richtingKaderView)).update(WelkomSoarCast.this.mLocatie.get(WelkomSoarCast.this.locIndex).mindeg, WelkomSoarCast.this.mLocatie.get(WelkomSoarCast.this.locIndex).maxdeg, WelkomSoarCast.this.richt, WelkomSoarCast.this.uurVanaf, WelkomSoarCast.this.mRichting.get(0).geefZonOpOnder());
                         WelkomSoarCast.this.updateWindmeting();
                         WelkomSoarCast.this.updateWindModel();
                         WelkomSoarCast.this.updateRichting();
@@ -605,19 +611,15 @@ public class WelkomSoarCast extends Activity
                     return true;
                 }
             });
-            this.findViewById(R.id.windKaderView).setOnTouchListener((View.OnTouchListener)new View.OnTouchListener() {
-                public boolean onTouch(final View view, final MotionEvent motionEvent) {
-                    WelkomSoarCast.this.gestureDetector1.onTouchEvent(motionEvent);
-                    return true;
-                }
+            this.findViewById(R.id.windKaderView).setOnTouchListener((view, motionEvent) -> {
+                WelkomSoarCast.this.gestureDetector1.onTouchEvent(motionEvent);
+                return true;
             });
-            this.findViewById(R.id.richtingKaderView).setOnTouchListener((View.OnTouchListener)new View.OnTouchListener() {
-                public boolean onTouch(final View view, final MotionEvent motionEvent) {
-                    WelkomSoarCast.this.gestureDetector1.onTouchEvent(motionEvent);
-                    return true;
-                }
+            this.findViewById(R.id.richtingKaderView).setOnTouchListener((view, motionEvent) -> {
+                WelkomSoarCast.this.gestureDetector1.onTouchEvent(motionEvent);
+                return true;
             });
-            this.gestureDetector2 = new GestureDetector((Context)this, (GestureDetector.OnGestureListener)new OnSwipeListener() {
+            this.gestureDetector2 = new GestureDetector(this, new OnSwipeListener() {
                 @Override
                 public boolean onSchuif(float n) {
                     final Integer value = (int)(n - 1.0 * WelkomSoarCast.this.reedsVerschoven2);
@@ -644,17 +646,15 @@ public class WelkomSoarCast extends Activity
                     return true;
                 }
             });
-            this.findViewById(R.id.waardenView).setOnTouchListener((View.OnTouchListener)new View.OnTouchListener() {
-                public boolean onTouch(final View view, final MotionEvent motionEvent) {
-                    WelkomSoarCast.this.gestureDetector2.onTouchEvent(motionEvent);
-                    return true;
-                }
+            this.findViewById(R.id.waardenView).setOnTouchListener((view, motionEvent) -> {
+                WelkomSoarCast.this.gestureDetector2.onTouchEvent(motionEvent);
+                return true;
             });
         }
     }
 
     public void schermafdruk() {
-        if (ContextCompat.checkSelfPermission((Context)this, "android.permission.WRITE_EXTERNAL_STORAGE") == 0 && ContextCompat.checkSelfPermission((Context)this, "android.permission.READ_EXTERNAL_STORAGE") == 0) {
+        if (ContextCompat.checkSelfPermission(this, "android.permission.WRITE_EXTERNAL_STORAGE") == 0 && ContextCompat.checkSelfPermission((Context)this, "android.permission.READ_EXTERNAL_STORAGE") == 0) {
             final View rootView = this.getWindow().getDecorView().getRootView();
             rootView.setDrawingCacheEnabled(true);
             final Bitmap bitmap = Bitmap.createBitmap(rootView.getDrawingCache());
@@ -671,15 +671,15 @@ public class WelkomSoarCast extends Activity
                 fileOutputStream.close();
             }
             catch (Exception ex) {
-                Log.e("SoarCast", "Error screenshot", (Throwable)ex);
+                Log.e("SoarCast", "Error screenshot", ex);
             }
             final Intent intent = new Intent("android.intent.action.SEND");
             intent.setType("image/*");
-            intent.putExtra("android.intent.extra.STREAM", (Parcelable)Uri.fromFile(file));
-            this.startActivity(Intent.createChooser(intent, (CharSequence)"Share via"));
+            intent.putExtra("android.intent.extra.STREAM", Uri.fromFile(file));
+            this.startActivity(Intent.createChooser(intent, "Share via"));
             return;
         }
-        Toast.makeText(this.getBaseContext(), (CharSequence)this.getResources().getString(R.string.permissie), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this.getBaseContext(), this.getResources().getString(R.string.permissie), Toast.LENGTH_SHORT).show();
     }
 
     private class LeesLocaties extends AsyncTask<String, Void, Integer>
@@ -1362,7 +1362,7 @@ public class WelkomSoarCast extends Activity
                 WelkomSoarCast.this.updateLocatieWindRichting();
                 return;
             }
-            Toast.makeText(WelkomSoarCast.this.getBaseContext(), (CharSequence)WelkomSoarCast.this.getResources().getString(R.string.check_connection), Toast.LENGTH_SHORT).show();
+            Toast.makeText(WelkomSoarCast.this.getBaseContext(), WelkomSoarCast.this.getResources().getString(R.string.check_connection), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -2123,18 +2123,18 @@ public class WelkomSoarCast extends Activity
         protected void onPostExecute(final Integer n) {
             if (n < 1) {
                 if (n == -2) {
-                    Toast.makeText(WelkomSoarCast.this.getBaseContext(), (CharSequence)WelkomSoarCast.this.getResources().getString(R.string.no_data), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(WelkomSoarCast.this.getBaseContext(), WelkomSoarCast.this.getResources().getString(R.string.no_data), Toast.LENGTH_SHORT).show();
                 }
                 else {
-                    Toast.makeText(WelkomSoarCast.this.getBaseContext(), (CharSequence)WelkomSoarCast.this.getResources().getString(R.string.check_connection), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(WelkomSoarCast.this.getBaseContext(), WelkomSoarCast.this.getResources().getString(R.string.check_connection), Toast.LENGTH_SHORT).show();
                 }
             }
             else {
-                WelkomSoarCast.this.tijdNul = ((Richting)WelkomSoarCast.this.mRichting.get(0)).unixTimestamp;
+                WelkomSoarCast.this.tijdNul = WelkomSoarCast.this.mRichting.get(0).unixTimestamp;
             }
             WelkomSoarCast.this.updateRichting();
             WelkomSoarCast.this.updateRichtingModel();
-            ((RichtingKaderView)WelkomSoarCast.this.findViewById(R.id.richtingKaderView)).update(((Locatie)WelkomSoarCast.this.mLocatie.get(WelkomSoarCast.this.locIndex)).mindeg, ((Locatie)WelkomSoarCast.this.mLocatie.get(WelkomSoarCast.this.locIndex)).maxdeg, WelkomSoarCast.this.richt, WelkomSoarCast.this.uurVanaf, ((Richting)WelkomSoarCast.this.mRichting.get(0)).geefZonOpOnder());
+            ((RichtingKaderView)WelkomSoarCast.this.findViewById(R.id.richtingKaderView)).update(WelkomSoarCast.this.mLocatie.get(WelkomSoarCast.this.locIndex).mindeg, WelkomSoarCast.this.mLocatie.get(WelkomSoarCast.this.locIndex).maxdeg, WelkomSoarCast.this.richt, WelkomSoarCast.this.uurVanaf, WelkomSoarCast.this.mRichting.get(0).geefZonOpOnder());
             WelkomSoarCast.this.ikBenKlaar();
         }
     }
@@ -3232,28 +3232,28 @@ public class WelkomSoarCast extends Activity
         protected void onPostExecute(final Integer n) {
             if (n < 1) {
                 if (n == -2) {
-                    Toast.makeText(WelkomSoarCast.this.getBaseContext(), (CharSequence)WelkomSoarCast.this.getResources().getString(R.string.no_data), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(WelkomSoarCast.this.getBaseContext(), WelkomSoarCast.this.getResources().getString(R.string.no_data), Toast.LENGTH_SHORT).show();
                 }
                 else {
-                    Toast.makeText(WelkomSoarCast.this.getBaseContext(), (CharSequence)WelkomSoarCast.this.getResources().getString(R.string.check_connection), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(WelkomSoarCast.this.getBaseContext(), WelkomSoarCast.this.getResources().getString(R.string.check_connection), Toast.LENGTH_SHORT).show();
                 }
             }
             else {
-                WelkomSoarCast.this.tijdNul = ((Wind)WelkomSoarCast.this.mWind.get(0)).unixTimestamp;
+                WelkomSoarCast.this.tijdNul = WelkomSoarCast.this.mWind.get(0).unixTimestamp;
             }
             WelkomSoarCast.this.schaal = 0;
             int n2;
             for (int size = WelkomSoarCast.this.mWind.size(), i = 0; i < size; i = n2 + 1) {
-                if (((Wind)WelkomSoarCast.this.mWind.get(i)).snelheidMeting <= 15.0 && ((Wind)WelkomSoarCast.this.mWind.get(i)).vlaagMeting <= 15.0 && ((Wind)WelkomSoarCast.this.mWind.get(i)).snelheidHarmonie <= 15.0 && ((Wind)WelkomSoarCast.this.mWind.get(i)).vlaagHarmonie <= 15.0 && ((Wind)WelkomSoarCast.this.mWind.get(i)).snelheidGFS <= 15.0) {
+                if (WelkomSoarCast.this.mWind.get(i).snelheidMeting <= 15.0 && WelkomSoarCast.this.mWind.get(i).vlaagMeting <= 15.0 && WelkomSoarCast.this.mWind.get(i).snelheidHarmonie <= 15.0 && WelkomSoarCast.this.mWind.get(i).vlaagHarmonie <= 15.0 && WelkomSoarCast.this.mWind.get(i).snelheidGFS <= 15.0) {
                     n2 = i;
-                    if (((Wind)WelkomSoarCast.this.mWind.get(i)).vlaagGFS <= 15.0) {
+                    if (WelkomSoarCast.this.mWind.get(i).vlaagGFS <= 15.0) {
                         continue;
                     }
                 }
                 WelkomSoarCast.this.schaal = 1;
                 n2 = size;
             }
-            ((WindKaderView)WelkomSoarCast.this.findViewById(R.id.windKaderView)).update(WelkomSoarCast.this.eenheid, WelkomSoarCast.this.schaal, WelkomSoarCast.this.uurVanaf, ((Wind)WelkomSoarCast.this.mWind.get(0)).geefZonOpOnder());
+            ((WindKaderView)WelkomSoarCast.this.findViewById(R.id.windKaderView)).update(WelkomSoarCast.this.eenheid, WelkomSoarCast.this.schaal, WelkomSoarCast.this.uurVanaf, WelkomSoarCast.this.mWind.get(0).geefZonOpOnder());
             WelkomSoarCast.this.updateWindmeting();
             WelkomSoarCast.this.updateWindModel();
             WelkomSoarCast.this.ikBenKlaar();
