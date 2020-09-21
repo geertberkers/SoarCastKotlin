@@ -1,4 +1,4 @@
-package geert.berkers.soarcast
+package geert.berkers.soarcast.model
 
 /**
  * Created by Zorgkluis (Geert Berkers)

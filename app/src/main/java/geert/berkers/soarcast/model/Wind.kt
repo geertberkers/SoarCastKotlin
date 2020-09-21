@@ -1,4 +1,4 @@
-package geert.berkers.soarcast
+package geert.berkers.soarcast.model
 
 import java.text.SimpleDateFormat
 import java.util.*
@@ -6,14 +6,18 @@ import java.util.*
 /**
  * Created by Zorgkluis (Geert Berkers)
  */
-data class Richting(
+data class Wind(
     var unixTimestamp: Long,
     var dag: Int,
     var locatieID: Int,
-    var richtingMeting: Double,
-    var richtingHarmonie: Double,
-    var richtingGFS: Double
+    var snelheidMeting: Double,
+    var vlaagMeting: Double,
+    var snelheidHarmonie: Double,
+    var vlaagHarmonie: Double,
+    var snelheidGFS: Double,
+    var vlaagGFS: Double
 ) {
+
     fun geefZonOpOnder(): Array<Int> {
         val format = SimpleDateFormat("MM").format(Date(unixTimestamp * 1000L))
         while (true) {

@@ -30,10 +30,12 @@ import android.app.Activity;
 
 import androidx.core.content.ContextCompat;
 
-import geert.berkers.soarcast.Locatie;
+import geert.berkers.soarcast.model.Locatie;
 import geert.berkers.soarcast.R;
-import geert.berkers.soarcast.Richting;
-import geert.berkers.soarcast.Wind;
+import geert.berkers.soarcast.model.Richting;
+import geert.berkers.soarcast.model.Wind;
+import geert.berkers.soarcast.listener.Direction;
+import geert.berkers.soarcast.listener.OnSwipeListener;
 import geert.berkers.soarcast.views.RichtingKaderView;
 import geert.berkers.soarcast.views.RichtingMetingView;
 import geert.berkers.soarcast.views.RichtingModelView;
