@@ -4,6 +4,7 @@ package geert.berkers.soarcast.decompiled;
  * Created by Zorgkluis (Geert Berkers)
  */
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -18,6 +19,7 @@ import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -50,9 +52,9 @@ import geert.berkers.soarcast.views.WindMetingView;
 import geert.berkers.soarcast.views.WindModelView;
 
 @SuppressWarnings("deprecation")
-public class
-WelkomSoarCast extends Activity
-{
+@SuppressLint("ClickableViewAccessibility")
+public class WelkomSoarCast extends Activity {
+
     private Integer eenheid;
     public GestureDetector gestureDetector1;
     public GestureDetector gestureDetector2;
@@ -64,27 +66,31 @@ WelkomSoarCast extends Activity
     private ArrayList<Locatie> mLocatie;
     private ArrayList<Richting> mRichting;
     private ArrayList<Wind> mWind;
-    private final Integer maxN;
-    private String[] queryDag;
+    private final Integer maxN = 288;
     public float reedsVerschoven1;
     public float reedsVerschoven2;
     private Integer richt;
     private Integer schaal;
     private Integer tIndicator;
-    private String[] tekstEenheid;
-    private String[] tekstModel;
-    private String[] tekstRicht;
+    private String[] tekstRicht = new String[] { "N", "deg" };
+    private String[] tekstModel = new String[] { "Harm", "GFS" };
+    private String[] tekstEenheid = new String[] { "m/s", "km/h", "kn", "Bft" };
+    private String[] queryDag = new String[] { "yesterday", "today", "tomorrow", "dayaftertomorrow" };
     private Long tijdNul;
     private Integer uurVanaf;
     private Integer weerModel;
 
-    public WelkomSoarCast() {
-        this.tekstModel = new String[] { "Harm", "GFS" };
-        this.tekstEenheid = new String[] { "m/s", "km/h", "kn", "Bft" };
-        this.tekstRicht = new String[] { "N", "deg" };
-        this.queryDag = new String[] { "yesterday", "today", "tomorrow", "dayaftertomorrow" };
-        this.maxN = 288;
-    }
+    TextView txtLocatie = this.findViewById(R.id.locatie);
+    TextView txtLoading = this.findViewById(R.id.txtLoading);
+    WaardenView waardenView = this.findViewById(R.id.waardenView);
+    WindKaderView windKaderView = this.findViewById(R.id.windKaderView);
+    WindModelView windModelView = this.findViewById(R.id.windModelView);
+    WindMetingView windMetingView = this.findViewById(R.id.windMetingView);
+    RichtingModelView richtingModelView = this.findViewById(R.id.richtingModelView);
+    RichtingKaderView richtingKaderView = this.findViewById(R.id.richtingKaderView);
+    RichtingMetingView richtingMetingView = this.findViewById(R.id.richtingMetingView);
+
+    public WelkomSoarCast() { }
 
     private Integer[] bepaalKolommen(final String s) {
         final Integer[] array = { -1, -1, -1, -1, -1, -1, -1 };
@@ -154,24 +160,7 @@ WelkomSoarCast extends Activity
                 n3 = -1;
             }
             switch (n3) {
-                default: {
-                    if (substring.length() <= 8) {
-                        break;
-                    }
-                    if (substring.substring(0, 8).equals("windstoo")) {
-                        array[n2] = 2;
-                        break;
-                    }
-                    if (substring.substring(0, 8).equals("windsnel")) {
-                        array[n2] = 1;
-                        break;
-                    }
-                    if (substring.substring(0, 8).equals("windrich")) {
-                        array[n2] = 7;
-                        break;
-                    }
-                    break;
-                }
+
                 case 6: {
                     array[n2] = 9;
                     break;
@@ -200,14 +189,30 @@ WelkomSoarCast extends Activity
                     array[n2] = 0;
                     break;
                 }
+                default: {
+                    if (substring.length() <= 8) {
+                        break;
+                    }
+                    if (substring.substring(0, 8).equals("windstoo")) {
+                        array[n2] = 2;
+                        break;
+                    }
+                    if (substring.substring(0, 8).equals("windsnel")) {
+                        array[n2] = 1;
+                        break;
+                    }
+                    if (substring.substring(0, 8).equals("windrich")) {
+                        array[n2] = 7;
+                        break;
+                    }
+                    break;
+                }
             }
             ++n2;
             n = value2 + 1;
         }
         return array;
     }
-
-
 
     private void doeLocatieN() {
         if (this.klaar > 0 && !this.grafiekBezig && this.locID >= 0 && this.locIndex > 0) {
@@ -229,20 +234,20 @@ WelkomSoarCast extends Activity
         }
     }
 
-
     private void ikBenKlaar() {
         this.klaar = this.klaar + 1;
         if (this.klaar > 0) {
-            ((TextView)findViewById(R.id.txtLoading)).setText("");
-            ((WaardenView)findViewById(R.id.waardenView)).update(this.eenheid, this.schaal, this.uurVanaf, this.tIndicator);
+            txtLoading.setText("");
+            waardenView.update(this.eenheid, this.schaal, this.uurVanaf, this.tIndicator);
         }
     }
 
     private void updateLocatieWindRichting() {
         this.klaar = -1;
         this.locID = this.mLocatie.get(this.locIndex).id;
-        ((TextView)this.findViewById(R.id.txtLoading)).setText(this.getResources().getString(R.string.laden));
-        ((TextView)this.findViewById(R.id.locatie)).setText(this.mLocatie.get(this.locIndex).naam);
+        txtLoading.setText(this.getResources().getString(R.string.laden));
+        txtLocatie.setText(this.mLocatie.get(this.locIndex).naam);
+
         if (!this.mWind.isEmpty()) {
             this.mWind.clear();
         }
@@ -255,86 +260,91 @@ WelkomSoarCast extends Activity
     }
 
     private void updateRichting() {
-        final Integer[] array = new Integer[(int)this.maxN];
-        final Double[] array2 = new Double[(int)this.maxN];
+        final Integer[] tijdR = new Integer[(int)this.maxN];
+        final Double[] richtingMeting = new Double[(int)this.maxN];
         final int size = this.mRichting.size();
         final Long value = this.tijdNul + this.uurVanaf * 3600;
         Long n = value + 86400L;
         int n2 = 0;
-        int n3 = 0;
+        int aantalR = 0;
         while (this.mRichting.get(n2).unixTimestamp <= n) {
-            int n4 = n3;
+            int n4 = aantalR;
             if (this.mRichting.get(n2).unixTimestamp >= value) {
-                final Double access$4200 = this.mRichting.get(n2).richtingMeting;
-                n4 = n3;
-                if (access$4200 >= 0.0) {
-                    n4 = n3;
-                    if (access$4200 < 1000.0 && (n4 = n3) < this.maxN) {
-                        array[n3] = (int)(this.mRichting.get(n2).unixTimestamp - value);
-                        array2[n3] = access$4200;
-                        n4 = n3 + 1;
+                final Double richting = this.mRichting.get(n2).richtingMeting;
+                n4 = aantalR;
+                if (richting >= 0.0) {
+                    n4 = aantalR;
+                    if (richting < 1000.0 && (n4 = aantalR) < this.maxN) {
+                        tijdR[aantalR] = (int)(this.mRichting.get(n2).unixTimestamp - value);
+                        richtingMeting[aantalR] = richting;
+                        n4 = aantalR + 1;
                     }
                 }
             }
             if (n2 < size - 1) {
                 ++n2;
-                n3 = n4;
+                aantalR = n4;
             }
             else {
                 n = 0L;
-                n3 = n4;
+                aantalR = n4;
             }
         }
-        ((RichtingMetingView)this.findViewById(R.id.richtingMetingView)).update(this.mLocatie.get(this.locIndex).mindeg, this.mLocatie.get(this.locIndex).maxdeg, n3, array, array2);
-        ((WaardenView)this.findViewById(R.id.waardenView)).zetRichting(n3, array, array2);
+        int minDeg = this.mLocatie.get(this.locIndex).mindeg;
+        int maxDeg = this.mLocatie.get(this.locIndex).maxdeg;
+
+        richtingMetingView.update(minDeg, maxDeg, aantalR, tijdR, richtingMeting);
+        waardenView.zetRichting(aantalR, tijdR, richtingMeting);
     }
 
     private void updateRichtingModel() {
-        final Integer[] array = new Integer[(int)this.maxN];
-        final Double[] array2 = new Double[(int)this.maxN];
+        final Integer[] tijd = new Integer[(int)this.maxN];
+        final Double[] richtingModel = new Double[(int)this.maxN];
         final int size = this.mRichting.size();
         final Long value = this.tijdNul + this.uurVanaf * 3600;
         Long n = value + 86400L;
         int index = 0;
-        int n2 = 0;
+        int aantal = 0;
         while (this.mRichting.get(index).unixTimestamp <= n) {
-            int n3 = n2;
+            int n3 = aantal;
             if (this.mRichting.get(index).unixTimestamp >= value) {
-                Double n4;
+                Double richting;
                 if (this.weerModel == 1) {
-                    n4 = this.mRichting.get(index).richtingGFS;
+                    richting = this.mRichting.get(index).richtingGFS;
                 }
                 else {
-                    n4 = this.mRichting.get(index).richtingHarmonie;
+                    richting = this.mRichting.get(index).richtingHarmonie;
                 }
-                n3 = n2;
-                if (n4 >= 0.0 && (n3 = n2) < this.maxN) {
-                    array[n2] = (int)(this.mRichting.get(index).unixTimestamp - value);
-                    array2[n2] = n4;
-                    n3 = n2 + 1;
+                n3 = aantal;
+                if (richting >= 0.0 && (n3 = aantal) < this.maxN) {
+                    tijd[aantal] = (int)(this.mRichting.get(index).unixTimestamp - value);
+                    richtingModel[aantal] = richting;
+                    n3 = aantal + 1;
                 }
             }
             if (index < size - 1) {
                 ++index;
-                n2 = n3;
+                aantal = n3;
             }
             else {
                 n = 0L;
-                n2 = n3;
+                aantal = n3;
             }
         }
-        ((RichtingModelView)this.findViewById(R.id.richtingModelView)).update(this.mLocatie.get(this.locIndex).mindeg, this.mLocatie.get(this.locIndex).maxdeg, n2, array, array2);
+        int minDeg = this.mLocatie.get(this.locIndex).mindeg;
+        int maxDeg = this.mLocatie.get(this.locIndex).maxdeg;
+        richtingModelView.update(minDeg, maxDeg, aantal, tijd, richtingModel);
     }
 
     private void updateWindModel() {
-        final Integer[] array = new Integer[(int)this.maxN];
-        final Double[] array2 = new Double[(int)this.maxN];
-        final Double[] array3 = new Double[(int)this.maxN];
+        final Integer[] tjid = new Integer[(int)this.maxN];
+        final Double[] windModel = new Double[(int)this.maxN];
+        final Double[] vlaagModel = new Double[(int)this.maxN];
         final int size = this.mWind.size();
         final Long value = this.tijdNul + this.uurVanaf * 3600;
         Long n = value + 86400L;
         int index = 0;
-        int n2 = 0;
+        int aantal = 0;
         while (this.mWind.get(index).unixTimestamp <= n) {
             if (this.mWind.get(index).unixTimestamp >= value) {
                 Double n3;
@@ -347,11 +357,11 @@ WelkomSoarCast extends Activity
                     n3 = this.mWind.get(index).snelheidHarmonie;
                     n4 = this.mWind.get(index).vlaagHarmonie;
                 }
-                if (n4 > 0.0 || (n3 > 0.0 && n2 < this.maxN)) {
-                    array[n2] = (int)(this.mWind.get(index).unixTimestamp - value);
-                    array2[n2] = n3;
-                    array3[n2] = n4;
-                    ++n2;
+                if (n4 > 0.0 || (n3 > 0.0 && aantal < this.maxN)) {
+                    tjid[aantal] = (int)(this.mWind.get(index).unixTimestamp - value);
+                    windModel[aantal] = n3;
+                    vlaagModel[aantal] = n4;
+                    ++aantal;
                 }
             }
             if (index < size - 1) {
@@ -361,31 +371,31 @@ WelkomSoarCast extends Activity
                 n = 0L;
             }
         }
-        ((WindModelView)this.findViewById(R.id.windModelView)).update(this.schaal, n2, array, array2, array3);
+        windModelView.update(this.schaal, aantal, tjid, windModel, vlaagModel);
     }
 
     private void updateWindmeting() {
-        final Integer[] array = new Integer[(int)this.maxN];
-        final Double[] array2 = new Double[(int)this.maxN];
-        final Double[] array3 = new Double[(int)this.maxN];
+        final Integer[] tijdW = new Integer[(int)this.maxN];
+        final Double[] windMeting = new Double[(int)this.maxN];
+        final Double[] vlaagMeting = new Double[(int)this.maxN];
         final int size = this.mWind.size();
         final Long value = this.tijdNul + this.uurVanaf * 3600;
         Long n = value + 86400L;
         int index = 0;
-        int n2 = 0;
+        int aantalW = 0;
         while (this.mWind.get(index).unixTimestamp <= n) {
-            int n3 = n2;
+            int n3 = aantalW;
             Label_0374: {
                 if (this.mWind.get(index).unixTimestamp >= value) {
                     final Double access$3500 = this.mWind.get(index).snelheidMeting;
                     final Double access$3501 = this.mWind.get(index).vlaagMeting;
                     if (access$3501 <= 0.0) {
-                        n3 = n2;
-                        if (access$3500 <= 0.0 || (n3 = n2) >= this.maxN) {
+                        n3 = aantalW;
+                        if (access$3500 <= 0.0 || (n3 = aantalW) >= this.maxN) {
                             break Label_0374;
                         }
                     }
-                    array[n2] = (int)(this.mWind.get(index).unixTimestamp - value);
+                    tijdW[aantalW] = (int)(this.mWind.get(index).unixTimestamp - value);
                     Double n4 = null;
                     Label_0285: {
                         if (access$3500 > 0.0) {
@@ -394,8 +404,8 @@ WelkomSoarCast extends Activity
                                 break Label_0285;
                             }
                         }
-                        if (n2 > 0) {
-                            n4 = array2[n2 - 1];
+                        if (aantalW > 0) {
+                            n4 = windMeting[aantalW - 1];
                         }
                         else {
                             n4 = access$3501;
@@ -409,40 +419,40 @@ WelkomSoarCast extends Activity
                                 break Label_0330;
                             }
                         }
-                        if (n2 > 0) {
-                            n5 = array3[n2 - 1];
+                        if (aantalW > 0) {
+                            n5 = vlaagMeting[aantalW - 1];
                         }
                         else {
                             n5 = n4;
                         }
                     }
-                    n3 = n2;
+                    n3 = aantalW;
                     if (n4 < 400.0) {
-                        n3 = n2;
+                        n3 = aantalW;
                         if (n5 < 400.0) {
-                            array2[n2] = n4;
-                            array3[n2] = n5;
-                            n3 = n2 + 1;
+                            windMeting[aantalW] = n4;
+                            vlaagMeting[aantalW] = n5;
+                            n3 = aantalW + 1;
                         }
                     }
                 }
             }
             if (index < size - 1) {
                 ++index;
-                n2 = n3;
+                aantalW = n3;
             }
             else {
                 n = 0L;
-                n2 = n3;
+                aantalW = n3;
             }
         }
-        ((WindMetingView)this.findViewById(R.id.windMetingView)).update(this.schaal, n2, array, array2, array3);
-        ((WaardenView)this.findViewById(R.id.waardenView)).zetWind(this.schaal, n2, array, array2, array3);
+        windMetingView.update(this.schaal, aantalW, tijdW, windMeting, vlaagMeting);
+        waardenView.zetWind(this.schaal, aantalW, tijdW, windMeting, vlaagMeting);
         if (!this.grafiekBezig) {
-            if (n2 > 0) {
-                this.tIndicator = array[n2 - 1];
+            if (aantalW > 0) {
+                this.tIndicator = tijdW[aantalW - 1];
             }
-            if (n2 == 0 || this.tIndicator < 10800 || this.tIndicator > 75600) {
+            if (aantalW == 0 || this.tIndicator < 10800 || this.tIndicator > 75600) {
                 this.tIndicator = 43200;
             }
         }
@@ -503,48 +513,43 @@ WelkomSoarCast extends Activity
 
         if (bundle == null) {
             this.setContentView(R.layout.activity_welkomsoarcast);
-            ((TextView)this.findViewById(R.id.txtLoading)).setText(this.getResources().getString(R.string.laden));
+            txtLoading.setText(this.getResources().getString(R.string.laden));
             new LeesLocaties().execute(string);
 
-            final Button button = this.findViewById(R.id.btnModel);
-            final Button button2 = this.findViewById(R.id.btnEenheid);
-            final Button button3 = this.findViewById(R.id.btnRichting);
-            final ImageButton imageButton = this.findViewById(R.id.btnDelen);
-            button.setText(this.tekstModel[this.weerModel]);
-            button2.setText(this.tekstEenheid[this.eenheid]);
-            button3.setText(this.tekstRicht[this.richt]);
-            button.getBackground().setColorFilter(-2047872, PorterDuff.Mode.MULTIPLY);
-            button2.getBackground().setColorFilter(-2047872, PorterDuff.Mode.MULTIPLY);
-            button3.getBackground().setColorFilter(-2047872, PorterDuff.Mode.MULTIPLY);
-            imageButton.getBackground().setColorFilter(-2047872, PorterDuff.Mode.MULTIPLY);
-            final ImageButton imageButton2 = this.findViewById(R.id.locatieN);
-            final ImageButton imageButton3 = this.findViewById(R.id.locatieZ);
-            button.setOnClickListener(view -> {
+            final Button btnModel = this.findViewById(R.id.btnModel);
+            final Button btnEenheid = this.findViewById(R.id.btnEenheid);
+            final Button btnRichting = this.findViewById(R.id.btnRichting);
+
+            final ImageButton btnDelen = this.findViewById(R.id.btnDelen);
+            btnModel.setText(this.tekstModel[this.weerModel]);
+            btnEenheid.setText(this.tekstEenheid[this.eenheid]);
+            btnRichting.setText(this.tekstRicht[this.richt]);
+            btnModel.getBackground().setColorFilter(-2047872, PorterDuff.Mode.MULTIPLY);
+            btnEenheid.getBackground().setColorFilter(-2047872, PorterDuff.Mode.MULTIPLY);
+            btnRichting.getBackground().setColorFilter(-2047872, PorterDuff.Mode.MULTIPLY);
+            btnDelen.getBackground().setColorFilter(-2047872, PorterDuff.Mode.MULTIPLY);
+            final ImageButton locatieN = this.findViewById(R.id.locatieN);
+            final ImageButton locatieZ = this.findViewById(R.id.locatieZ);
+            btnModel.setOnClickListener(view -> {
                 if (WelkomSoarCast.this.klaar > 0 && !WelkomSoarCast.this.grafiekBezig) {
-//                    WelkomSoarCast.this.weerModel;
-//                    ++WelkomSoarCast.this.weerModel;
-//                    WelkomSoarCast.this.weerModel %= 2;
                     WelkomSoarCast.this.weerModel = this.weerModel % 2;
-                    button.setText(WelkomSoarCast.this.tekstModel[WelkomSoarCast.this.weerModel]);
+                    btnModel.setText(WelkomSoarCast.this.tekstModel[WelkomSoarCast.this.weerModel]);
                     WelkomSoarCast.this.updateWindModel();
                     WelkomSoarCast.this.updateRichtingModel();
                 }
             });
-            button2.setOnClickListener(view -> {
+            btnEenheid.setOnClickListener(view -> {
                 if (WelkomSoarCast.this.klaar > 0 && !WelkomSoarCast.this.grafiekBezig) {
-//                    WelkomSoarCast.this.eenheid;
-//                    ++WelkomSoarCast.this.eenheid;
-//                    WelkomSoarCast.this.eenheid %= 4;
                     WelkomSoarCast.this.eenheid = this.eenheid + 1;
                     WelkomSoarCast.this.eenheid = this.eenheid % 4;
-                    button2.setText(WelkomSoarCast.this.tekstEenheid[WelkomSoarCast.this.eenheid]);
-                    ((WindKaderView)WelkomSoarCast.this.findViewById(R.id.windKaderView)).update(
+                    btnEenheid.setText(WelkomSoarCast.this.tekstEenheid[WelkomSoarCast.this.eenheid]);
+                    windKaderView.update(
                             WelkomSoarCast.this.eenheid,
                             WelkomSoarCast.this.schaal,
                             WelkomSoarCast.this.uurVanaf,
                             WelkomSoarCast.this.mWind.get(0).geefZonOpOnder()
                     );
-                    ((WaardenView)WelkomSoarCast.this.findViewById(R.id.waardenView)).update(
+                    waardenView.update(
                             WelkomSoarCast.this.eenheid,
                             WelkomSoarCast.this.schaal,
                             WelkomSoarCast.this.uurVanaf,
@@ -554,23 +559,20 @@ WelkomSoarCast extends Activity
                     edit.apply();
                 }
             });
-            button3.setOnClickListener(view -> {
+            btnRichting.setOnClickListener(view -> {
                 if (WelkomSoarCast.this.klaar > 0 && !WelkomSoarCast.this.grafiekBezig) {
-//                    WelkomSoarCast.this.richt;
-//                    ++WelkomSoarCast.this.richt;
-//                    WelkomSoarCast.this.richt %= 2;
                     WelkomSoarCast.this.richt = this.richt + 1;
                     WelkomSoarCast.this.richt = this.richt % 2;
-                    button3.setText(WelkomSoarCast.this.tekstRicht[WelkomSoarCast.this.richt]);
-                    ((RichtingKaderView)WelkomSoarCast.this.findViewById(R.id.richtingKaderView)).update(WelkomSoarCast.this.mLocatie.get(WelkomSoarCast.this.locIndex).mindeg, WelkomSoarCast.this.mLocatie.get(WelkomSoarCast.this.locIndex).maxdeg, WelkomSoarCast.this.richt, WelkomSoarCast.this.uurVanaf, WelkomSoarCast.this.mRichting.get(0).geefZonOpOnder());
+                    btnRichting.setText(WelkomSoarCast.this.tekstRicht[WelkomSoarCast.this.richt]);
+                    richtingKaderView.update(WelkomSoarCast.this.mLocatie.get(WelkomSoarCast.this.locIndex).mindeg, WelkomSoarCast.this.mLocatie.get(WelkomSoarCast.this.locIndex).maxdeg, WelkomSoarCast.this.richt, WelkomSoarCast.this.uurVanaf, WelkomSoarCast.this.mRichting.get(0).geefZonOpOnder());
                     edit.putInt("richting", WelkomSoarCast.this.richt);
                     edit.apply();
                 }
             });
-            imageButton3.setOnClickListener(view -> WelkomSoarCast.this.doeLocatieZ());
-            imageButton2.setOnClickListener(view -> WelkomSoarCast.this.doeLocatieN());
-            imageButton.setOnClickListener(view -> WelkomSoarCast.this.schermafdruk());
-            this.findViewById(R.id.locatie).setOnClickListener(view -> {
+            locatieZ.setOnClickListener(view -> WelkomSoarCast.this.doeLocatieZ());
+            locatieN.setOnClickListener(view -> WelkomSoarCast.this.doeLocatieN());
+            btnDelen.setOnClickListener(view -> WelkomSoarCast.this.schermafdruk());
+            txtLocatie.setOnClickListener(view -> {
                 if (WelkomSoarCast.this.locID >= 0) {
                     WelkomSoarCast.this.locatieOpMaps();
                 }
@@ -591,13 +593,13 @@ WelkomSoarCast extends Activity
                         if (WelkomSoarCast.this.uurVanaf > 72) {
                             WelkomSoarCast.this.uurVanaf = 72;
                         }
-                        ((WindKaderView)WelkomSoarCast.this.findViewById(R.id.windKaderView)).update(WelkomSoarCast.this.eenheid, WelkomSoarCast.this.schaal, WelkomSoarCast.this.uurVanaf, WelkomSoarCast.this.mWind.get(0).geefZonOpOnder());
-                        ((RichtingKaderView)WelkomSoarCast.this.findViewById(R.id.richtingKaderView)).update(WelkomSoarCast.this.mLocatie.get(WelkomSoarCast.this.locIndex).mindeg, WelkomSoarCast.this.mLocatie.get(WelkomSoarCast.this.locIndex).maxdeg, WelkomSoarCast.this.richt, WelkomSoarCast.this.uurVanaf, WelkomSoarCast.this.mRichting.get(0).geefZonOpOnder());
+                        windKaderView.update(WelkomSoarCast.this.eenheid, WelkomSoarCast.this.schaal, WelkomSoarCast.this.uurVanaf, WelkomSoarCast.this.mWind.get(0).geefZonOpOnder());
+                        richtingKaderView.update(WelkomSoarCast.this.mLocatie.get(WelkomSoarCast.this.locIndex).mindeg, WelkomSoarCast.this.mLocatie.get(WelkomSoarCast.this.locIndex).maxdeg, WelkomSoarCast.this.richt, WelkomSoarCast.this.uurVanaf, WelkomSoarCast.this.mRichting.get(0).geefZonOpOnder());
                         WelkomSoarCast.this.updateWindmeting();
                         WelkomSoarCast.this.updateWindModel();
                         WelkomSoarCast.this.updateRichting();
                         WelkomSoarCast.this.updateRichtingModel();
-                        ((WaardenView)WelkomSoarCast.this.findViewById(R.id.waardenView)).update(WelkomSoarCast.this.eenheid, WelkomSoarCast.this.schaal, WelkomSoarCast.this.uurVanaf, WelkomSoarCast.this.tIndicator);
+                        waardenView.update(WelkomSoarCast.this.eenheid, WelkomSoarCast.this.schaal, WelkomSoarCast.this.uurVanaf, WelkomSoarCast.this.tIndicator);
                         WelkomSoarCast.this.grafiekBezig = false;
                     }
                     return true;
@@ -620,11 +622,11 @@ WelkomSoarCast extends Activity
                     return true;
                 }
             });
-            this.findViewById(R.id.windKaderView).setOnTouchListener((view, motionEvent) -> {
+            windKaderView.setOnTouchListener((View view, MotionEvent motionEvent) -> {
                 WelkomSoarCast.this.gestureDetector1.onTouchEvent(motionEvent);
                 return true;
             });
-            this.findViewById(R.id.richtingKaderView).setOnTouchListener((view, motionEvent) -> {
+            richtingKaderView.setOnTouchListener((view, motionEvent) -> {
                 WelkomSoarCast.this.gestureDetector1.onTouchEvent(motionEvent);
                 return true;
             });
@@ -643,7 +645,7 @@ WelkomSoarCast extends Activity
                         if (WelkomSoarCast.this.tIndicator > 75600) {
                             WelkomSoarCast.this.tIndicator = 75600;
                         }
-                        ((WaardenView)WelkomSoarCast.this.findViewById(R.id.waardenView)).update(WelkomSoarCast.this.eenheid, WelkomSoarCast.this.schaal, WelkomSoarCast.this.uurVanaf, WelkomSoarCast.this.tIndicator);
+                        waardenView.update(WelkomSoarCast.this.eenheid, WelkomSoarCast.this.schaal, WelkomSoarCast.this.uurVanaf, WelkomSoarCast.this.tIndicator);
                         WelkomSoarCast.this.grafiekBezig = false;
                     }
                     return true;
@@ -655,7 +657,7 @@ WelkomSoarCast extends Activity
                     return true;
                 }
             });
-            this.findViewById(R.id.waardenView).setOnTouchListener((view, motionEvent) -> {
+            waardenView.setOnTouchListener((view, motionEvent) -> {
                 WelkomSoarCast.this.gestureDetector2.onTouchEvent(motionEvent);
                 return true;
             });
@@ -691,8 +693,7 @@ WelkomSoarCast extends Activity
         Toast.makeText(this.getBaseContext(), this.getResources().getString(R.string.permissie), Toast.LENGTH_SHORT).show();
     }
 
-    private class LeesLocaties extends AsyncTask<String, Void, Integer>
-    {
+    private class LeesLocaties extends AsyncTask<String, Void, Integer> {
         private final String LOG_TAG;
 
         private LeesLocaties() {
@@ -745,6 +746,8 @@ WelkomSoarCast extends Activity
                         response.append(inputLine);
 
                         if (inputLine.equals("naam;id;lat;long;mindeg;maxdeg")) {
+//                            Integer[] kolommen = bepaalKolommen(inputLine);
+//                            System.out.println("Kolommen:" + kolommen);
                             continue;
                         } else {
                             try {
@@ -1478,7 +1481,98 @@ WelkomSoarCast extends Activity
         // CSV
         //http://www.soarcast.nl/sc/plotPerLocAndUnit.php?csv&unit=deg&location=61&day=today&windUnits=ms&forecastToShow=harm&runsToShow=lastOnly&activity_id=238&canvas=cnv_61_deg
         // TODO: Implement translation of bytecode
-        protected Integer doInBackground(final Integer... p0) {
+        protected Integer doInBackground(final Integer... params) {
+            Integer locatieId = params[0];
+
+            final StringBuilder sb = new StringBuilder();
+            sb.append(WelkomSoarCast.this.getResources().getString(R.string.url_soarcast));
+            sb.append(WelkomSoarCast.this.getResources().getString(R.string.php_soarcast));
+
+            // TODO: Add Unit
+            sb.append(WelkomSoarCast.this.getResources().getString(R.string.q_unit));
+            sb.append("=");
+            sb.append(WelkomSoarCast.this.getResources().getString(R.string.p_unit_richting));
+
+            // TODO: Add Location
+            sb.append("&");
+            sb.append(WelkomSoarCast.this.getResources().getString(R.string.q_location));
+            sb.append("=");
+            sb.append(locatieId);
+
+            // TODO: Add Day
+            sb.append("&");
+            sb.append(WelkomSoarCast.this.getResources().getString(R.string.q_day));
+            sb.append("=");
+            sb.append("today");
+
+            // TODO: Add runstoshow
+            sb.append("&");
+            sb.append(WelkomSoarCast.this.getResources().getString(R.string.q_runsToShow));
+            sb.append("=");
+            sb.append(WelkomSoarCast.this.getResources().getString(R.string.p_runsToShow));
+
+            // TODO: Add activity id
+            sb.append("&");
+            sb.append(WelkomSoarCast.this.getResources().getString(R.string.q_activity_id));
+            sb.append("=");
+            sb.append(WelkomSoarCast.this.getResources().getString(R.string.p_activity_id));
+
+            // TODO: Add q_cvs
+            sb.append("&");
+            sb.append(WelkomSoarCast.this.getResources().getString(R.string.q_csv));
+
+            String urlString = sb.toString();
+            System.out.println("HTTP - GET :: " + urlString);
+
+            try {
+                URL url = new URL(Uri.parse(urlString).buildUpon().build().toString());
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setRequestMethod("GET");
+                urlConnection.connect();
+
+                int responseCode = urlConnection.getResponseCode();
+                System.out.println("GET Response Code :: " + responseCode);
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    BufferedReader in = new BufferedReader(
+                            new InputStreamReader(urlConnection.getInputStream())
+                    );
+
+                    String inputLine;
+                    StringBuilder response = new StringBuilder();
+
+                    while ((inputLine = in.readLine()) != null) {
+                        System.out.println(inputLine);
+                        response.append(inputLine);
+
+                        // TODO: Rename next line
+                        if (inputLine.equals("etime;windrichting_q1_platfor;harm_windrichting")) {
+                            Integer[] kolommen = bepaalKolommen(inputLine);
+                            System.out.println("Kolommen:" + kolommen);
+                            continue;
+                        } else {
+                            try {
+                                Richting richting = createRichting(inputLine.split(";"), locatieId);
+                                mRichting.add(richting);
+                            } catch (Exception ex) {
+                                System.out.println("Could NOT parse richting!");
+                            }
+                        }
+                    }
+                    in.close();
+
+                    // print result
+                    System.out.println(response.toString());
+
+                    return mRichting.size();
+                } else {
+                    System.out.println("GET request not worked");
+                    return -1;
+                }
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+
             //
             // This method could not be decompiled.
             //
@@ -2213,6 +2307,30 @@ WelkomSoarCast extends Activity
             throw new IllegalStateException("An error occurred while decompiling this method.");
         }
 
+        // TODO: Set Day and locatie from kwown values
+        private Richting createRichting(String[] params, Integer locatieId) {
+            long unixTimestamp = 0L;
+            double richtingMeting = 0.0;
+            double richtingHarmonie = 0.0;
+            double richtingGFS = 0.0;
+
+            System.out.println("Creating Richting");
+
+            for (int i = 0; i < params.length; i++) {
+                String param = params[i];
+                System.out.println("Param["+ i + "]  =  " + param);
+
+                if (i == 0) {
+                    unixTimestamp = Long.parseLong(params[i]);
+                } else if (i == 1 && !param.isEmpty()) {
+                    richtingMeting = Double.parseDouble(params[i]);
+                } else if (i == 2) {
+                    richtingHarmonie = Double.parseDouble(params[i]);
+                }
+            }
+            return new Richting(unixTimestamp, 1, locatieId, richtingMeting, richtingHarmonie, richtingGFS);
+        }
+
         protected void onPostExecute(final Integer n) {
             if (n < 1) {
                 if (n == -2) {
@@ -2227,13 +2345,12 @@ WelkomSoarCast extends Activity
             }
             WelkomSoarCast.this.updateRichting();
             WelkomSoarCast.this.updateRichtingModel();
-            ((RichtingKaderView)WelkomSoarCast.this.findViewById(R.id.richtingKaderView)).update(WelkomSoarCast.this.mLocatie.get(WelkomSoarCast.this.locIndex).mindeg, WelkomSoarCast.this.mLocatie.get(WelkomSoarCast.this.locIndex).maxdeg, WelkomSoarCast.this.richt, WelkomSoarCast.this.uurVanaf, WelkomSoarCast.this.mRichting.get(0).geefZonOpOnder());
+            richtingKaderView.update(WelkomSoarCast.this.mLocatie.get(WelkomSoarCast.this.locIndex).mindeg, WelkomSoarCast.this.mLocatie.get(WelkomSoarCast.this.locIndex).maxdeg, WelkomSoarCast.this.richt, WelkomSoarCast.this.uurVanaf, WelkomSoarCast.this.mRichting.get(0).geefZonOpOnder());
             WelkomSoarCast.this.ikBenKlaar();
         }
     }
 
-    private class LeesWind extends AsyncTask<Integer, Void, Integer>
-    {
+    private class LeesWind extends AsyncTask<Integer, Void, Integer> {
         private final String LOG_TAG;
 
         private LeesWind() {
@@ -2241,7 +2358,99 @@ WelkomSoarCast extends Activity
         }
 
         // TODO: Implement translation of bytecode
-        protected Integer doInBackground(final Integer... p0) {
+        protected Integer doInBackground(final Integer... params) {
+            Integer locatieId = params[0];
+            final StringBuilder sb = new StringBuilder();
+            sb.append(WelkomSoarCast.this.getResources().getString(R.string.url_soarcast));
+            sb.append(WelkomSoarCast.this.getResources().getString(R.string.php_soarcast));
+
+            // TODO: Add Unit
+            sb.append(WelkomSoarCast.this.getResources().getString(R.string.q_unit));
+            sb.append("=");
+            sb.append(WelkomSoarCast.this.getResources().getString(R.string.p_unit_wind));
+
+            // TODO: Add Location
+            sb.append("&");
+            sb.append(WelkomSoarCast.this.getResources().getString(R.string.q_location));
+            sb.append("=");
+            sb.append(locatieId);
+
+            // TODO: Add Day
+            sb.append("&");
+            sb.append(WelkomSoarCast.this.getResources().getString(R.string.q_day));
+            sb.append("=");
+            // TODO: Make parameter
+            sb.append("today");
+//            sb.append(params[0]);
+
+
+            // TODO: Add runstoshow
+            sb.append("&");
+            sb.append(WelkomSoarCast.this.getResources().getString(R.string.q_runsToShow));
+            sb.append("=");
+            sb.append(WelkomSoarCast.this.getResources().getString(R.string.p_runsToShow));
+
+            // TODO: Add activity id
+            sb.append("&");
+            sb.append(WelkomSoarCast.this.getResources().getString(R.string.q_activity_id));
+            sb.append("=");
+            sb.append(WelkomSoarCast.this.getResources().getString(R.string.p_activity_id));
+
+            // TODO: Add q_cvs
+            sb.append("&");
+            sb.append(WelkomSoarCast.this.getResources().getString(R.string.q_csv));
+
+            String urlString = sb.toString();
+            System.out.println("HTTP - GET :: " + urlString);
+
+            try {
+                URL url = new URL(Uri.parse(urlString).buildUpon().build().toString());
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setRequestMethod("GET");
+                urlConnection.connect();
+
+                int responseCode = urlConnection.getResponseCode();
+                System.out.println("GET Response Code :: " + responseCode);
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    BufferedReader in = new BufferedReader(
+                            new InputStreamReader(urlConnection.getInputStream())
+                    );
+
+                    String inputLine;
+                    StringBuilder response = new StringBuilder();
+
+                    while ((inputLine = in.readLine()) != null) {
+                        System.out.println(inputLine);
+                        response.append(inputLine);
+
+                        if (inputLine.equals("etime;windsnelheid_q1_platfor;windstoot_q1_platfor;harm_windsnelheid;harm_windvlaag")) {
+                            Integer[] kolommen = bepaalKolommen(inputLine);
+                            System.out.println("Kolommen:" + kolommen);
+                            continue;
+                        } else {
+                            try {
+                                Wind wind = createWind(inputLine.split(";"), locatieId);
+                                mWind.add(wind);
+                            } catch (Exception ex) {
+                                System.out.println("Could NOT parse wind!");
+                            }
+                        }
+                    }
+                    in.close();
+
+                    // print result
+                    System.out.println(response.toString());
+
+                    return mWind.size();
+                } else {
+                    System.out.println("GET request not worked");
+                    return -1;
+                }
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+
             //
             // This method could not be decompiled.
             //
@@ -3322,12 +3531,43 @@ WelkomSoarCast extends Activity
             throw new IllegalStateException("An error occurred while decompiling this method.");
         }
 
+        private Wind createWind(String[] params, Integer locatieID) {
+            long unixTimestamp = 0L;
+            double snelheidMeting = 0.0;
+            double vlaagMeting = 0.0;
+            double snelheidHarmonie = 0.0;
+            double vlaagHarmonie = 0.0;
+            double snelheidGFS = 0.0;
+            double vlaagGFS = 0.0;
+
+            for (int i = 0; i < params.length; i++) {
+                String param = params[i];
+                System.out.println("Param["+ i + "]  =  " + param);
+
+                if (i == 0) {
+                    unixTimestamp = Long.parseLong(param);
+                } else if (i == 1 && !param.isEmpty()) {
+                    snelheidMeting = Double.parseDouble(param);
+                } else if (i == 2 && !param.isEmpty()) {
+                    vlaagMeting = Double.parseDouble(param);
+                }else if (i == 3 && !param.isEmpty()) {
+                    snelheidHarmonie = Double.parseDouble(param);
+                } else if (i == 4 && !param.isEmpty()) {
+                    vlaagHarmonie = Double.parseDouble(param);
+                }else if (i == 5 && !param.isEmpty()) {
+                    snelheidGFS = Double.parseDouble(param);
+                } else if (i == 6 && !param.isEmpty()) {
+                    vlaagGFS = Double.parseDouble(param);
+                }
+            }
+            return new Wind(unixTimestamp, 1, locatieID, snelheidMeting, vlaagMeting, snelheidHarmonie, vlaagHarmonie, snelheidGFS, vlaagGFS);
+        }
+
         protected void onPostExecute(final Integer n) {
             if (n < 1) {
                 if (n == -2) {
                     Toast.makeText(WelkomSoarCast.this.getBaseContext(), WelkomSoarCast.this.getResources().getString(R.string.no_data), Toast.LENGTH_SHORT).show();
-                }
-                else {
+                } else {
                     Toast.makeText(WelkomSoarCast.this.getBaseContext(), WelkomSoarCast.this.getResources().getString(R.string.check_connection), Toast.LENGTH_SHORT).show();
                 }
             }
@@ -3346,12 +3586,11 @@ WelkomSoarCast extends Activity
                 WelkomSoarCast.this.schaal = 1;
                 n2 = size;
             }
-            ((WindKaderView)WelkomSoarCast.this.findViewById(R.id.windKaderView)).update(WelkomSoarCast.this.eenheid, WelkomSoarCast.this.schaal, WelkomSoarCast.this.uurVanaf, WelkomSoarCast.this.mWind.get(0).geefZonOpOnder());
+            windKaderView.update(WelkomSoarCast.this.eenheid, WelkomSoarCast.this.schaal, WelkomSoarCast.this.uurVanaf, WelkomSoarCast.this.mWind.get(0).geefZonOpOnder());
             WelkomSoarCast.this.updateWindmeting();
             WelkomSoarCast.this.updateWindModel();
             WelkomSoarCast.this.ikBenKlaar();
         }
     }
-
 
 }
