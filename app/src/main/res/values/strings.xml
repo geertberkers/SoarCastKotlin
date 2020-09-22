@@ -49,4 +49,11 @@
     <string name="url_soarcast">http://www.soarcast.nl/sc/</string>
     <string name="verder">Continue</string>
     <string name="yesterday">Yesterday</string>
+    <string name="n">N</string>
+    <string name="m_s">m/s</string>
+    <string name="harm">Harm</string>
+    <string name="wijk_aan_zee">Wijk aan Zee</string>
+    <string name="locatie_zuider">Lokatie zuider</string>
+    <string name="locatie_noorder">Lokatie noorder</string>
+    <string name="delen">Delen</string>
 </resources>
