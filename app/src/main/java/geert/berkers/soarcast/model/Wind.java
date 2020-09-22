@@ -18,7 +18,7 @@ public class Wind {
     public Double vlaagHarmonie;
     public Double vlaagMeting;
 
-    Wind(final Long unixTimestamp, final Integer dag, final Integer locatieID, final Double snelheidMeting, final Double vlaagMeting, final Double snelheidHarmonie, final Double vlaagHarmonie, final Double snelheidGFS, final Double vlaagGFS) {
+    public Wind(final Long unixTimestamp, final Integer dag, final Integer locatieID, final Double snelheidMeting, final Double vlaagMeting, final Double snelheidHarmonie, final Double vlaagHarmonie, final Double snelheidGFS, final Double vlaagGFS) {
         this.unixTimestamp = unixTimestamp;
         this.dag = dag;
         this.locatieID = locatieID;
