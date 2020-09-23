@@ -53,17 +53,17 @@ public class WindKaderView extends View {
         float f6;
         float f7;
         int k;
-        float f3 = getMeasuredWidth();
-        float f1 = getMeasuredHeight();
-        float f2 = f3 / 700.0F;
+        float measuredWidth = getMeasuredWidth();
+        float measuredHeight = getMeasuredHeight();
+        float f2 = measuredWidth / 700.0F;
         this.mAssen.setTextSize(28.0F * f2);
         float f8 = 40.0F * f2;
         float f10 = 35.0F * f2;
         float f4 = 8.0F * f2;
-        f3 -= f4;
-        float f9 = f1 - f2 * 15.0F;
-        float f11 = f3 - f8;
-        f1 = f9 - f10;
+        measuredWidth -= f4;
+        float f9 = measuredHeight - f2 * 15.0F;
+        float f11 = measuredWidth - f8;
+        measuredHeight = f9 - f10;
         int i = this.schaal;
         int j = 1;
         if (i == 1) {
@@ -116,8 +116,8 @@ public class WindKaderView extends View {
                 while (true) {
                     float f12 = i1;
                     if (f12 < f5) {
-                        f12 = f9 - f12 * f1 / f5;
-                        paramCanvas.drawLine(f8, f12, f3, f12, this.mAssen);
+                        f12 = f9 - f12 * measuredHeight / f5;
+                        paramCanvas.drawLine(f8, f12, measuredWidth, f12, this.mAssen);
                         i1 += k;
                         continue;
                     }
@@ -133,8 +133,8 @@ public class WindKaderView extends View {
                         i = b;
                         j = n;
                         if (f12 < f6) {
-                            f12 = f9 - f12 * f1 / f6;
-                            paramCanvas.drawLine(f8, f12, f3, f12, this.mAssen);
+                            f12 = f9 - f12 * measuredHeight / f6;
+                            paramCanvas.drawLine(f8, f12, measuredWidth, f12, this.mAssen);
                             i1 += k;
                             continue;
                         }
@@ -150,8 +150,8 @@ public class WindKaderView extends View {
                         i = b;
                         j = n;
                         if (f12 < f2) {
-                            f12 = f9 - f12 * f1 / f2;
-                            paramCanvas.drawLine(f8, f12, f3, f12, this.mAssen);
+                            f12 = f9 - f12 * measuredHeight / f2;
+                            paramCanvas.drawLine(f8, f12, measuredWidth, f12, this.mAssen);
                             k++;
                             continue;
                         }
@@ -180,7 +180,7 @@ public class WindKaderView extends View {
             }
             this.mAssen.setColor(-3355444);
             this.mAssen.setTextAlign(Paint.Align.CENTER);
-            float f = f1 / 10.0F + f10;
+            float f = measuredHeight / 10.0F + f10;
             f11 = ((36 - this.uurVanaf % j) % j) * f11 / 24.0F + f8;
             if (this.uurVanaf < 10)
                 paramCanvas.drawText(getResources().getString(R.string.yesterday), f11, f, this.mAssen);
@@ -201,9 +201,9 @@ public class WindKaderView extends View {
                         stringBuilder.append("");
                         stringBuilder.append(i * 10);
                         String str = stringBuilder.toString();
-                        f2 = f9 - f2 * f1 / f6;
+                        f2 = f9 - f2 * measuredHeight / f6;
                         paramCanvas.drawText(str, f8 - f4, f2 + f4, this.mAssen);
-                        paramCanvas.drawLine(f8, f2, f3, f2, this.mAssen);
+                        paramCanvas.drawLine(f8, f2, measuredWidth, f2, this.mAssen);
                         i++;
                         continue;
                     }
@@ -219,9 +219,9 @@ public class WindKaderView extends View {
                         stringBuilder.append("");
                         stringBuilder.append(i * 10);
                         String str = stringBuilder.toString();
-                        f2 = f9 - f2 * f1 / f5;
+                        f2 = f9 - f2 * measuredHeight / f5;
                         paramCanvas.drawText(str, f8 - f4, f2 + f4, this.mAssen);
-                        paramCanvas.drawLine(f8, f2, f3, f2, this.mAssen);
+                        paramCanvas.drawLine(f8, f2, measuredWidth, f2, this.mAssen);
                         i++;
                         continue;
                     }
@@ -234,10 +234,10 @@ public class WindKaderView extends View {
                         StringBuilder stringBuilder = new StringBuilder();
                         stringBuilder.append("");
                         stringBuilder.append(i);
-                        paramCanvas.drawText(stringBuilder.toString(), f8 - f4, f9 - f5 * f1 / f2 + f4, this.mAssen);
+                        paramCanvas.drawText(stringBuilder.toString(), f8 - f4, f9 - f5 * measuredHeight / f2 + f4, this.mAssen);
                     }
-                    f5 = f9 - f5 * f1 / f2;
-                    paramCanvas.drawLine(f8, f5, f3, f5, this.mAssen);
+                    f5 = f9 - f5 * measuredHeight / f2;
+                    paramCanvas.drawLine(f8, f5, measuredWidth, f5, this.mAssen);
                 }
             } else {
                 i = 0;
@@ -249,9 +249,9 @@ public class WindKaderView extends View {
                         stringBuilder.append("");
                         stringBuilder.append(i * 5);
                         String str = stringBuilder.toString();
-                        f5 = f9 - f5 * f1 / f6;
+                        f5 = f9 - f5 * measuredHeight / f6;
                         paramCanvas.drawText(str, f8 - f4, f5 + f4, this.mAssen);
-                        paramCanvas.drawLine(f8, f5, f3, f5, this.mAssen);
+                        paramCanvas.drawLine(f8, f5, measuredWidth, f5, this.mAssen);
                         i++;
                         continue;
                     }
@@ -263,23 +263,23 @@ public class WindKaderView extends View {
     }
 
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        int i = View.MeasureSpec.getMode(heightMeasureSpec);
+        int mode = View.MeasureSpec.getMode(heightMeasureSpec);
         heightMeasureSpec = View.MeasureSpec.getSize(heightMeasureSpec);
         byte b = 100;
-        if (i != 1073741824)
-            if (i == Integer.MIN_VALUE) {
+        if (mode != 1073741824)
+            if (mode == Integer.MIN_VALUE) {
                 heightMeasureSpec = Math.min(100, heightMeasureSpec);
             } else {
                 heightMeasureSpec = 100;
             }
         int j = View.MeasureSpec.getMode(widthMeasureSpec);
-        i = View.MeasureSpec.getSize(widthMeasureSpec);
+        mode = View.MeasureSpec.getSize(widthMeasureSpec);
         if (j == 1073741824) {
-            widthMeasureSpec = i;
+            widthMeasureSpec = mode;
         } else {
             widthMeasureSpec = b;
             if (j == Integer.MIN_VALUE)
-                widthMeasureSpec = Math.min(100, i);
+                widthMeasureSpec = Math.min(100, mode);
         }
         setMeasuredDimension(widthMeasureSpec, heightMeasureSpec);
     }

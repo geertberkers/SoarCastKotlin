@@ -74,7 +74,7 @@ public class WindMetingView extends View {
         for (i = j; i < this.aantal; i++) {
             Integer[] arrayOfInteger = this.tijd;
             j = i - 1;
-            f6 = arrayOfInteger[j] * f4 / 24.0F / 3600.0F;
+            f6 = arrayOfInteger[j] * f4 / 24.0F / 3600.0F; // 24 Hour / 3600 Seconds?
             float f = this.tijd[i] * f4 / 24.0F / 3600.0F;
             if (f6 < f)
                 paramCanvas.drawLine(f2 + f6, f3 - this.vlaagMeting[j].floatValue() / f1 * f5, f2 + f, f3 - this.vlaagMeting[i].floatValue() / f1 * f5, this.mMeting);

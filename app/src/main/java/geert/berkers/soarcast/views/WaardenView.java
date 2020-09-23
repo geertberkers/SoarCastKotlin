@@ -77,64 +77,64 @@ public class WaardenView extends View {
     }
 
     protected void onDraw(Canvas paramCanvas) {
-        double d1;
-        double d2;
+        double windMeting;
+        double vlaagMeting;
         double d3;
-        float f3 = getMeasuredWidth();
-        float f7 = getMeasuredHeight();
-        float f6 = f3 / 700.0F;
+        float measuredWidth = getMeasuredWidth();
+        float measuredHeight = getMeasuredHeight();
+        float f6 = measuredWidth / 700.0F;
         this.mWaarden.setTextSize(28.0F * f6);
         float f1 = 40.0F * f6;
         float f2 = 8.0F * f6;
-        float f4 = f3 - f2 - f1;
-        float f8 = f7 - 0.0F;
-        f3 = f1 + 1.0F * this.tIndicator / 86400.0F * f4;
+        float f4 = measuredWidth - f2 - f1;
+        float f8 = measuredHeight - 0.0F;
+        measuredWidth = f1 + 1.0F * this.tIndicator / 86400.0F * f4;
         float f5 = f4 * 0.17F;
         f1 = 0.3F * f8;
         f4 = f1 / 2.0F;
-        int i = this.schaal;
+        int i = this.schaal; // TODO: Rename as schaal?
         if (this.aantalW > 0) {
             i = 1;
             d3 = 0.0D;
             double d = 0.0D;
             while (true) {
-                d1 = d3;
-                d2 = d;
+                windMeting = d3;
+                vlaagMeting = d;
                 if (i < this.aantalW) {
                     int k = this.tIndicator;
                     Integer[] arrayOfInteger = this.tijdW;
                     int m = i - 1;
                     int j = i;
-                    d2 = d3;
-                    d1 = d;
+                    vlaagMeting = d3;
+                    windMeting = d;
                     if (k >= arrayOfInteger[m]) {
                         j = i;
-                        d2 = d3;
-                        d1 = d;
+                        vlaagMeting = d3;
+                        windMeting = d;
                         if (this.tIndicator <= this.tijdW[i]) {
                             if (Math.abs(this.tijdW[m] - this.tIndicator) <= Math.abs(this.tijdW[i] - this.tIndicator)) {
-                                d1 = this.windMeting[m];
-                                d2 = this.vlaagMeting[m];
+                                windMeting = this.windMeting[m];
+                                vlaagMeting = this.vlaagMeting[m];
                             } else {
-                                d1 = this.windMeting[i];
-                                d2 = this.vlaagMeting[i];
+                                windMeting = this.windMeting[i];
+                                vlaagMeting = this.vlaagMeting[i];
                             }
-                            d = d1;
+                            d = windMeting;
                             j = this.aantalW;
-                            d1 = d2;
-                            d2 = d;
+                            windMeting = vlaagMeting;
+                            vlaagMeting = d;
                         }
                     }
                     i = j + 1;
-                    d3 = d2;
-                    d = d1;
+                    d3 = vlaagMeting;
+                    d = windMeting;
                     continue;
                 }
                 break;
             }
         } else {
-            d1 = 0.0D;
-            d2 = 0.0D;
+            windMeting = 0.0D;
+            vlaagMeting = 0.0D;
         }
         if (this.aantalR > 0) {
             i = 1;
@@ -171,16 +171,16 @@ public class WaardenView extends View {
         }
         switch (this.eenheid) {
             case 3:
-                d1 = Math.pow(d1 / 0.836D, 0.6666666666666666D);
-                d2 = Math.pow(d2 / 0.836D, 0.6666666666666666D);
+                windMeting = Math.pow(windMeting / 0.836D, 0.6666666666666666D);
+                vlaagMeting = Math.pow(vlaagMeting / 0.836D, 0.6666666666666666D);
                 break;
             case 2:
-                d1 *= 1.944D;
-                d2 *= 1.944D;
+                windMeting *= 1.944D;
+                vlaagMeting *= 1.944D;
                 break;
             case 1:
-                d1 *= 3.6D;
-                d2 *= 3.6D;
+                windMeting *= 3.6D;
+                vlaagMeting *= 3.6D;
                 break;
         }
         this.mWaarden.setTypeface(Typeface.DEFAULT);
@@ -189,51 +189,51 @@ public class WaardenView extends View {
         this.mWaarden.setColor(-3355444);
         Path path = new Path();
         path.reset();
-        path.moveTo(f3, 0.0F);
-        float f9 = f3 - f4;
+        path.moveTo(measuredWidth, 0.0F);
+        float f9 = measuredWidth - f4;
         float f11 = f8 / 2.0F;
         f6 = 0.0F + f11;
         f8 = f6 - f4;
         path.lineTo(f9, f8);
-        float f10 = f3 + f4;
+        float f10 = measuredWidth + f4;
         path.lineTo(f10, f8);
-        path.lineTo(f3, 0.0F);
+        path.lineTo(measuredWidth, 0.0F);
         paramCanvas.drawPath(path, this.mWaarden);
         path.reset();
-        path.moveTo(f3, f7);
-        f11 = f7 - f11 + f4;
+        path.moveTo(measuredWidth, measuredHeight);
+        f11 = measuredHeight - f11 + f4;
         path.lineTo(f9, f11);
         path.lineTo(f10, f11);
-        path.lineTo(f3, f7);
+        path.lineTo(measuredWidth, measuredHeight);
         paramCanvas.drawPath(path, this.mWaarden);
         path.reset();
-        f7 = f3 - f5;
+        measuredHeight = measuredWidth - f5;
         f10 = f4 / 1.5F;
-        f11 = f7 - f10;
+        f11 = measuredHeight - f10;
         path.moveTo(f11, f6);
-        path.lineTo(f7, f8);
+        path.lineTo(measuredHeight, f8);
         f9 = f6 + f4;
-        path.lineTo(f7, f9);
+        path.lineTo(measuredHeight, f9);
         path.lineTo(f11, f6);
         paramCanvas.drawPath(path, this.mWaarden);
         path.reset();
-        f5 = f3 + f5;
+        f5 = measuredWidth + f5;
         f10 += f5;
         path.moveTo(f10, f6);
         path.lineTo(f5, f8);
         path.lineTo(f5, f9);
         path.lineTo(f10, f6);
         paramCanvas.drawPath(path, this.mWaarden);
-        paramCanvas.drawRect(f7, f6 - f1, f5, f6 + f1, this.mWaarden);
+        paramCanvas.drawRect(measuredHeight, f6 - f1, f5, f6 + f1, this.mWaarden);
         this.mWaarden.setColor(-14671617);
         this.mWaarden.setTextAlign(Paint.Align.LEFT);
-        String str = String.format("%.1f", d1);
+        String str = String.format("%.1f", windMeting);
         f1 = f4 / 2.0F;
         f4 = f6 + f2;
-        paramCanvas.drawText(str, f7 + f1 + f2, f4, this.mWaarden);
+        paramCanvas.drawText(str, measuredHeight + f1 + f2, f4, this.mWaarden);
         this.mWaarden.setColor(-5205936);
         this.mWaarden.setTextAlign(Paint.Align.CENTER);
-        paramCanvas.drawText(String.format("%.1f", d2), f3, f4, this.mWaarden);
+        paramCanvas.drawText(String.format("%.1f", vlaagMeting), measuredWidth, f4, this.mWaarden);
         this.mWaarden.setColor(-14671617);
         this.mWaarden.setTextAlign(Paint.Align.RIGHT);
         StringBuilder stringBuilder = new StringBuilder();
@@ -242,26 +242,26 @@ public class WaardenView extends View {
         paramCanvas.drawText(stringBuilder.toString(), f5 - f2, f4, this.mWaarden);
     }
 
-    protected void onMeasure(int paramInt1, int paramInt2) {
-        int i = View.MeasureSpec.getMode(paramInt2);
-        paramInt2 = View.MeasureSpec.getSize(paramInt2);
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        int i = View.MeasureSpec.getMode(heightMeasureSpec);
+        heightMeasureSpec = View.MeasureSpec.getSize(heightMeasureSpec);
         byte b = 100;
         if (i != 1073741824)
             if (i == Integer.MIN_VALUE) {
-                paramInt2 = Math.min(100, paramInt2);
+                heightMeasureSpec = Math.min(100, heightMeasureSpec);
             } else {
-                paramInt2 = 100;
+                heightMeasureSpec = 100;
             }
-        int j = View.MeasureSpec.getMode(paramInt1);
-        i = View.MeasureSpec.getSize(paramInt1);
+        int j = View.MeasureSpec.getMode(widthMeasureSpec);
+        i = View.MeasureSpec.getSize(widthMeasureSpec);
         if (j == 1073741824) {
-            paramInt1 = i;
+            widthMeasureSpec = i;
         } else {
-            paramInt1 = b;
+            widthMeasureSpec = b;
             if (j == Integer.MIN_VALUE)
-                paramInt1 = Math.min(100, i);
+                widthMeasureSpec = Math.min(100, i);
         }
-        setMeasuredDimension(paramInt1, paramInt2);
+        setMeasuredDimension(widthMeasureSpec, heightMeasureSpec);
     }
 
     public void update(int eenheid, int schaal, int uurVanaf, int tIndicator) {

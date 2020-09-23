@@ -54,13 +54,13 @@ public class RichtingModelView extends View {
     }
 
     protected void onDraw(Canvas paramCanvas) {
-        float f1 = getMeasuredWidth();
-        float f3 = getMeasuredHeight();
-        float f2 = f1 / 700.0F;
+        float measuredWidth = getMeasuredWidth();
+        float measuredHeight = getMeasuredHeight();
+        float f2 = measuredWidth / 700.0F;
         float f4 = 40.0F * f2;
         float f5 = 15.0F * f2;
-        float f6 = f3 - 30.0F * f2;
-        float f7 = f1 - 8.0F * f2 - f4;
+        float f6 = measuredHeight - 30.0F * f2;
+        float f7 = measuredWidth - 8.0F * f2 - f4;
         float f8 = f6 - f5;
         this.mModel.setColor(805306623);
         this.mModel.setStrokeWidth(6.0F);
@@ -72,35 +72,35 @@ public class RichtingModelView extends View {
             float f10 = this.tijd[i] * f7 / 24.0F / 3600.0F;
             if (f9 < f10) {
                 f2 = this.richtingModel[j].floatValue() - ((360 - this.centrum * 90) % 360);
-                f1 = f2;
+                measuredWidth = f2;
                 if (f2 > 180.0F)
-                    f1 = f2 - 360.0F;
-                f2 = f1;
-                if (f1 < -180.0F)
-                    f2 = f1 + 360.0F;
-                f3 = this.richtingModel[i].floatValue() - ((360 - 90 * this.centrum) % 360);
-                f1 = f3;
-                if (f3 > 180.0F)
-                    f1 = f3 - 360.0F;
-                f3 = f1;
-                if (f1 < -180.0F)
-                    f3 = f1 + 360.0F;
-                if (Math.abs(f2 - f3) < 180.0F) {
-                    f1 = f8 / 2.0F + f5;
+                    measuredWidth = f2 - 360.0F;
+                f2 = measuredWidth;
+                if (measuredWidth < -180.0F)
+                    f2 = measuredWidth + 360.0F;
+                measuredHeight = this.richtingModel[i].floatValue() - ((360 - 90 * this.centrum) % 360);
+                measuredWidth = measuredHeight;
+                if (measuredHeight > 180.0F)
+                    measuredWidth = measuredHeight - 360.0F;
+                measuredHeight = measuredWidth;
+                if (measuredWidth < -180.0F)
+                    measuredHeight = measuredWidth + 360.0F;
+                if (Math.abs(f2 - measuredHeight) < 180.0F) {
+                    measuredWidth = f8 / 2.0F + f5;
                     float f = f8 / 360.0F;
-                    paramCanvas.drawLine(f4 + f9, f1 - f2 * f, f4 + f10, f1 - f * f3, this.mModel);
+                    paramCanvas.drawLine(f4 + f9, measuredWidth - f2 * f, f4 + f10, measuredWidth - f * measuredHeight, this.mModel);
                 } else if (f2 > 0.0F) {
-                    f1 = f5 + f8 / 2.0F;
+                    measuredWidth = f5 + f8 / 2.0F;
                     float f11 = f8 / 360.0F;
                     float f12 = f4 + (f9 + f10) / 2.0F;
-                    paramCanvas.drawLine(f4 + f9, f1 - f2 * f11, f12, f5, this.mModel);
-                    paramCanvas.drawLine(f12, f6, f4 + f10, f1 - f11 * f3, this.mModel);
+                    paramCanvas.drawLine(f4 + f9, measuredWidth - f2 * f11, f12, f5, this.mModel);
+                    paramCanvas.drawLine(f12, f6, f4 + f10, measuredWidth - f11 * measuredHeight, this.mModel);
                 } else {
-                    f1 = f5 + f8 / 2.0F;
+                    measuredWidth = f5 + f8 / 2.0F;
                     float f11 = f8 / 360.0F;
                     float f12 = f4 + (f9 + f10) / 2.0F;
-                    paramCanvas.drawLine(f4 + f9, f1 - f2 * f11, f12, f6, this.mModel);
-                    paramCanvas.drawLine(f12, f5, f4 + f10, f1 - f11 * f3, this.mModel);
+                    paramCanvas.drawLine(f4 + f9, measuredWidth - f2 * f11, f12, f6, this.mModel);
+                    paramCanvas.drawLine(f12, f5, f4 + f10, measuredWidth - f11 * measuredHeight, this.mModel);
                 }
             }
         }

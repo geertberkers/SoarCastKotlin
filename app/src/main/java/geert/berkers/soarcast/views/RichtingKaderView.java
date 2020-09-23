@@ -50,32 +50,32 @@ public class RichtingKaderView extends View {
     }
 
     protected void onDraw(Canvas paramCanvas) {
-        float f1 = getMeasuredWidth();
-        float f3 = getMeasuredHeight();
-        float f4 = f1 / 700.0F;
+        float measuredWidth = getMeasuredWidth();
+        float measuredHeight = getMeasuredHeight();
+        float f4 = measuredWidth / 700.0F;
         float f5 = 40.0F * f4;
         float f7 = 15.0F * f4;
         float f2 = 8.0F * f4;
-        f1 -= f2;
-        float f8 = f3 - 30.0F * f4;
-        float f9 = f1 - f5;
+        measuredWidth -= f2;
+        float f8 = measuredHeight - 30.0F * f4;
+        float f9 = measuredWidth - f5;
         float f6 = f8 - f7;
         int k = 4;
-        String[] arrayOfString = new String[4];
-        arrayOfString[0] = "S";
+        String[] verticalAxisDescription = new String[4];
+        verticalAxisDescription[0] = "S";
         int j = 1;
-        arrayOfString[1] = "E";
-        arrayOfString[2] = "N";
-        arrayOfString[3] = "W";
+        verticalAxisDescription[1] = "E";
+        verticalAxisDescription[2] = "N";
+        verticalAxisDescription[3] = "W";
         if (this.richt == 1) {
-            arrayOfString[0] = "180";
-            arrayOfString[1] = "90";
-            arrayOfString[2] = "0";
-            arrayOfString[3] = "270";
+            verticalAxisDescription[0] = "180";
+            verticalAxisDescription[1] = "90";
+            verticalAxisDescription[2] = "0";
+            verticalAxisDescription[3] = "270";
         }
         Paint paint = this.mAssen;
-        f3 = 28.0F * f4;
-        paint.setTextSize(f3);
+        measuredHeight = 28.0F * f4;
+        paint.setTextSize(measuredHeight);
         this.mAssen.setTextAlign(Paint.Align.LEFT);
         this.mAssen.setTypeface(Typeface.DEFAULT_BOLD);
         this.mAssen.setStyle(Paint.Style.FILL);
@@ -104,26 +104,26 @@ public class RichtingKaderView extends View {
             k = 4;
         }
         float f10 = f7 + 7.0F * f6 / 8.0F;
-        paramCanvas.drawLine(f5, f10, f1, f10, this.mAssen);
+        paramCanvas.drawLine(f5, f10, measuredWidth, f10, this.mAssen);
         f10 = f7 + 5.0F * f6 / 8.0F;
-        paramCanvas.drawLine(f5, f10, f1, f10, this.mAssen);
+        paramCanvas.drawLine(f5, f10, measuredWidth, f10, this.mAssen);
         f10 = f6 * 3.0F;
         float f11 = f7 + f10 / 8.0F;
-        paramCanvas.drawLine(f5, f11, f1, f11, this.mAssen);
+        paramCanvas.drawLine(f5, f11, measuredWidth, f11, this.mAssen);
         f11 = f7 + 1.0F * f6 / 8.0F;
-        paramCanvas.drawLine(f5, f11, f1, f11, this.mAssen);
+        paramCanvas.drawLine(f5, f11, measuredWidth, f11, this.mAssen);
         this.mAssen.setColor(-7829368);
         f11 = f10 / 4.0F;
         f10 = f7 + f11;
-        paramCanvas.drawLine(f5, f10, f1, f10, this.mAssen);
+        paramCanvas.drawLine(f5, f10, measuredWidth, f10, this.mAssen);
         float f12 = f6 / 4.0F;
         f10 = f7 + f12;
-        paramCanvas.drawLine(f5, f10, f1, f10, this.mAssen);
+        paramCanvas.drawLine(f5, f10, measuredWidth, f10, this.mAssen);
         float f13 = f6 / 2.0F;
         f10 = f7 + f13;
-        paramCanvas.drawLine(f5, f10, f1, f10, this.mAssen);
-        paramCanvas.drawLine(f5, f7, f1, f7, this.mAssen);
-        paramCanvas.drawLine(f5, f8, f1, f8, this.mAssen);
+        paramCanvas.drawLine(f5, f10, measuredWidth, f10, this.mAssen);
+        paramCanvas.drawLine(f5, f7, measuredWidth, f7, this.mAssen);
+        paramCanvas.drawLine(f5, f8, measuredWidth, f8, this.mAssen);
         for (i = 3; i < 25; i += 3) {
             j = i - this.uurVanaf % 3;
             int m = this.uurVanaf % 24 / 3;
@@ -140,71 +140,71 @@ public class RichtingKaderView extends View {
         if (this.richt == 1) {
             this.mAssen.setTextSize(20.0F * f4);
         } else {
-            this.mAssen.setTextSize(f3);
+            this.mAssen.setTextSize(measuredHeight);
         }
         this.mAssen.setTextAlign(Paint.Align.RIGHT);
         paramCanvas.drawLine(f5, f7, f5, f8, this.mAssen);
-        String str = arrayOfString[this.centrum];
-        f3 = f5 - f2;
+        String str = verticalAxisDescription[this.centrum];
+        measuredHeight = f5 - f2;
         f4 = f7 + f2;
-        paramCanvas.drawText(str, f3, f4, this.mAssen);
-        paramCanvas.drawText(arrayOfString[(1 + this.centrum) % 4], f3, f4 + f12, this.mAssen);
-        paramCanvas.drawText(arrayOfString[(2 + this.centrum) % 4], f3, f4 + f13, this.mAssen);
-        paramCanvas.drawText(arrayOfString[(3 + this.centrum) % 4], f3, f4 + f11, this.mAssen);
-        paramCanvas.drawText(arrayOfString[(k + this.centrum) % 4], f3, f8 + f2, this.mAssen);
+        paramCanvas.drawText(str, measuredHeight, f4, this.mAssen);
+        paramCanvas.drawText(verticalAxisDescription[(1 + this.centrum) % 4], measuredHeight, f4 + f12, this.mAssen);
+        paramCanvas.drawText(verticalAxisDescription[(2 + this.centrum) % 4], measuredHeight, f4 + f13, this.mAssen);
+        paramCanvas.drawText(verticalAxisDescription[(3 + this.centrum) % 4], measuredHeight, f4 + f11, this.mAssen);
+        paramCanvas.drawText(verticalAxisDescription[(k + this.centrum) % 4], measuredHeight, f8 + f2, this.mAssen);
         this.mAssen.setColor(1355853952);
         this.mAssen.setStyle(Paint.Style.FILL);
-        f3 = (this.mindeg - (360 - this.centrum * 90) % 360);
+        measuredHeight = (this.mindeg - (360 - this.centrum * 90) % 360);
         f4 = (this.maxdeg - (360 - 90 * this.centrum) % 360);
-        f2 = f3;
-        if (f3 > 180.0F)
-            f2 = f3 - 360.0F;
-        f3 = f4;
+        f2 = measuredHeight;
+        if (measuredHeight > 180.0F)
+            f2 = measuredHeight - 360.0F;
+        measuredHeight = f4;
         if (f4 > 180.0F)
-            f3 = f4 - 360.0F;
+            measuredHeight = f4 - 360.0F;
         f4 = f6 / 360.0F;
-        paramCanvas.drawRect(f5, f10 - f3 * f4, f1, f10 - f4 * f2, this.mAssen);
+        paramCanvas.drawRect(f5, f10 - measuredHeight * f4, measuredWidth, f10 - f4 * f2, this.mAssen);
     }
 
-    protected void onMeasure(int paramInt1, int paramInt2) {
-        int i = View.MeasureSpec.getMode(paramInt2);
-        paramInt2 = View.MeasureSpec.getSize(paramInt2);
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        int i = View.MeasureSpec.getMode(heightMeasureSpec);
+        heightMeasureSpec = View.MeasureSpec.getSize(heightMeasureSpec);
         byte b = 100;
         if (i != 1073741824)
             if (i == Integer.MIN_VALUE) {
-                paramInt2 = Math.min(100, paramInt2);
+                heightMeasureSpec = Math.min(100, heightMeasureSpec);
             } else {
-                paramInt2 = 100;
+                heightMeasureSpec = 100;
             }
-        int j = View.MeasureSpec.getMode(paramInt1);
-        i = View.MeasureSpec.getSize(paramInt1);
+        int j = View.MeasureSpec.getMode(widthMeasureSpec);
+        i = View.MeasureSpec.getSize(widthMeasureSpec);
         if (j == 1073741824) {
-            paramInt1 = i;
+            widthMeasureSpec = i;
         } else {
-            paramInt1 = b;
+            widthMeasureSpec = b;
             if (j == Integer.MIN_VALUE)
-                paramInt1 = Math.min(100, i);
+                widthMeasureSpec = Math.min(100, i);
         }
-        setMeasuredDimension(paramInt1, paramInt2);
+        setMeasuredDimension(widthMeasureSpec, heightMeasureSpec);
     }
 
-    public void update(int paramInt1, int paramInt2, int paramInt3, int paramInt4, Integer[] paramArrayOfInteger) {
-        if (paramInt1 == paramInt2 || paramInt1 < 0 || paramInt1 > 360 || paramInt2 < 0 || paramInt2 > 360) {
+    public void update(int minDeg, int maxDeg, int richting, int uurVanaf, Integer[] zonOpOnder) {
+        if (minDeg == maxDeg || minDeg < 0 || minDeg > 360 || maxDeg < 0 || maxDeg > 360) {
             this.kustdeg = -1;
             this.centrum = 0;
         } else {
-            this.mindeg = paramInt1;
-            this.maxdeg = paramInt2;
-            int i = paramInt2;
-            if (paramInt1 > paramInt2)
-                i = paramInt2 + 360;
-            this.kustdeg = (paramInt1 + i) / 2;
+            this.mindeg = minDeg;
+            this.maxdeg = maxDeg;
+            int i = maxDeg;
+            if (minDeg > maxDeg)
+                i = maxDeg + 360;
+            this.kustdeg = (minDeg + i) / 2;
             this.kustdeg %= 360;
             this.centrum = (4 - (this.kustdeg + 45) % 360 / 90) % 4;
         }
-        this.richt = paramInt3;
-        this.uurVanaf = paramInt4;
-        this.zonOpOnder = paramArrayOfInteger;
+        this.richt = richting;
+        this.uurVanaf = uurVanaf;
+        this.zonOpOnder = zonOpOnder;
         invalidate();
     }
 }

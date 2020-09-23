@@ -135,17 +135,17 @@ public class RichtingMetingView extends View {
         setMeasuredDimension(widthMeasureSpec, heightMeasureSpec);
     }
 
-    public void update(int paramInt1, int paramInt2, int aantal, Integer[] tijd, Double[] richtingMeting) {
-        if (paramInt1 == paramInt2 || paramInt1 < 0 || paramInt1 > 360 || paramInt2 < 0 || paramInt2 > 360) {
+    public void update(int minDeg, int maxDeg, int aantal, Integer[] tijd, Double[] richtingMeting) {
+        if (minDeg == maxDeg || minDeg < 0 || minDeg > 360 || maxDeg < 0 || maxDeg > 360) {
             this.kustdeg = -1;
             this.centrum = 0;
         } else {
-            this.mindeg = paramInt1;
-            this.maxdeg = paramInt2;
-            int i = paramInt2;
-            if (paramInt1 > paramInt2)
-                i = paramInt2 + 360;
-            this.kustdeg = (paramInt1 + i) / 2;
+            this.mindeg = minDeg;
+            this.maxdeg = maxDeg;
+            int i = maxDeg;
+            if (minDeg > maxDeg)
+                i = maxDeg + 360;
+            this.kustdeg = (minDeg + i) / 2;
             this.kustdeg %= 360;
             this.centrum = (4 - (this.kustdeg + 45) % 360 / 90) % 4;
         }
